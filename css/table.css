@@ -1,0 +1,26 @@
+/* Estilos para la tabla de registro */
+.customTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.customTable th, .customTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.customTable th {
+    background-color: rgb(104, 63, 105);
+    color: white;
+}
+
+.customTable tr {
+    background-color: #f2f2f2;
+}
+
+/* Separador de meses */
+.monthSeparator {
+    background-color: #724c26; 
+}

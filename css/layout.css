@@ -1,0 +1,43 @@
+/* Estilos generales de la página */
+body {
+    font-family: 'Poppins', sans-serif; 
+    background-color: #f4f4f4; 
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+/* Estilo del encabezado */
+.page-header {
+    background-color: rgb(104, 63, 105); 
+    color: white;
+    padding: 0;
+    font-size: 20px;
+    border-radius: 5px;
+}
+
+/* Contenedor padre que alinea los bloques en fila */
+.container-flex {
+    display: flex;
+    justify-content: center; /* Centrar los elementos en la página */
+    gap: 20px; /* Espacio entre los contenedores */
+    margin-top: 40px;
+}
+
+/* Ajustar el ancho de los bloques */
+.main-content {
+    background-color: rgb(242, 221, 247);
+    width: 40%; /* Reducimos el ancho para que entren ambos */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+
+/* Estilo del párrafo en el cuerpo */
+.main-content p {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 20px;
+}

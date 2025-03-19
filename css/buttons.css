@@ -1,0 +1,61 @@
+/* Estilos para los botones de picaje */
+.customButton {
+    background-color: #dbd0d0; 
+    color: rgb(22, 21, 21);
+    padding: 10px 25px;
+    text-decoration: none;
+    font-weight: bold;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 20px;
+    border-radius: 5px;
+    border:none; 
+    cursor: pointer;
+    display: inline-block;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.customButton:hover {
+    background-color: rgb(104, 63, 105); /* Al pulsar  */
+    text-decoration: none;
+}
+
+/* Contenedor de la flecha */
+.backContainer {
+    position: fixed; /* Se mantiene en la esquina inferior izquierda */
+    bottom: 30px;
+    left: 30px;
+    width: 80px; /* Tamaño del contenedor */
+    height: 80px; /* Tamaño del contenedor */
+    background-color: rgb(104, 63, 105);
+    border-radius: 50%; /* Hace que el contenedor sea un círculo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Sombra elegante */
+    transition: transform 0.2s ease-in-out, background-color 0.3s ease-in-out;
+}
+
+/* Flecha dentro del contenedor */
+.backArrow {
+    font-size: 40px; /* Flecha grande */
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%; /* Asegura que use todo el espacio del contenedor */
+    height: 100%;
+}
+
+/* Efecto al pasar el cursor */
+.backContainer:hover {
+    background-color:rgb(242, 221, 247); 
+    transform: scale(1.1); /* Se agranda ligeramente */
+}
+
+.backArrow:hover {
+    transform: scale(1.2); /* Hace que la flecha se agrande un poco */
+    text-decoration: none;
+}
+
