@@ -3,7 +3,7 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/dolibarr/main.inc.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/admin.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/custom/mimodulo/includes/header.php';
-require_once DOL_DOCUMENT_ROOT . '/custom/mimodulo/core/modules/picajeController.php';
+require_once DOL_DOCUMENT_ROOT . '/custom/mimodulo/core/modules/dbController.php';
 
 session_start();
 
