@@ -19,7 +19,8 @@
     text-decoration: none;
 }
 
-/* Contenedor de la flecha */
+/* Estilos de la fecha  */
+    /* Contenedor de la flecha */
 .backContainer {
     position: fixed; /* Se mantiene en la esquina inferior izquierda */
     bottom: 30px;
@@ -35,7 +36,7 @@
     transition: transform 0.2s ease-in-out, background-color 0.3s ease-in-out;
 }
 
-/* Flecha dentro del contenedor */
+
 .backArrow {
     font-size: 40px; /* Flecha grande */
     color: white;
@@ -48,7 +49,7 @@
     height: 100%;
 }
 
-/* Efecto al pasar el cursor */
+    /* Efecto al pasar el cursor */
 .backContainer:hover {
     background-color:rgb(242, 221, 247); 
     transform: scale(1.1); /* Se agranda ligeramente */
@@ -59,3 +60,39 @@
     text-decoration: none;
 }
 
+
+/* Boton modificar registro */
+
+/* Botones flotantes alineados con cada fila */
+.floating-buttons {
+    position: absolute;
+    right: 0px; /* Ajusta la distancia de la tabla */
+    top: calc(50% + var(--row-offset, 0px));
+    transform: translateY(-50%);
+    display: flex;
+    gap: 5px;
+}
+
+/* Estilos exclusivos para los botones flotantes de la tabla */
+.tableButton {
+    background-color: #ff4d4d;
+    border: none;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.3s ease;
+}
+
+.tableButton.editButton {
+    background-color: #4caf50;
+}
+
+.tableButton.deleteButton:hover {
+    background-color: #cc0000;
+}
+
+.tableButton.editButton:hover {
+    background-color: #388e3c;
+}

@@ -16,6 +16,7 @@ $registros = obtenerRegistrosDiarios();
 $token = $_SESSION['newtoken'];
 ?>
 
+
 <header class="page-header">
     <h1>Registro de Picaje</h1>
 </header>
@@ -55,6 +56,8 @@ $token = $_SESSION['newtoken'];
         </table>
     </div>
 </div>
+
+
 
 <!-- Fecha Volver -->
 <div class="backContainer">

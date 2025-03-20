@@ -14,7 +14,7 @@ class modMiModulo extends DolibarrModules
         $this->module_position = 500; // Posición en la lista de módulos
         $this->name = "MiModulo"; // Nombre del módulo
         $this->description = $langs->trans("Este es mi módulo en Dolibarr");
-        $this->version = '1.5'; // Versión del módulo
+        $this->version = '2'; // Versión del módulo
         
         // Estado del módulo
         $this->special = 0;

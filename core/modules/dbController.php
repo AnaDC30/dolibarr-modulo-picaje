@@ -32,8 +32,9 @@ function obtenerRegistrosDiarios() {
 function obtenerHistorialPicajes() {
     global $db, $user;
 
-    $sql = "SELECT fecha, hora, tipo FROM llx_picaje WHERE usuario_id = " . (int) $user->id . " 
-            ORDER BY fecha DESC, hora DESC";
+    $sql = "SELECT id, fecha, hora, tipo FROM llx_picaje WHERE usuario_id = " . (int) $user->id . " 
+        ORDER BY fecha DESC, hora DESC";
+
     
     $resql = $db->query($sql);
     $historial = [];
@@ -41,6 +42,7 @@ function obtenerHistorialPicajes() {
     if ($resql) {
         while ($row = $db->fetch_object($resql)) {
             $historial[] = [
+                'id' => $row->id,
                 'fecha' => $row->fecha,
                 'hora' => $row->hora,
                 'tipo' => ucfirst($row->tipo)
