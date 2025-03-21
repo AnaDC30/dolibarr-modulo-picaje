@@ -1,6 +1,8 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/dolibarr/main.inc.php';
 
+//Controlador de la base de datos
+
 global $db, $user;
 
 // Función para obtener registros del usuario actual
@@ -26,9 +28,8 @@ function obtenerRegistrosDiarios() {
     return $registros;
 }
 
-/**
- * Obtener el historial completo de picajes para el usuario autenticado.
- */
+ // Obtener el historial completo de picajes para el usuario autenticado.
+
 function obtenerHistorialPicajes() {
     global $db, $user;
 

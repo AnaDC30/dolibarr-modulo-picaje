@@ -1,43 +1,84 @@
-/* Estilos generales de la página */
+/* ===================== */
+/*     ESTILOS GLOBALES  */
+/* ===================== */
+
 body {
-    font-family: 'Poppins', sans-serif; 
-    background-color: #f4f4f4; 
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f4f4;
     margin: 0;
     padding: 0;
     text-align: center;
 }
 
-/* Estilo del encabezado */
+/* ===================== */
+/*      ENCABEZADO       */
+/* ===================== */
+
 .page-header {
-    background-color: rgb(104, 63, 105); 
+    background-color: rgb(104, 63, 105);
     color: white;
-    padding: 0;
-    font-size: 20px;
+    padding: 20px;
+    font-size: 24px;
     border-radius: 5px;
+    margin-bottom: 30px;
 }
 
-/* Contenedor padre que alinea los bloques en fila */
+/* ===================== */
+/*    CONTENEDOR FLEX    */
+/* ===================== */
+
 .container-flex {
     display: flex;
-    justify-content: center; /* Centrar los elementos en la página */
-    gap: 20px; /* Espacio entre los contenedores */
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
     margin-top: 40px;
+    padding: 0 20px;
 }
 
-/* Ajustar el ancho de los bloques */
+/* ===================== */
+/*     BLOQUES OPCIÓN    */
+/* ===================== */
+
 .main-content {
     background-color: rgb(242, 221, 247);
-    width: 40%; /* Reducimos el ancho para que entren ambos */
+    width: 300px;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
+    transition: transform 0.2s ease;
 }
 
+.main-content:hover {
+    transform: scale(1.03);
+}
 
-/* Estilo del párrafo en el cuerpo */
 .main-content p {
     font-size: 18px;
     color: #333;
     margin-bottom: 20px;
 }
+
+/* ===================== */
+/*     BOTÓN PRINCIPAL   */
+/* ===================== */
+
+.mainButton {
+    background-color: #683f69;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.mainButton:hover {
+    background-color: #532d54;
+}
+
