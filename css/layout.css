@@ -17,7 +17,6 @@ body {
 .page-header {
     background-color: rgb(104, 63, 105);
     color: white;
-    padding: 20px;
     font-size: 24px;
     border-radius: 5px;
     margin-bottom: 30px;
@@ -56,8 +55,9 @@ body {
 
 .main-content p {
     font-size: 18px;
-    color: #333;
+    color: #050505;
     margin-bottom: 20px;
+    text-decoration: none;
 }
 
 /* ===================== */
@@ -65,7 +65,7 @@ body {
 /* ===================== */
 
 .mainButton {
-    background-color: #683f69;
+    background-color: #9b8b9b;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -80,5 +80,6 @@ body {
 
 .mainButton:hover {
     background-color: #532d54;
+    text-decoration: none;
 }
 

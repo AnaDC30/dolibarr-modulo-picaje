@@ -1,64 +1,101 @@
 /* ===================== */
-/*   CONTENEDOR TABLA    */
+/*      ENCABEZADO       */
+/* ===================== */
+
+.page-header {
+    background-color: rgb(104, 63, 105);
+    color: white;
+    font-size: 24px;
+    text-align: center;
+    border-radius: 5px;
+    margin-bottom: 30px;
+}
+
+/* ===================== */
+/*     CONTENEDOR BASE   */
 /* ===================== */
 
 .table-container {
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    width: 100%;
-    max-width: 1200px;
-    margin: auto;
-    position: relative;
 }
 
 .table-wrapper {
-    width: 60%;
-    max-width: 600px;
-    overflow-x: auto;
-}
-
-/* ===================== */
-/*       TABLA           */
-/* ===================== */
-
-.picajeTable {
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    background-color: white;
-    display: table;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.picajeTable th, .picajeTable td {
-    border: 1px solid #ddd;
-    padding: 8px;
+/* ===================== */
+/*   CABECERA DE TABLA   */
+/* ===================== */
+
+.table-header {
+    display: flex;
+    background-color: rgb(104, 63, 105);
+    color: white;
+    font-weight: bold;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.table-header .cell {
+    flex: 1;
+    padding: 10px;
     text-align: center;
 }
 
-.picajeTable th {
-    background-color: rgb(104, 63, 105);
-    color: white;
+/* ===================== */
+/*     FILA DE DATOS     */
+/* ===================== */
+
+.row-wrapper {
+    position: relative;
+    display: flex;
+    background-color: #f2f2f2;
+    border-radius: 6px;
+    align-items: center;
+    transition: background 0.2s ease;
 }
 
-.picajeTable tr {
-    background-color: #f2f2f2;
+.row-wrapper:hover {
+    background-color: #e7dff1;
+}
+
+/* Celda interna de cada fila */
+.cell {
+    flex: 1;
+    text-align: center;
+    padding: 8px;
+}
+
+/* Fila cuando no hay datos */
+.no-data .cell {
+    flex: 1;
+    text-align: center;
+    font-style: italic;
+    color: #888;
 }
 
 /* ===================== */
-/* BOTONES FLOTANTES     */
+/*   BOTONES FLOTANTES   */
 /* ===================== */
 
 .floating-buttons {
     position: absolute;
-    right: 0px;
-    top: calc(50% + var(--row-offset, 0px));
+    right: 10px;
+    top: 50%;
     transform: translateY(-50%);
     display: flex;
-    gap: 5px;
-    z-index: 10;
+    gap: 8px;
 }
 
+/* Estilos generales para los botones */
 .tableButton {
     background-color: #ff4d4d;
     border: none;
@@ -66,24 +103,22 @@
     padding: 6px 10px;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 14px;
     transition: background 0.3s ease;
 }
 
+/* Botón editar */
 .tableButton.editButton {
     background-color: #4caf50;
 }
 
-.tableButton.deleteButton:hover {
-    background-color: #cc0000;
-}
-
+/* Hover de editar */
 .tableButton.editButton:hover {
     background-color: #388e3c;
 }
 
 /* ===================== */
-/*    BOTÓN VOLVER       */
+/*     BOTÓN VOLVER      */
 /* ===================== */
 
 .backContainer {
@@ -120,5 +155,5 @@
 
 .backArrow:hover {
     transform: scale(1.2);
-    text-decoration: none;
+    text-decoration: none !important;
 }

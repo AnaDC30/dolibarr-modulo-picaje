@@ -1,11 +1,55 @@
 /* ===================== */
-/*       TABLA           */
+/*      ESTILO GLOBAL     */
+/* ===================== */
+
+.page-header {
+    background-color: rgb(104, 63, 105);
+    color: white;
+    text-align: center;
+    font-size: 24px;
+    border-radius: 5px;
+    margin-bottom: 30px;
+}
+
+/* ===================== */
+/*    CONTENEDOR FLEX    */
+/* ===================== */
+
+.container-flex {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap; /* Para apilar en móvil */
+    gap: 20px;
+    padding: 0 20px;
+    margin-top: 40px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ===================== */
+/*     TARJETAS          */
+/* ===================== */
+
+.main-content {
+    flex: 1 1 calc(50% - 10px); /* 50% menos mitad del gap */
+    padding: 30px;
+    background-color: rgb(242, 221, 247);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    box-sizing: border-box;
+}
+
+
+/* ===================== */
+/*   TABLA DE PICAJES    */
 /* ===================== */
 
 .customTable {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
+    background-color: white;
 }
 
 .customTable th, .customTable td {
@@ -23,40 +67,42 @@
     background-color: #f2f2f2;
 }
 
-/* Separador de meses en tabla */
-.monthSeparator {
-    background-color: #724c26; 
-}
-
 /* ===================== */
-/*       BOTONES         */
+/*     BOTONES PICAR     */
 /* ===================== */
 
-.customButton {
-    background-color: #dbd0d0; 
-    color: rgb(22, 21, 21);
-    padding: 10px 25px;
-    text-decoration: none;
+.picajeButton {
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
     font-weight: bold;
-    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    font-size: 20px;
-    border-radius: 5px;
-    border: none; 
+    color: rgb(0, 0, 0);
     cursor: pointer;
-    display: inline-block;
-    transition: background-color 0.3s ease-in-out;
+    transition: background-color 0.3s ease;
 }
 
-.customButton:hover {
-    background-color: rgb(104, 63, 105);
-    text-decoration: none;
+/* Botón de Entrada */
+.picajeButton.entrada {
+    background-color: #9b8b9b;
+}
+
+/* Botón de Salida */
+.picajeButton.salida {
+    background-color: #9b8b9b;
+}
+
+/* Efecto hover común */
+.picajeButton:hover {
+    opacity: 0.9;
 }
 
 /* ===================== */
 /*    BOTÓN VOLVER       */
 /* ===================== */
 
-.backContainer {
+.picajeBack {
     position: fixed;
     bottom: 30px;
     left: 30px;
@@ -71,7 +117,7 @@
     transition: transform 0.2s ease-in-out, background-color 0.3s ease-in-out;
 }
 
-.backArrow {
+.picajeArrow {
     font-size: 40px;
     color: white;
     text-decoration: none;
@@ -83,12 +129,12 @@
     height: 100%;
 }
 
-.backContainer:hover {
+.picajeBack:hover {
     background-color: rgb(242, 221, 247); 
     transform: scale(1.1);
 }
 
-.backArrow:hover {
+.picajeArrow:hover {
     transform: scale(1.2);
     text-decoration: none;
 }
