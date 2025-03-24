@@ -6,10 +6,12 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/dolibarr/main.inc.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/admin.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/custom/mimodulo/core/modules/dbController.php';
 
+
 // =====================
 //  CARGAR ESTILOS CSS
 // =====================
 echo '<link rel="stylesheet" href="' . DOL_URL_ROOT . '/custom/mimodulo/css/historial.css">';
+echo '<link rel="stylesheet" href="' . DOL_URL_ROOT . '/custom/mimodulo/css/modal.css">';
 
 // =====================
 //    CABECERA VISUAL
@@ -59,10 +61,7 @@ $historial = obtenerHistorialPicajes();
                     <!-- BOTONES DE ACCIÓN SI ES ADMIN -->
                     <?php if ($user->admin == 1): ?>
                         <div class="floating-buttons">
-                            <form method="post" action="../core/modules/modificar_picaje.php">
-                                <input type="hidden" name="id_picaje" value="<?php echo $registro['id']; ?>">
-                                <button type="submit" name="accion" value="editar" class="editButton tableButton">✏️</button>
-                            </form>
+                            <button type="button" class="editButton tableButton" onclick="abrirModalEditar(<?php echo $registro['id']; ?>)">✏️</button>  
                         </div>
                     <?php endif; ?>
                 </div>
@@ -78,6 +77,26 @@ $historial = obtenerHistorialPicajes();
 <div class="backContainer">
     <a href="principal.php" class="backArrow">&#8592;</a>
 </div>
+
+<!-- ===================== -->
+<!--    MODAL DE EDICIÓN   -->
+<!-- ===================== -->
+<!-- Modal de edición -->
+<div id="modalEditar" class="modal-overlay">
+  <div id="modalEditarContenido" class="modal-content">
+    <!-- Aquí se carga el formulario por AJAX -->
+  </div>
+</div>
+
+
+<!-- ===================== -->
+<!--      SCRIPTS JS       -->
+<!-- ===================== -->
+<script src="<?php echo DOL_URL_ROOT; ?>/custom/mimodulo/scripts/modal-editar.js"></script>
+<script>
+    const DOLIBARR_CSRF_TOKEN = '<?php echo newToken(); ?>';
+</script>
+
 
 <?php
 // =====================

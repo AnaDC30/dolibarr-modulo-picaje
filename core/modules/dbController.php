@@ -53,4 +53,15 @@ function obtenerHistorialPicajes() {
 
     return $historial;
 }
+
+// función para obtener un registro específico por ID 
+function obtenerPicajePorId($id) {
+    global $db;
+    $sql = "SELECT * FROM llx_picaje WHERE id = " . (int)$id;
+    $resql = $db->query($sql);
+    if ($resql && $db->num_rows($resql) > 0) {
+        return $db->fetch_array($resql); 
+    }
+    return null;
+}
 ?>
