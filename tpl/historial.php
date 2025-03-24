@@ -21,7 +21,10 @@ llxHeader("", "Historial de Picaje", "");
 // =====================
 //   OBTENER DATOS BBDD
 // =====================
-$historial = obtenerHistorialPicajes();
+$filtroFecha = $_GET['fecha'] ?? null;
+$filtroUsuario = $_GET['usuario'] ?? null;
+$historial = obtenerHistorialPicajes($filtroFecha, $filtroUsuario);
+
 ?>
 
 <!-- ===================== -->
@@ -34,6 +37,29 @@ $historial = obtenerHistorialPicajes();
 <!-- ===================== -->
 <!--  CONTENEDOR PRINCIPAL -->
 <!-- ===================== -->
+
+<!-- BOTON FILTRO -->
+<button type="button" class="toggle-filtros" onclick="toggleFiltros()">🔍</button>
+
+<!-- Contenedor del formulario oculto inicialmente -->
+<div id="filtrosContainer" class="filtro-formulario oculto">
+    <form method="GET">
+        <div class="filtros">
+            <label for="fecha">Fecha:</label>
+            <input type="date" name="fecha" id="fecha" value="<?php echo $_GET['fecha'] ?? ''; ?>">
+
+            <?php if ($user->admin == 1): ?>
+                <label for="usuario">Usuario:</label>
+                <input type="text" name="usuario" id="usuario" placeholder="Nombre o apellido" value="<?php echo $_GET['usuario'] ?? ''; ?>">
+            <?php endif; ?>
+
+            <button type="submit">🔍 Buscar</button>
+            <a href="historial.php" class="btn-reset">Limpiar</a>
+        </div>
+    </form>
+</div>
+
+
 <div class="table-container">
     <div class="table-wrapper">
 
@@ -69,6 +95,7 @@ $historial = obtenerHistorialPicajes();
                     <!-- BOTONES DE ACCIÓN SI ES ADMIN -->
                     <?php if ($user->admin == 1): ?>
                         <div class="floating-buttons">
+                            <button type="button" class="locButton tableButton" onclick="verUbicacion(<?php echo $registro['id']; ?>)">📍</button>
                             <button type="button" class="editButton tableButton" onclick="abrirModalEditar(<?php echo $registro['id']; ?>)">✏️</button>  
                         </div>
                     <?php endif; ?>
@@ -89,10 +116,21 @@ $historial = obtenerHistorialPicajes();
 <!-- ===================== -->
 <!--    MODAL DE EDICIÓN   -->
 <!-- ===================== -->
-<!-- Modal de edición -->
+
 <div id="modalEditar" class="modal-overlay">
   <div id="modalEditarContenido" class="modal-content">
     <!-- Aquí se carga el formulario por AJAX -->
+  </div>
+</div>
+
+<!-- ===================== -->
+<!--  MODAL DE UBICACIÓN   -->
+<!-- ===================== -->
+
+<div id="modalUbicacion" class="modal-overlay">
+  <div class="modal-content">
+    <button class="cerrarModal" onclick="cerrarModalUbicacion()">×</button>
+    <div id="modalUbicacionContenido">Cargando ubicación...</div>
   </div>
 </div>
 
@@ -101,9 +139,18 @@ $historial = obtenerHistorialPicajes();
 <!--      SCRIPTS JS       -->
 <!-- ===================== -->
 <script src="<?php echo DOL_URL_ROOT; ?>/custom/mimodulo/scripts/modal-editar.js"></script>
+
 <script>
     const DOLIBARR_CSRF_TOKEN = '<?php echo newToken(); ?>';
 </script>
+
+<script>
+    function toggleFiltros() {
+        const contenedor = document.getElementById("filtrosContainer");
+        contenedor.classList.toggle("oculto");
+    }
+</script>
+
 
 
 <?php

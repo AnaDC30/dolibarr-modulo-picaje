@@ -24,6 +24,7 @@ $resql = $db->query($sql);
     <h1>Historial de Modificaciones</h1>
 </header>
 
+
 <div class="log-container">
     <table class="log-table">
         <thead>

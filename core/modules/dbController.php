@@ -30,23 +30,43 @@ function obtenerRegistrosDiarios() {
 
  // Obtener el historial completo de picajes para el usuario autenticado.
 
- function obtenerHistorialPicajes() {
+ function obtenerHistorialPicajes($filtroFecha = null, $filtroUsuario = null) {
     global $db, $user;
 
+    $sql = "SELECT p.id, p.fecha, p.hora, p.tipo";
     if ($user->admin == 1) {
-        // Mostrar todos los registros con nombre completo del usuario
-        $sql = "SELECT p.id, p.fecha, p.hora, p.tipo, 
-                       CONCAT(u.firstname, ' ', u.lastname) AS usuario
-                FROM llx_picaje p
-                LEFT JOIN " . MAIN_DB_PREFIX . "user u ON u.rowid = p.usuario_id
-                ORDER BY p.fecha DESC, p.hora DESC";
-    } else {
-        // Mostrar solo los registros del usuario logueado
-        $sql = "SELECT p.id, p.fecha, p.hora, p.tipo
-                FROM llx_picaje p
-                WHERE p.usuario_id = " . (int) $user->id . "
-                ORDER BY p.fecha DESC, p.hora DESC";
+        $sql .= ", CONCAT(u.firstname, ' ', u.lastname) AS usuario";
     }
+    $sql .= " FROM llx_picaje p";
+
+    if ($user->admin == 1) {
+        $sql .= " LEFT JOIN llx_user u ON u.rowid = p.usuario_id";
+    }
+
+    $where = [];
+
+    // Filtro por usuario (solo admin)
+    if ($user->admin == 1 && !empty($filtroUsuario)) {
+        $filtroUsuarioEscapado = $db->escape($filtroUsuario);
+        $where[] = "(u.firstname LIKE '%$filtroUsuarioEscapado%' OR u.lastname LIKE '%$filtroUsuarioEscapado%')";
+    }
+
+    // Filtro por fecha
+    if (!empty($filtroFecha)) {
+        $filtroFechaEscapado = $db->escape($filtroFecha);
+        $where[] = "p.fecha = '$filtroFechaEscapado'";
+    }
+
+    // Si no es admin, mostrar solo sus registros
+    if ($user->admin != 1) {
+        $where[] = "p.usuario_id = " . (int) $user->id;
+    }
+
+    if (count($where)) {
+        $sql .= " WHERE " . implode(" AND ", $where);
+    }
+
+    $sql .= " ORDER BY p.fecha DESC, p.hora DESC";
 
     $resql = $db->query($sql);
     $historial = [];
@@ -58,13 +78,14 @@ function obtenerRegistrosDiarios() {
                 'fecha' => $row->fecha,
                 'hora' => $row->hora,
                 'tipo' => ucfirst($row->tipo),
-                'usuario' => $row->usuario ?? null
+                'usuario' => $user->admin == 1 ? $row->usuario : null
             ];
         }
     }
 
     return $historial;
 }
+
 
 
 

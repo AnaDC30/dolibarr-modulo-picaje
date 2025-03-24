@@ -66,9 +66,9 @@ function mostrarMensajeExito(mensaje) {
 }
 
 
-// =========================
+// =======================
 // GUARDAR EDICIÓN (AJAX)
-// =========================
+// =======================
 
 function guardarEdicion(event) {
     event.preventDefault(); 
@@ -76,14 +76,13 @@ function guardarEdicion(event) {
     const form = event.target;
     const formData = new FormData(form);
 
-     //Añadir token CSRF generado desde PHP
-    formData.append('token', DOLIBARR_CSRF_TOKEN); // para evitar CSRF
+    // Añadir token CSRF generado desde PHP
+    formData.append('token', DOLIBARR_CSRF_TOKEN); 
 
     fetch('../core/modules/modificar_picaje.php', {
         method: 'POST',
         body: formData,
         credentials: 'same-origin'
-
     })
     .then(response => {
         if (!response.ok) {
@@ -106,5 +105,43 @@ function guardarEdicion(event) {
 
     return false;
 }
+
+
+// ===========
+// UBICACIÓN
+// ===========
+function verUbicacion(id) {
+    document.getElementById("modalUbicacion").style.display = "flex";
+
+    fetch(`../core/modules/get_ubicacion.php?id=${id}`)
+        .then(response => response.json())
+        .then(data => {
+            const contenedor = document.getElementById("modalUbicacionContenido");
+            if (data.success) {
+                contenedor.innerHTML = `
+                    <h3>📍 Ubicación del registro</h3>
+                    <p><strong>Usuario:</strong> ${data.usuario}</p>
+                    <p><strong>Fecha:</strong> ${data.fecha}</p>
+                    <p><strong>Hora:</strong> ${data.hora}</p>
+                    <p><strong>Latitud:</strong> ${data.latitud}</p>
+                    <p><strong>Longitud:</strong> ${data.longitud}</p>
+                    <a href="https://www.google.com/maps?q=${data.latitud},${data.longitud}" target="_blank">🌍 Ver en Google Maps</a>
+                `;
+            } else {
+                contenedor.innerHTML = `<p>Error: ${data.error}</p>`;
+            }
+        })
+        .catch(error => {
+            console.error("Error al obtener ubicación:", error);
+            document.getElementById("modalUbicacionContenido").innerHTML = "<p>❌ Error al cargar los datos de ubicación.</p>";
+        });
+}
+
+function cerrarModalUbicacion() {
+    document.getElementById("modalUbicacion").style.display = "none";
+    document.getElementById("modalUbicacionContenido").innerHTML = '';
+}
+
+
 
 

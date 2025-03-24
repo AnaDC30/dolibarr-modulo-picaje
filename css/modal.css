@@ -142,3 +142,19 @@
 .btn-historial:hover {
   background-color: #27ae60;
 }
+
+
+/* Ubicación */
+.locButton {
+  background-color: #2f8eb9;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.5rem;
+  border-radius: 5px;
+  margin-left: 0.3rem;
+  cursor: pointer;
+}
+.locButton:hover {
+  background-color: #25759b;
+}
+

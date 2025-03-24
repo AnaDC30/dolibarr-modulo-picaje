@@ -32,6 +32,68 @@
 }
 
 /* ===================== */
+/*        FILTRO         */
+/* ===================== */
+
+.filtro-formulario {
+    margin: 1rem 0;
+    padding: 1rem;
+    background-color: #f3f3f3;
+    border-radius: 8px;
+}
+
+.filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+}
+
+.filtros label {
+    font-weight: bold;
+}
+
+.filtros input,
+.filtros button,
+.filtros .btn-reset {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.95rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.filtros .btn-reset {
+    background-color: #eee;
+    text-decoration: none;
+    color: #444;
+}
+
+/* ============ */
+/* FILTRO OCULTO / MOSTRAR OCULTAR */
+/* ============ */
+
+.filtro-formulario.oculto {
+    display: none;
+}
+
+.toggle-filtros {
+    background-color: #974dad;
+    color: white;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 5px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    margin-bottom: 1rem;
+}
+
+.toggle-filtros:hover {
+    background-color: #a167b3;
+}
+
+
+
+/* ===================== */
 /*   CABECERA DE TABLA   */
 /* ===================== */
 
