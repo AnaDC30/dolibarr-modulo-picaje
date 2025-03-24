@@ -39,6 +39,9 @@ $historial = obtenerHistorialPicajes();
 
         <!-- CABECERA DE LA TABLA -->
         <div class="table-header">
+            <?php if ($user->admin == 1): ?>
+                <div class="cell">Usuario</div>
+            <?php endif; ?>
             <div class="cell">Tipo</div>
             <div class="cell">Hora</div>
             <div class="cell">Fecha</div>
@@ -54,6 +57,11 @@ $historial = obtenerHistorialPicajes();
         <?php else: ?>
             <?php foreach ($historial as $index => $registro): ?>
                 <div class="row-wrapper">
+
+                <?php if ($user->admin == 1): ?>
+                    <div class="cell cell-usuario"><?php echo $registro['usuario']; ?></div>
+                    <?php endif; ?>
+
                     <div class="cell"><?php echo $registro['tipo']; ?></div>
                     <div class="cell"><?php echo $registro['hora']; ?></div>
                     <div class="cell"><?php echo date("d/m/Y", strtotime($registro['fecha'])); ?></div>

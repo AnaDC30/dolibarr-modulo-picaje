@@ -82,6 +82,18 @@
     color: #888;
 }
 
+
+/* ========================= */
+/* ESTILO PARA COLUMNA USUARIO */
+/* ========================= */
+
+.cell-usuario {
+    font-weight: bold;
+    color: #34495e;
+}
+
+
+
 /* ===================== */
 /*   BOTONES FLOTANTES   */
 /* ===================== */

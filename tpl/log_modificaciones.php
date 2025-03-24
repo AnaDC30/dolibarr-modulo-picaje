@@ -9,10 +9,14 @@ llxHeader("", "Historial de Modificaciones de Picaje", "");
 
 // Obtener logs desde la base de datos
 global $db;
-$sql = "SELECT l.*, u.login AS usuario 
-        FROM llx_mimodulo_picaje_log l
-        LEFT JOIN ".MAIN_DB_PREFIX."user u ON u.rowid = l.usuario_id
-        ORDER BY l.fecha_modificacion DESC";
+$sql = 
+    "SELECT l.id, l.descripcion, l.comentario, l.fecha_modificacion,
+           CONCAT(u.firstname, ' ', u.lastname) AS nombre_usuario_afectado
+    FROM llx_mimodulo_picaje_log l
+    LEFT JOIN llx_picaje p ON p.id = l.picaje_id
+    LEFT JOIN llx_user u ON u.rowid = p.usuario_id
+    ORDER BY l.fecha_modificacion DESC";
+
 $resql = $db->query($sql);
 ?>
 
@@ -25,11 +29,10 @@ $resql = $db->query($sql);
         <thead>
             <tr>
                 <th>ID</th>
-                <th>ID Picaje</th>
-                <th>Usuario</th>
+                <th>Usuario Afectado</th>
                 <th>Descripción</th>
                 <th>Comentario</th>
-                <th>Fecha Modificación</th>
+                <th>Fecha de Modificación</th>
             </tr>
         </thead>
         <tbody>
@@ -37,8 +40,7 @@ $resql = $db->query($sql);
                 <?php while ($row = $db->fetch_array($resql)): ?>
                     <tr>
                         <td><?php echo $row['id']; ?></td>
-                        <td><?php echo $row['picaje_id']; ?></td>
-                        <td><?php echo $row['usuario']; ?></td>
+                        <td><?php echo $row['nombre_usuario_afectado'] ?? '—'; ?></td>
                         <td><?php echo $row['descripcion']; ?></td>
                         <td><?php echo $row['comentario']; ?></td>
                         <td><?php echo date("d/m/Y H:i", strtotime($row['fecha_modificacion'])); ?></td>
