@@ -107,9 +107,9 @@ function guardarEdicion(event) {
 }
 
 
-// ===========
+// ==========
 // UBICACIÓN
-// ===========
+// ==========
 function verUbicacion(id) {
     document.getElementById("modalUbicacion").style.display = "flex";
 
@@ -140,4 +140,24 @@ function verUbicacion(id) {
 function cerrarModalUbicacion() {
     document.getElementById("modalUbicacion").style.display = "none";
     document.getElementById("modalUbicacionContenido").innerHTML = '';
+}
+
+// =====================
+// JUSTIFICACIÓN PICAJE
+// =====================
+
+function enviarJustificacion() {
+    const texto = document.getElementById('textoJustificacion').value.trim();
+    if (!texto) {
+        alert("⚠️ Debes escribir una justificación.");
+        return;
+    }
+
+    document.getElementById('inputJustificacion').value = texto;
+    document.getElementById('tipo_picaje').value = 'salida';
+    document.getElementById('form-picaje').submit();
+}
+
+function cerrarModalJustificacion() {
+    document.getElementById('modalJustificacion').style.display = 'none';
 }

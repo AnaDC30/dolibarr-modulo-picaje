@@ -88,7 +88,6 @@ function obtenerRegistrosDiarios() {
 
 
 
-
 // función para obtener un registro específico por ID 
 function obtenerPicajePorId($id) {
     global $db;
@@ -99,4 +98,84 @@ function obtenerPicajePorId($id) {
     }
     return null;
 }
+
+function getHorarioUsuario($user_id)
+{
+    global $db, $conf;
+
+    // 1. Buscar horario individual
+    $sql = "SELECT hora_salida, salida_automatica 
+            FROM llx_picaje_horarios 
+            WHERE fk_user = " . (int) $user_id . " 
+            AND entity = " . (int) $conf->entity . " 
+            LIMIT 1";
+
+    $resql = $db->query($sql);
+    if ($resql && $db->num_rows($resql)) {
+        return $db->fetch_object($resql);
+    }
+
+    // 2. Si no hay horario individual, obtener horario por grupo
+    $sql_dept = "SELECT g.rowid, g.nom FROM llx_usergroup_user u
+                JOIN llx_usergroup g ON g.rowid = u.fk_usergroup
+                WHERE u.fk_user = " . (int) $user_id;
+
+    $res_dept = $db->query($sql_dept);
+    if ($res_dept && $db->num_rows($res_dept)) {
+        while ($obj = $db->fetch_object($res_dept)) {
+            $sql2 = "SELECT hora_salida, salida_automatica 
+                    FROM llx_picaje_horarios 
+                    WHERE fk_departement = " . (int) $obj->rowid . " 
+                    AND entity = " . (int) $conf->entity . " 
+                    LIMIT 1";
+            $res2 = $db->query($sql2);
+            if ($res2 && $db->num_rows($res2)) {
+                $horario = $db->fetch_object($res2);
+                $horario->heredado_de_grupo = $obj->nom; // añadimos info del grupo
+            return $horario;
+            }
+        }
+    }
+
+
+
+    // 3. Si no hay nada definido, usar duración por defecto del módulo
+    $duracion = getDolGlobalInt('PICAR_DURACION_JORNADA') ?: 8;
+    $hora_salida = date("H:i:s", strtotime("+$duracion hours", strtotime("08:00"))); // Por defecto desde las 08:00
+
+    return (object) [
+        'hora_salida' => $hora_salida,
+        'salida_automatica' => getDolGlobalInt('PICAR_SALIDA_AUTOMATICA')
+    ];
+}
+
+//Funcion estado de picaje del Usuario 
+
+function getEstadoPicajeUsuario($user_id)
+{
+    global $db;
+
+    $fecha = date('Y-m-d');
+    $sql = "SELECT tipo FROM llx_picaje 
+            WHERE usuario_id = " . (int) $user_id . " 
+            AND fecha = '" . $db->escape($fecha) . "'";
+
+    $res = $db->query($sql);
+
+    $estado = [
+        'entrada' => false,
+        'salida' => false
+    ];
+
+    if ($res && $db->num_rows($res)) {
+        while ($obj = $db->fetch_object($res)) {
+            if ($obj->tipo === 'entrada') $estado['entrada'] = true;
+            if ($obj->tipo === 'salida') $estado['salida'] = true;
+        }
+    }
+
+    return $estado;
+}
+
+
 ?>

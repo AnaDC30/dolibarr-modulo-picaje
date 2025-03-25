@@ -28,6 +28,9 @@ class modMiModulo extends DolibarrModules
         $this->need_dolibarr_version = array(12, 0); // Versión mínima de Dolibarr
         $this->langfiles = array("mimodulo@mimodulo");
 
+        // Página de configuración del módulo
+        $this->config_page_url = array("admin/admin.php@mimodulo");
+
         // Configuración de permisos
         $this->rights = array();
         $this->rights[0][0] = 600001; // ID de permiso único
