@@ -141,7 +141,3 @@ function cerrarModalUbicacion() {
     document.getElementById("modalUbicacion").style.display = "none";
     document.getElementById("modalUbicacionContenido").innerHTML = '';
 }
-
-
-
-

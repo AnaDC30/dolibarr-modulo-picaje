@@ -20,14 +20,25 @@ if (!in_array($tipo, ['entrada', 'salida'])) {
     exit;
 }
 
-// Guardar en la base de datos
+// Datos comunes
 $fecha = date('Y-m-d');
 $hora = date('H:i:s');
 $usuario_id = $user->id;
 
-$sql = "INSERT INTO llx_picaje (fecha, hora, tipo, usuario_id) 
-        VALUES ('" . $db->escape($fecha) . "', '" . $db->escape($hora) . "', 
-        '" . $db->escape($tipo) . "', " . (int)$usuario_id . ")";
+// Obtener geolocalización (puede llegar vacía)
+$latitud = isset($_POST['latitud']) && $_POST['latitud'] !== '' ? $_POST['latitud'] : null;
+$longitud = isset($_POST['longitud']) && $_POST['longitud'] !== '' ? $_POST['longitud'] : null;
+
+// Preparar consulta con latitud y longitud
+$sql = "INSERT INTO llx_picaje (fecha, hora, tipo, usuario_id, latitud, longitud)
+        VALUES (
+            '" . $db->escape($fecha) . "',
+            '" . $db->escape($hora) . "',
+            '" . $db->escape($tipo) . "',
+            " . (int) $usuario_id . ",
+            " . ($latitud !== null ? "'" . $db->escape($latitud) . "'" : "NULL") . ",
+            " . ($longitud !== null ? "'" . $db->escape($longitud) . "'" : "NULL") . "
+        )";
 
 $res = $db->query($sql);
 
@@ -37,8 +48,8 @@ if ($res) {
     setEventMessages("❌ Error al registrar el picaje: " . $db->lasterror(), null, 'errors');
 }
 
-
 echo "✅ Picaje registrado correctamente. Redirigiendo...";
 header("Refresh: 3; URL=../../tpl/picaje.php");
 exit;
 ?>
+

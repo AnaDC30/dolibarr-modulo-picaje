@@ -99,6 +99,32 @@
 }
 
 /* ===================== */
+/*   ALERTA UBICACIÓN    */
+/* ===================== */
+
+.ubicacion-toast {
+    background-color: #ffdddd;
+    border: 1px solid #d33;
+    color: #a00;
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-weight: bold;
+    text-align: center;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+
+
+/* ===================== */
 /*    BOTÓN VOLVER       */
 /* ===================== */
 
