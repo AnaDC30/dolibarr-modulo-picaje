@@ -1,0 +1,46 @@
+/* ============================ */
+/*   BOTÓN "Picar" en Header   */
+/* ============================ */
+
+#btnPicajeHeader {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 5px 12px;
+    margin-left: 8px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: white;
+    vertical-align: middle;
+    transition: background-color 0.2s ease-in-out, opacity 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+#btnPicajeHeader .fa {
+    color: white;
+    font-size: 18px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+/* Colores por estado */
+#btnPicajeHeader.picar-entrada {
+    background-color: #2ecc71; /* Verde */
+}
+
+#btnPicajeHeader.picar-salida {
+    background-color: #e67e22; /* Naranja */
+}
+
+#btnPicajeHeader.picar-completado {
+    background-color: #95a5a6; /* Gris */
+    cursor: default;
+}
+
+/* Hover (solo si es clicable) */
+#btnPicajeHeader:not(.picar-completado):hover {
+    opacity: 0.85;
+    cursor: pointer;
+}
