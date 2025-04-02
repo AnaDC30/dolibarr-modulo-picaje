@@ -1,5 +1,3 @@
-
-
 // =========================
 // MODAL DE EDICIÓN DE PICAJE
 // =========================
@@ -7,7 +5,7 @@
 function abrirModalEditar(id) {
     document.getElementById("modalEditar").style.display = "flex";
 
-    fetch(dol_buildpath('/custom/picaje/core/modules/get_picaje.php?id=' + id, 1)) 
+    fetch(`${URL_GET_PICAJE}?id=${id}`)
         .then(response => response.text())
         .then(html => {
             document.getElementById("modalEditarContenido").innerHTML = html;
@@ -23,13 +21,6 @@ function cerrarModalEditar() {
     document.getElementById('modalEditarContenido').innerHTML = '';
 }
 
-// Cerrar modal al hacer clic fuera del contenido
-window.addEventListener('click', function (event) {
-    const modal = document.getElementById('modalEditar');
-    if (event.target === modal) {
-        cerrarModalEditar();
-    }
-});
 
 // =========================
 // MENSAJE DE ÉXITO
@@ -47,7 +38,7 @@ function mostrarMensajeExito(mensaje) {
     botonHistorial.className = "btn-historial";
     botonHistorial.textContent = "📄 Ver historial de modificaciones";
     botonHistorial.onclick = () => {
-        window.open(dol_buildpath('/custom/picaje/tpl/log_modificaciones.php', 1), '_blank');
+        window.open(URL_LOG_MODIFICACIONES, '_blank');
     };
 
     contenedor.appendChild(alerta);
@@ -70,7 +61,7 @@ function guardarEdicion(event) {
     const formData = new FormData(form);
     formData.append('token', DOLIBARR_CSRF_TOKEN);
 
-    fetch(dol_buildpath('/custom/picaje/core/modules/modificar_picaje.php', 1), {
+    fetch(URL_MODIFICAR_PICAJE, {
         method: 'POST',
         body: formData,
         credentials: 'same-origin'
@@ -96,6 +87,7 @@ function guardarEdicion(event) {
     return false;
 }
 
+
 // ==========
 // UBICACIÓN
 // ==========
@@ -103,9 +95,11 @@ function guardarEdicion(event) {
 function verUbicacion(id) {
     document.getElementById("modalUbicacion").style.display = "flex";
 
-    fetch(dol_buildpath(`/custom/picaje/core/modules/get_ubicacion.php?id=${id}`, 1))
+    fetch(`${URL_GET_UBICACION}?id=${id}`)
         .then(response => response.json())
         .then(data => {
+            console.log("📦 Datos de ubicación recibidos:", data); // 🔍 Aquí lo añadimos
+
             const contenedor = document.getElementById("modalUbicacionContenido");
             if (data.success) {
                 contenedor.innerHTML = `
@@ -127,10 +121,43 @@ function verUbicacion(id) {
         });
 }
 
-function cerrarModalUbicacion() {
-    document.getElementById("modalUbicacion").style.display = "none";
-    document.getElementById("modalUbicacionContenido").innerHTML = '';
+// =================
+//  CERRAR MODALES
+// =================
+
+window.addEventListener('click', function (event) {
+    const modalEditar = document.getElementById('modalEditar');
+    const modalUbicacion = document.getElementById('modalUbicacion');
+
+    if (modalEditar && event.target === modalEditar) {
+        cerrarModalEditar();
+    }
+
+    if (modalUbicacion && event.target === modalUbicacion) {
+        cerrarModalUbicacion();
+    }
+});
+
+function cerrarModalEditar() {
+    const modal = document.getElementById('modalEditar');
+    const contenido = document.getElementById('modalEditarContenido');
+
+    if (modal && contenido) {
+        modal.style.display = 'none';
+        contenido.innerHTML = '';
+    }
 }
+
+function cerrarModalUbicacion() {
+    const modal = document.getElementById('modalUbicacion');
+    const contenido = document.getElementById('modalUbicacionContenido');
+
+    if (modal && contenido) {
+        modal.style.display = 'none';
+        contenido.innerHTML = '';
+    }
+}
+
 
 // =====================
 // JUSTIFICACIÓN PICAJE
@@ -151,3 +178,105 @@ function enviarJustificacion() {
 function cerrarModalJustificacion() {
     document.getElementById('modalJustificacion').style.display = 'none';
 }
+
+
+// ==========================
+// PICAJE AJAX (entrada/salida)
+// ==========================
+
+function inicializarPicaje(haEntrada, haSalida) {
+    const tipoInput = document.getElementById('tipo_picaje');
+
+    if (!tipoInput) return;
+
+    if (!haEntrada && !haSalida) {
+        tipoInput.value = 'entrada';
+    } else if (haEntrada && !haSalida) {
+        tipoInput.value = 'salida';
+    } else {
+        tipoInput.value = ''; 
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const formPicaje = document.getElementById('form-picaje');
+    const botonPicar = document.getElementById('boton-picar');
+
+    if (formPicaje && botonPicar) {
+        formPicaje.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            botonPicar.disabled = true;
+            botonPicar.textContent = '⏳ Obteniendo ubicación...';
+
+            if (!navigator.geolocation) {
+                alert("⚠️ Tu navegador no soporta geolocalización.");
+                botonPicar.disabled = false;
+                botonPicar.textContent = '📍 Picar';
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(function (position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+
+                document.getElementById('latitud').value = lat;
+                document.getElementById('longitud').value = lng;
+
+                // Confirmación visual
+                console.log("✅ Latitud recogida:", lat);
+                console.log("✅ Longitud recogida:", lng);
+
+                const formData = new FormData(formPicaje);
+                const tokenInput = document.querySelector('input[name="token"]');
+                if (tokenInput) {
+                    formData.append('token', tokenInput.value);
+                }
+
+                const actionURL = formPicaje.getAttribute('action');
+                botonPicar.textContent = '⏳ Registrando...';
+
+                fetch(actionURL, {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin'
+                })
+                .then(response => response.text())
+                .then(text => {
+                    console.log("🔍 Respuesta cruda del servidor:", text);
+                    try {
+                        const data = JSON.parse(text);
+                        if (data.success) {
+                            alert(data.message || "✔ Picaje registrado correctamente");
+                            location.reload();
+                        } else {
+                            alert("❌ " + (data.error || "Error al registrar el picaje."));
+                            botonPicar.disabled = false;
+                            botonPicar.textContent = '📍 Picar';
+                        }
+                    } catch (e) {
+                        console.error("❌ No es JSON válido:", text);
+                        alert("❌ Error inesperado del servidor. Revisa la consola.");
+                        botonPicar.disabled = false;
+                        botonPicar.textContent = '📍 Picar';
+                    }
+                })
+                .catch(error => {
+                    console.error("Error en el picaje:", error);
+                    alert("❌ Error inesperado.");
+                    botonPicar.disabled = false;
+                    botonPicar.textContent = '📍 Picar';
+                });
+
+            }, function (error) {
+                alert("⚠️ No se pudo obtener la ubicación. Verifica los permisos del navegador.");
+                botonPicar.disabled = false;
+                botonPicar.textContent = '📍 Picar';
+            });
+        });
+    }
+});
+
+
+
+

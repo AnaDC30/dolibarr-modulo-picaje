@@ -52,9 +52,10 @@
     background-color: #f1e3f6;
 }
 
-/* =============================== */
-/*     BOTÓN VOLVER CIRCULAR      */
-/* =============================== */
+/* ===================== */
+/*     BOTÓN VOLVER      */
+/* ===================== */
+
 .backContainer {
     position: fixed;
     bottom: 30px;
@@ -70,26 +71,30 @@
     transition: transform 0.2s ease-in-out, background-color 0.3s ease-in-out;
 }
 
-/* Flecha dentro del botón volver */
 .backArrow {
     font-size: 40px;
     color: white;
     text-decoration: none;
     font-weight: bold;
-    width: 100%;
-    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    height: 100%;
 }
 
-/* Efecto al pasar el ratón sobre el botón volver */
+.backArrow svg {
+    width: 60px;
+    height: 60px;
+}
+
+
 .backContainer:hover {
-    background-color: rgb(242, 221, 247);
+    background-color: rgb(242, 221, 247); 
     transform: scale(1.1);
 }
 
 .backArrow:hover {
     transform: scale(1.2);
-    text-decoration: none;
+    text-decoration: none !important;
 }

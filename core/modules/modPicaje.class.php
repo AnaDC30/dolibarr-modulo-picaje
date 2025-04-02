@@ -281,6 +281,21 @@ class modPicaje extends DolibarrModules
 		// Permissions provided by this module
 		$this->rights = array();
 		$r = 0;
+
+		$this->rights[$r][0] = 500001; // ID único (usa uno libre y no repetido)
+		$this->rights[$r][1] = 'Ver registros de picaje';
+		$this->rights[$r][2] = 'r'; // Permiso de lectura
+		$this->rights[$r][3] = 1; // Activado por defecto
+		$this->rights[$r][4] = 'ver'; // Se usará como: $user->rights->picaje->ver
+		$r++;
+
+		$this->rights[$r][0] = 500002;
+		$this->rights[$r][1] = 'Editar registros de picaje';
+		$this->rights[$r][2] = 'w'; // Permiso de escritura
+		$this->rights[$r][3] = 1;
+		$this->rights[$r][4] = 'editar'; // Se usará como: $user->rights->picaje->editar
+		$r++;
+
 		// Add here entries to declare new permissions
 		/* BEGIN MODULEBUILDER PERMISSIONS */
 		/*

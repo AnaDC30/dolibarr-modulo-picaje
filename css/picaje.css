@@ -1,11 +1,20 @@
 /* ===================== */
-/*      ESTILO GLOBAL     */
+/*     ESTILO GLOBAL     */
 /* ===================== */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
 
+/* ===================== */
+/*      ENCABEZADO       */
+/* ===================== */
 .page-header {
     background-color: rgb(104, 63, 105);
     color: white;
-    text-align: center;
     font-size: 24px;
     border-radius: 5px;
     margin-bottom: 30px;
@@ -14,63 +23,60 @@
 /* ===================== */
 /*    CONTENEDOR FLEX    */
 /* ===================== */
-
 .container-flex {
     display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap; /* Para apilar en móvil */
-    gap: 20px;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 30px;
     padding: 0 20px;
     margin-top: 40px;
-    width: 100%;
     box-sizing: border-box;
 }
 
 /* ===================== */
-/*     TARJETAS          */
+/*        TARJETAS       */
 /* ===================== */
-
 .main-content {
-    flex: 1 1 calc(50% - 10px); /* 50% menos mitad del gap */
-    padding: 30px;
+    width: 350px; /* Puedes ajustar este ancho */
+    padding: 25px;
     background-color: rgb(242, 221, 247);
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
-    box-sizing: border-box;
+    transition: transform 0.2s ease;
+    flex-shrink: 0; /* Evita que se reduzcan demasiado */
 }
-
+.main-content:hover {
+    transform: scale(1.03);
+}
 
 /* ===================== */
 /*   TABLA DE PICAJES    */
 /* ===================== */
-
 .customTable {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    margin-top: 20px;
     background-color: white;
 }
-
-.customTable th, .customTable td {
+.customTable th,
+.customTable td {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 10px;
     text-align: center;
 }
-
 .customTable th {
     background-color: rgb(104, 63, 105);
     color: white;
 }
-
 .customTable tr {
-    background-color: #f2f2f2;
+    background-color: #f9f9f9;
 }
 
 /* ===================== */
 /*     BOTONES PICAR     */
 /* ===================== */
-
 .picajeButton {
     padding: 10px 20px;
     margin: 10px;
@@ -78,42 +84,30 @@
     border-radius: 6px;
     font-size: 16px;
     font-weight: bold;
-    color: rgb(0, 0, 0);
+    color: rgb(17, 17, 17);
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
-
-/* Botón de Entrada */
-.picajeButton.entrada {
-    background-color: #9b8b9b;
-}
-
-/* Botón de Salida */
+.picajeButton.entrada,
 .picajeButton.salida {
     background-color: #9b8b9b;
 }
-
-/* Efecto hover común */
 .picajeButton:hover {
-    opacity: 0.9;
+    background-color: #532d54;
 }
 
 /* ===================== */
 /*   ALERTA UBICACIÓN    */
 /* ===================== */
-
 .ubicacion-toast {
     background-color: #ffdddd;
     border: 1px solid #d33;
     color: #a00;
     padding: 10px 20px;
     border-radius: 8px;
-    margin-top: 15px;
+    margin: 15px auto;
     font-weight: bold;
-    text-align: center;
     max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     animation: fadeIn 0.3s ease;
 }
@@ -122,13 +116,11 @@
     to {opacity: 1;}
 }
 
-
-
 /* ===================== */
-/*    BOTÓN VOLVER       */
+/*     BOTÓN VOLVER      */
 /* ===================== */
 
-.picajeBack {
+.backContainer {
     position: fixed;
     bottom: 30px;
     left: 30px;
@@ -143,8 +135,8 @@
     transition: transform 0.2s ease-in-out, background-color 0.3s ease-in-out;
 }
 
-.picajeArrow {
-    font-size: 60px;
+.backArrow {
+    font-size: 40px;
     color: white;
     text-decoration: none;
     font-weight: bold;
@@ -155,17 +147,18 @@
     height: 100%;
 }
 
-.picajeArrow svg {
+.backArrow svg {
     width: 60px;
     height: 60px;
 }
 
-.picajeBack:hover {
+
+.backContainer:hover {
     background-color: rgb(242, 221, 247); 
     transform: scale(1.1);
 }
 
-.picajeArrow:hover {
+.backArrow:hover {
     transform: scale(1.2);
-    text-decoration: none;
+    text-decoration: none !important;
 }

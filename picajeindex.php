@@ -18,10 +18,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
 // Cargar idiomas del módulo
 $langs->loadLangs(array("picaje@picaje"));
 
-// Seguridad básica (puedes adaptarlo según permisos)
-//if (empty($user->rights->picaje->read)) {
-    //accessforbidden();
-//}
+
 
 // Título y cabecera estándar
 llxHeader("", $langs->trans("PicajeArea"), '', '', 0, 0, '', '', '', 'mod-picaje page-index');
@@ -41,7 +38,7 @@ switch ($view) {
     case 'editar_grupo':
         include dol_buildpath('/custom/picaje/tpl/editar_horario_grupo.php', 0);
         break;
-    case 'log':
+    case 'log_modificaciones':
         include dol_buildpath('/custom/picaje/tpl/log_modificaciones.php', 0);
         break;
     default:

@@ -12,10 +12,6 @@ echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/histori
 echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/modal.css', 1) . '">';
 
 // =====================
-//    CABECERA VISUAL
-// =====================
-
-// =====================
 //   OBTENER DATOS BBDD
 // =====================
 $filtroFecha = GETPOST('fecha', 'alpha');
@@ -40,7 +36,8 @@ $historial = obtenerHistorialPicajes($filtroFecha, $filtroUsuario);
 
 <!-- Contenedor del formulario oculto inicialmente -->
 <div id="filtrosContainer" class="filtro-formulario oculto">
-    <form method="GET">
+    <form method="GET" action="picajeindex.php">
+        <input type="hidden" name="view" value="historial">
         <div class="filtros">
             <label for="fecha">Fecha:</label>
             <input type="date" name="fecha" id="fecha" value="<?php echo dol_escape_htmltag($filtroFecha); ?>">
@@ -51,7 +48,9 @@ $historial = obtenerHistorialPicajes($filtroFecha, $filtroUsuario);
             <?php endif; ?>
 
             <button type="submit">🔍 Buscar</button>
-            <a href="historial.php" class="btn-reset">Limpiar</a>
+
+            <!-- 🔄 Botón de quitar filtros -->
+            <a href="picajeindex.php?view=historial" class="btn-reset">🔄 Quitar filtros</a>
         </div>
     </form>
 </div>
@@ -118,9 +117,31 @@ $historial = obtenerHistorialPicajes($filtroFecha, $filtroUsuario);
 </div>
 
 
+<!-- MODAL PARA EDITAR -->
+<div id="modalEditar" class="modal-overlay" style="display: none;">
+    <div class="modal-content" id="modalEditarContenido">
+        <!-- El contenido se cargará dinámicamente -->
+    </div>
+</div>
+
+<!-- MODAL PARA VER UBICACIÓN -->
+<div id="modalUbicacion" class="modal-overlay" style="display: none;">
+    <div class="modal-content" id="modalUbicacionContenido">
+        <!-- El contenido se cargará dinámicamente -->
+    </div>
+</div>
+
 
 
 <!-- Scripts JS -->
+
+<script>
+    const URL_GET_UBICACION = '<?php echo dol_buildpath("/custom/picaje/ajax/get_ubicacion.php", 1); ?>';
+    const URL_GET_PICAJE = '<?php echo dol_buildpath("/custom/picaje/ajax/get_picaje.php", 1); ?>';
+    const URL_MODIFICAR_PICAJE = '<?php echo dol_buildpath("/custom/picaje/ajax/modificar_picaje.php", 1); ?>';
+    const URL_LOG_MODIFICACIONES = '<?php echo dol_buildpath('/custom/picaje/picajeindex.php?view=log_modificaciones', 1); ?>';
+</script>
+
 <script src="<?php echo dol_buildpath('/custom/picaje/js/picaje.js', 1); ?>"></script>
 
 <script>

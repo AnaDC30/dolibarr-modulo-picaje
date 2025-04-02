@@ -5,17 +5,20 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/dolibarr/main.inc.php';
 
 global $db, $user;
 
+
 // Función para obtener registros del usuario actual
 function obtenerRegistrosDiarios() {
     global $db, $user;
 
-    $fecha_actual = date('Y-m-d');
-    $sql = "SELECT hora, tipo, tipo_registro FROM llx_picaje
-        WHERE usuario_id = " . (int) $user->id . "
-        AND fecha = '" . date('Y-m-d') . "'
-        ORDER BY hora ASC";
+    $sql = "SELECT 
+                TIME(fecha_hora) AS hora, 
+                tipo, 
+                tipo_registro 
+            FROM llx_picaje
+            WHERE fk_user = " . (int) $user->id . "
+            AND DATE(fecha_hora) = '" . date('Y-m-d') . "'
+            ORDER BY fecha_hora ASC";
 
-    
     $resql = $db->query($sql);
     $registros = [];
 
@@ -23,8 +26,8 @@ function obtenerRegistrosDiarios() {
         while ($row = $db->fetch_object($resql)) {
             $registros[] = [
                 'hora' => $row->hora,
-                'tipo' => ucfirst($row->tipo)
-                
+                'tipo' => ucfirst($row->tipo),
+                'origen' => $row->tipo_registro
             ];
         }
     }
@@ -32,45 +35,45 @@ function obtenerRegistrosDiarios() {
     return $registros;
 }
 
- // Obtener el historial completo de picajes para el usuario autenticado.
-
- function obtenerHistorialPicajes($filtroFecha = null, $filtroUsuario = null) {
+// Obtener el historial completo de picajes para el usuario autenticado.
+function obtenerHistorialPicajes($filtroFecha = null, $filtroUsuario = null) {
     global $db, $user;
 
-    $sql = "SELECT p.id, p.fecha, p.hora, p.tipo, p.tipo_registro";
+    $sql = "SELECT p.id, DATE(p.fecha_hora) AS fecha, TIME(p.fecha_hora) AS hora, p.tipo, p.tipo_registro";
     if ($user->admin == 1) {
         $sql .= ", CONCAT(u.firstname, ' ', u.lastname) AS usuario";
     }
     $sql .= " FROM llx_picaje p";
 
     if ($user->admin == 1) {
-        $sql .= " LEFT JOIN llx_user u ON u.rowid = p.usuario_id";
+        $sql .= " LEFT JOIN llx_user u ON u.rowid = p.fk_user";
     }
 
     $where = [];
 
     // Filtro por usuario (solo admin)
-    if ($user->admin == 1 && !empty($filtroUsuario)) {
+    if ($user->admin == 1 && strlen(trim($filtroUsuario)) >= 2) {
         $filtroUsuarioEscapado = $db->escape($filtroUsuario);
         $where[] = "(u.firstname LIKE '%$filtroUsuarioEscapado%' OR u.lastname LIKE '%$filtroUsuarioEscapado%')";
     }
 
-    // Filtro por fecha
-    if (!empty($filtroFecha)) {
+    // Filtro por fecha (usamos fecha_hora)
+    if (isset($filtroFecha) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $filtroFecha)) {
         $filtroFechaEscapado = $db->escape($filtroFecha);
-        $where[] = "p.fecha = '$filtroFechaEscapado'";
+        $where[] = "DATE(p.fecha_hora) = '$filtroFechaEscapado'";
     }
+    
 
     // Si no es admin, mostrar solo sus registros
     if ($user->admin != 1) {
-        $where[] = "p.usuario_id = " . (int) $user->id;
+        $where[] = "p.fk_user = " . (int) $user->id;
     }
 
     if (count($where)) {
         $sql .= " WHERE " . implode(" AND ", $where);
     }
 
-    $sql .= " ORDER BY p.fecha DESC, p.hora DESC";
+    $sql .= " ORDER BY p.fecha_hora DESC";
 
     $resql = $db->query($sql);
     $historial = [];
@@ -90,6 +93,7 @@ function obtenerRegistrosDiarios() {
 
     return $historial;
 }
+
 
 
 
@@ -162,8 +166,8 @@ function getEstadoPicajeUsuario($user_id)
 
     $fecha = date('Y-m-d');
     $sql = "SELECT tipo FROM llx_picaje 
-            WHERE usuario_id = " . (int) $user_id . " 
-            AND fecha = '" . $db->escape($fecha) . "'";
+            WHERE fk_user = " . (int) $user_id . " 
+            AND DATE(fecha_hora) = '" . $db->escape($fecha) . "'";
 
     $res = $db->query($sql);
 
@@ -181,6 +185,5 @@ function getEstadoPicajeUsuario($user_id)
 
     return $estado;
 }
-
 
 ?>
