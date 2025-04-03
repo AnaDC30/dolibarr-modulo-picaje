@@ -96,6 +96,14 @@ body {
     background-color: #532d54;
 }
 
+.picajeButton.disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+
 /* ===================== */
 /*   ALERTA UBICACIÓN    */
 /* ===================== */

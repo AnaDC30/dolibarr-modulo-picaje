@@ -110,10 +110,38 @@ if (!$user->admin) {
 
 // Enter here all parameters in your setup page
 
-// Setup conf for selection of an URL
-$item = $formSetup->newItem('PICAJE_MYPARAM1');
-$item->fieldAttr['placeholder'] = (empty($_SERVER['HTTPS']) ? 'http://' : 'https://') . $_SERVER['HTTP_HOST'];
+$item = $formSetup->newItem('PICAR_AUTO_LOGIN');
+$item->setAsYesNo();
+$item->nameText = "✅ Picaje automático al iniciar sesión (login)";
+
+$item = $formSetup->newItem('PICAR_MOSTRAR_BOTON_HEADER');
+$item->setAsYesNo();
+$item->nameText = "✅ Mostrar botón 'Picar' en el header";
+
+$item = $formSetup->newItem('PICAR_SALIDA_AUTOMATICA');
+$item->setAsYesNo();
+$item->nameText = "✅ Activar salida automática según horario";
+
+$item = $formSetup->newItem('PICAR_SALIDA_MANUAL_JUSTIFICADA');
+$item->setAsYesNo();
+$item->nameText = "✅ Permitir salida manual anticipada con justificación";
+
+$item = $formSetup->newItem('PICAR_MODO_HORARIO');
+$item->setAsSelect([
+    'usuario' => 'Por usuario',
+    'departamento' => 'Por departamento'
+]);
+$item->nameText = "🕒 Modo de horarios";
+
+$item = $formSetup->newItem('PICAR_DURACION_JORNADA');
+$item->defaultFieldValue = 8;
+$item->nameText = "⏱️ Duración de jornada predeterminada (en horas)";
+$item->fieldAttr['type'] = 'number';
+$item->fieldAttr['min'] = 1;
+$item->fieldAttr['max'] = 24;
 $item->cssClass = 'minwidth500';
+
+
 
 // Setup conf for selection of a simple string input
 $item = $formSetup->newItem('PICAJE_MYPARAM2');

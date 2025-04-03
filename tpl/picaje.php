@@ -47,16 +47,30 @@ $token = newToken();
         <?php if ($ha_entrada && $ha_salida): ?>
             <p>✅ Ya has registrado entrada y salida hoy.</p>
         <?php else: ?>
+            <?php
+                // Determinar tipo de picaje
+                $tipoRegistro = (!$ha_entrada) ? 'entrada' : 'salida';
+
+                // Texto del botón
+                $textoBoton = ($tipoRegistro === 'entrada') ? "📍 Picar entrada" : "📍 Picar salida";
+
+                // Desactivar si ya ha picado ambos
+                $desactivarBoton = ($ha_entrada && $ha_salida) ? 'disabled' : '';
+            ?>
+
             <form method="post" action="<?php echo dol_buildpath('/custom/picaje/ajax/procesar_picaje.php', 1); ?>" id="form-picaje">
                 <input type="hidden" name="token" value="<?php echo $token; ?>">
-                <input type="hidden" name="tipo" id="tipo_picaje">
+                <input type="hidden" name="tipo" value="<?php echo $tipoRegistro; ?>">
                 <input type="hidden" name="latitud" id="latitud">
                 <input type="hidden" name="longitud" id="longitud">
 
-                <button type="submit" class="picajeButton" id="boton-picar">📍 Picar</button>
+                <button type="submit" class="picajeButton" id="boton-picar" <?php echo $desactivarBoton; ?>>
+                    <?php echo $textoBoton; ?>
+                </button>
             </form>
         <?php endif; ?>
     </div>
+
 
     <div class="main-content">
         <h2>Registro Diario (<?php echo date("d/m/Y"); ?>)</h2>
@@ -102,13 +116,15 @@ $token = newToken();
 <script src="<?php echo dol_buildpath('/custom/picaje/js/picaje.js', 1); ?>"></script>
 
 <script>
-window.addEventListener('DOMContentLoaded', function () {
     const haEntrada = <?php echo $ha_entrada ? 'true' : 'false'; ?>;
     const haSalida = <?php echo $ha_salida ? 'true' : 'false'; ?>;
 
+    console.log("🧪 haEntrada:", haEntrada);
+    console.log("🧪 haSalida:", haSalida);
+
     inicializarPicaje(haEntrada, haSalida);
-});
 </script>
+
 
 <!-- ===================== -->
 <!--     BOTÓN VOLVER      -->

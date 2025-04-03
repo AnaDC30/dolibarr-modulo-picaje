@@ -1,3 +1,4 @@
+
 // =========================
 // MODAL DE EDICIÓN DE PICAJE
 // =========================
@@ -97,6 +98,25 @@ function inicializarPicaje(haEntrada, haSalida) {
     const latInput = document.getElementById("latitud");
     const lonInput = document.getElementById("longitud");
     const tipoInput = document.getElementById("tipo_picaje");
+
+    //Diferenciar boton segun registro de picaje
+    const boton = document.getElementById('boton-picar');
+
+    if (!boton) {
+        console.warn("⚠️ No se encontró el botón de picaje en el DOM.");
+        return;
+    }
+
+    if (!haEntrada) {
+        boton.textContent = "📍 Picar entrada";
+    } else if (haEntrada && !haSalida) {
+        boton.textContent = "📍 Picar salida";
+    } else if (haEntrada && haSalida) {
+        boton.textContent = "✅ Picaje completado";
+        boton.disabled = true;
+        boton.classList.add('disabled'); // Opcional: si tienes estilos CSS para botón desactivado
+    }
+
 
     const modalJustificacion = document.getElementById('modalJustificacion');
     let ubicacionObtenida = false;

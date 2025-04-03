@@ -90,13 +90,15 @@ $historial = obtenerHistorialPicajes($filtroFecha, $filtroUsuario);
                     <div class="cell"><?php echo date("d/m/Y", strtotime($registro['fecha'])); ?></div>
                     <div class="cell"><?php echo dol_escape_htmltag($registro['tipo_registro'] ?? 'manual'); ?></div>
 
-                    <!-- BOTONES DE ACCIÓN SI ES ADMIN -->
-                    <?php if ($user->admin == 1): ?>
-                        <div class="floating-buttons">
-                            <button type="button" class="locButton tableButton" onclick="verUbicacion(<?php echo (int)$registro['id']; ?>)">📍</button>
+                    <div class="floating-buttons">
+                        <!-- Botón visible para todos -->
+                        <button type="button" class="locButton tableButton" onclick="verUbicacion(<?php echo (int)$registro['id']; ?>)">📍</button>
+
+                        <!-- Botón de edición solo para admins -->
+                        <?php if ($user->admin == 1): ?>
                             <button type="button" class="editButton tableButton" onclick="abrirModalEditar(<?php echo (int)$registro['id']; ?>)">✏️</button>  
-                        </div>
-                    <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
                 </div>
             <?php endforeach; ?>
         <?php endif; ?>
