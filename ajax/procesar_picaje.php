@@ -22,8 +22,8 @@ if (empty($user->id)) {
 
 // Recoger datos del POST
 $tipo = GETPOST('tipo', 'alpha');
-$lat = GETPOST('lat', 'alpha');
-$lng = GETPOST('lng', 'alpha');
+$lat = GETPOST('latitud', 'alpha');
+$lng = GETPOST('longitud', 'alpha');
 
 // Validar datos
 if (!in_array($tipo, ['entrada', 'salida'])) {

@@ -92,6 +92,84 @@ function guardarEdicion(event) {
 // UBICACIÓN
 // ==========
 
+function inicializarPicaje(haEntrada, haSalida) {
+    const form = document.getElementById('form-picaje');
+    const latInput = document.getElementById("latitud");
+    const lonInput = document.getElementById("longitud");
+    const tipoInput = document.getElementById("tipo_picaje");
+
+    const modalJustificacion = document.getElementById('modalJustificacion');
+    let ubicacionObtenida = false;
+
+    // Obtener ubicación del navegador
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+            latInput.value = position.coords.latitude;
+            lonInput.value = position.coords.longitude;
+            ubicacionObtenida = true;
+        }, function () {
+            alert("❌ No se pudo obtener la ubicación. No podrás picar sin permitir la localización.");
+        });
+    } else {
+        alert("⚠️ Este navegador no soporta geolocalización.");
+    }
+
+    // Evento al enviar formulario
+    form.addEventListener('submit', function (e) {
+        if (!latInput.value || !lonInput.value || !ubicacionObtenida) {
+            e.preventDefault();
+            alert("❌ No se ha detectado la ubicación. No se puede registrar el picaje.");
+            return;
+        }
+
+        if (!haEntrada) {
+            tipoInput.value = 'entrada';
+        } else if (haEntrada && !haSalida) {
+            e.preventDefault(); // Detenemos el envío hasta validar si es salida anticipada
+
+            fetch('../ajax/validar_salida.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.salida_anticipada) {
+                        modalJustificacion.style.display = 'flex';
+                    } else {
+                        tipoInput.value = 'salida';
+                        form.submit();
+                    }
+                })
+                .catch(err => {
+                    alert("❌ Error al validar hora de salida.");
+                    console.error(err);
+                });
+        }
+    });
+}
+
+
+// Función para cerrar el modal de justificación
+function cerrarModalJustificacion() {
+    const modal = document.getElementById('modalJustificacion');
+    modal.style.display = 'none';
+}
+
+// Función para confirmar y enviar justificación
+function enviarJustificacion() {
+    const justificacion = document.getElementById('textoJustificacion').value.trim();
+    const inputHidden = document.getElementById('inputJustificacion');
+    const tipoInput = document.getElementById("tipo_picaje");
+
+    if (!justificacion) {
+        alert("⚠️ Debes indicar un motivo.");
+        return;
+    }
+
+    inputHidden.value = justificacion;
+    tipoInput.value = 'salida';
+
+    document.getElementById('form-picaje').submit();
+}
+
+
 function verUbicacion(id) {
     document.getElementById("modalUbicacion").style.display = "flex";
 
@@ -120,6 +198,9 @@ function verUbicacion(id) {
             document.getElementById("modalUbicacionContenido").innerHTML = "<p>❌ Error al cargar los datos de ubicación.</p>";
         });
 }
+
+
+
 
 // =================
 //  CERRAR MODALES
