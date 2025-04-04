@@ -110,53 +110,30 @@ function obtenerPicajePorId($id) {
 
 function getHorarioUsuario($user_id)
 {
-    global $db, $conf;
+    global $db;
 
-    // 1. Buscar horario individual
-    $sql = "SELECT hora_salida, salida_automatica 
-            FROM llx_picaje_horarios 
-            WHERE fk_user = " . (int) $user_id . " 
-            AND entity = " . (int) $conf->entity . " 
-            LIMIT 1";
+    $extrafields = new ExtraFields($db);
+    $user = new User($db);
+    if ($user->fetch($user_id) <= 0) return null;
 
-    $resql = $db->query($sql);
-    if ($resql && $db->num_rows($resql)) {
-        return $db->fetch_object($resql);
-    }
+    $user->fetch_optionals($user_id, $extrafields);
+    $hora_salida = $user->array_options['options_picaje_hora_salida'] ?? null;
 
-    // 2. Si no hay horario individual, obtener horario por grupo
-    $sql_dept = "SELECT g.rowid, g.nom FROM llx_usergroup_user u
-                JOIN llx_usergroup g ON g.rowid = u.fk_usergroup
-                WHERE u.fk_user = " . (int) $user_id;
-
-    $res_dept = $db->query($sql_dept);
-    if ($res_dept && $db->num_rows($res_dept)) {
-        while ($obj = $db->fetch_object($res_dept)) {
-            $sql2 = "SELECT hora_salida, salida_automatica 
-                    FROM llx_picaje_horarios 
-                    WHERE fk_departement = " . (int) $obj->rowid . " 
-                    AND entity = " . (int) $conf->entity . " 
-                    LIMIT 1";
-            $res2 = $db->query($sql2);
-            if ($res2 && $db->num_rows($res2)) {
-                $horario = $db->fetch_object($res2);
-                $horario->heredado_de_grupo = $obj->nom; // añadimos info del grupo
-            return $horario;
-            }
+    // Si no tiene horario asignado, buscamos en su grupo
+    if (!$hora_salida && $user->fk_usergroup) {
+        require_once DOL_DOCUMENT_ROOT . '/user/class/usergroup.class.php';
+        $group = new UserGroup($db);
+        if ($group->fetch($user->fk_usergroup) > 0) {
+            $group->fetch_optionals($user->fk_usergroup, $extrafields);
+            $hora_salida = $group->array_options['options_picaje_hora_salida'] ?? null;
         }
     }
 
-
-
-    // 3. Si no hay nada definido, usar duración por defecto del módulo
-    $duracion = getDolGlobalInt('PICAR_DURACION_JORNADA') ?: 8;
-    $hora_salida = date("H:i:s", strtotime("+$duracion hours", strtotime("08:00"))); // Por defecto desde las 08:00
-
-    return (object) [
-        'hora_salida' => $hora_salida,
-        'salida_automatica' => getDolGlobalInt('PICAR_SALIDA_AUTOMATICA')
+    return (object)[
+        'hora_salida' => $hora_salida
     ];
 }
+
 
 //Funcion estado de picaje del Usuario 
 
@@ -185,5 +162,42 @@ function getEstadoPicajeUsuario($user_id)
 
     return $estado;
 }
+
+function getHoraSalidaEmpresaPorDefecto() {
+    $dias = [
+        1 => 'MAIN_INFO_OPENINGHOURS_MONDAY',
+        2 => 'MAIN_INFO_OPENINGHOURS_TUESDAY',
+        3 => 'MAIN_INFO_OPENINGHOURS_WEDNESDAY',
+        4 => 'MAIN_INFO_OPENINGHOURS_THURSDAY',
+        5 => 'MAIN_INFO_OPENINGHOURS_FRIDAY',
+        6 => 'MAIN_INFO_OPENINGHOURS_SATURDAY',
+        7 => 'MAIN_INFO_OPENINGHOURS_SUNDAY',
+    ];
+
+    $diaSemana = date('N');
+    $constante = $dias[$diaSemana] ?? null;
+    $valor = $constante ? getDolGlobalString($constante) : '';
+
+    if ($valor && strpos($valor, '-') !== false) {
+        list(, $salida) = explode('-', $valor);
+        if (preg_match('/^\d{1,2}$/', $salida)) $salida .= ':00:00';
+        elseif (preg_match('/^\d{1,2}:\d{2}$/', $salida)) $salida .= ':00';
+        return $salida;
+    }
+
+    return '14:00:00'; // fallback
+}
+
+function getNombreUsuarioPorId($id) {
+    global $db;
+    $sql = "SELECT firstname, lastname FROM " . MAIN_DB_PREFIX . "user WHERE rowid = " . (int) $id;
+    $res = $db->query($sql);
+    if ($res && $db->num_rows($res)) {
+        $obj = $db->fetch_object($res);
+        return trim($obj->firstname . ' ' . $obj->lastname);
+    }
+    return '';
+}
+
 
 ?>

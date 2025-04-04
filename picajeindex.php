@@ -26,17 +26,14 @@ llxHeader("", $langs->trans("PicajeArea"), '', '', 0, 0, '', '', '', 'mod-picaje
 // Controlador de vistas internas
 $view = GETPOST('view', 'alpha');
 switch ($view) {
+    case 'incidencias':
+        include dol_buildpath('/custom/picaje/tpl/incidencias.php', 0);
+        break;
     case 'historial':
         include dol_buildpath('/custom/picaje/tpl/historial.php', 0);
         break;
     case 'picaje':
         include dol_buildpath('/custom/picaje/tpl/picaje.php', 0);
-        break;
-    case 'editar_usuario':
-        include dol_buildpath('/custom/picaje/tpl/editar_horario_usuario.php', 0);
-        break;
-    case 'editar_grupo':
-        include dol_buildpath('/custom/picaje/tpl/editar_horario_grupo.php', 0);
         break;
     case 'log_modificaciones':
         include dol_buildpath('/custom/picaje/tpl/log_modificaciones.php', 0);

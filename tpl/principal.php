@@ -22,4 +22,11 @@ echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/layout.
     </div>
 </div>
 
-
+<?php if ($user->admin && $user->id == 1): ?>
+    <div class="container-flex">
+        <div class="main-content">
+            <p>Incidencias</p>
+            <a class="mainButton" href="<?php echo dol_buildpath('/custom/picaje/picajeindex.php?view=incidencias', 1); ?>">Incidencias</a>
+        </div>
+    </div>
+<?php endif; ?>

@@ -16,6 +16,11 @@ echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/modal.c
 // =====================
 $filtroFecha = GETPOST('fecha', 'alpha');
 $filtroUsuario = GETPOST('usuario', 'alpha');
+$filtroUserId = GETPOST('user_id', 'int');
+if ($filtroUserId > 0) {
+    $filtroUsuario = getNombreUsuarioPorId($filtroUserId); // función personalizada que haremos
+}
+
 $historial = obtenerHistorialPicajes($filtroFecha, $filtroUsuario);
 
 ?>

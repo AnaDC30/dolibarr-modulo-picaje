@@ -1,8 +1,5 @@
 <?php
 
-file_put_contents("C:/xampp/htdocs/dolibarr/custom/picaje/log_prueba.txt", "🎯 Entró a actions_picaje.class.php\n", FILE_APPEND);
-
-
 class ActionsPicaje
 {
     public function formObjectOptions($parameters, &$object, &$action, $hookmanager)

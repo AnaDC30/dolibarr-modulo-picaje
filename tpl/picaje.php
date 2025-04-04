@@ -8,25 +8,52 @@ if (!defined('DOL_DOCUMENT_ROOT')) {
 }
 
 require_once dol_buildpath('/custom/picaje/lib/dbController.php', 0);
+require_once DOL_DOCUMENT_ROOT . '/custom/picaje/class/picaje.class.php';
 
 // Cargar el estilo específico para esta vista
 echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/picaje.css', 1) . '">';
-
+echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/modal.css', 1) . '">';
 // =====================
-//  DATOS NECESARIOS
+//  OPCIONES DE PICAJE
 // =====================
 
 $registros = obtenerRegistrosDiarios();
-
-// Verificar si el usuario ya ha picado hoy
-require_once DOL_DOCUMENT_ROOT . '/custom/picaje/class/picaje.class.php';
 $estado = Picaje::getEstadoHoy($db, $user->id);
 $ha_entrada = $estado['entrada'];
 $ha_salida = $estado['salida'];
 
+$salida_automatica = getDolGlobalInt('PICAR_SALIDA_AUTOMATICA');
+$salida_manual_justificada = getDolGlobalInt('PICAR_SALIDA_MANUAL_JUSTIFICADA');
 
-// Obtener el token CSRF de Dolibarr
-$token = newToken();
+// ================
+//  TOKEN // CSRF
+// ================
+
+$token = newToken(); 
+
+// =====================
+//  LÓGICA BOTÓN PICAJE
+// =====================
+
+$mostrarBoton = false;
+$tipoRegistro = '';
+$textoBoton = '';
+$desactivarBoton = '';
+
+if (!$ha_entrada) {
+    $tipoRegistro = 'entrada';
+    $textoBoton = "📍 Picar entrada";
+    $mostrarBoton = true;
+} elseif ($ha_entrada && !$ha_salida) {
+    if (!$salida_automatica || $salida_manual_justificada) {
+        $tipoRegistro = 'salida';
+        $textoBoton = "📍 Picar salida";
+        $mostrarBoton = true;
+    }
+} elseif ($ha_entrada && $ha_salida) {
+    $textoBoton = "✅ Picaje completado";
+    $desactivarBoton = 'disabled';
+}
 ?>
 
 <!-- ===================== -->
@@ -36,41 +63,26 @@ $token = newToken();
     <h1>Realizar Picaje</h1>
 </header>
 
-<!-- ====================-->
-<!--       TARJETAS      -->
-<!-- ====================-->
-
 <div class="container-flex">
     <div class="main-content">
         <h2>Registro de Picaje</h2>
 
-        <?php if ($ha_entrada && $ha_salida): ?>
-            <p>✅ Ya has registrado entrada y salida hoy.</p>
-        <?php else: ?>
-            <?php
-                // Determinar tipo de picaje
-                $tipoRegistro = (!$ha_entrada) ? 'entrada' : 'salida';
-
-                // Texto del botón
-                $textoBoton = ($tipoRegistro === 'entrada') ? "📍 Picar entrada" : "📍 Picar salida";
-
-                // Desactivar si ya ha picado ambos
-                $desactivarBoton = ($ha_entrada && $ha_salida) ? 'disabled' : '';
-            ?>
-
+        <?php if ($mostrarBoton): ?>
             <form method="post" action="<?php echo dol_buildpath('/custom/picaje/ajax/procesar_picaje.php', 1); ?>" id="form-picaje">
                 <input type="hidden" name="token" value="<?php echo $token; ?>">
                 <input type="hidden" name="tipo" value="<?php echo $tipoRegistro; ?>">
                 <input type="hidden" name="latitud" id="latitud">
                 <input type="hidden" name="longitud" id="longitud">
+                <input type="hidden" name="justificacion" id="inputJustificacion">
 
                 <button type="submit" class="picajeButton" id="boton-picar" <?php echo $desactivarBoton; ?>>
                     <?php echo $textoBoton; ?>
                 </button>
             </form>
+        <?php else: ?>
+            <p>✅ Ya has registrado entrada y salida hoy o la salida será automática.</p>
         <?php endif; ?>
     </div>
-
 
     <div class="main-content">
         <h2>Registro Diario (<?php echo date("d/m/Y"); ?>)</h2>
@@ -98,31 +110,72 @@ $token = newToken();
     </div>
 </div>
 
+<footer>
+    <?php
+            $autoSalidaActiva = getDolGlobalInt('PICAR_SALIDA_AUTOMATICA');
+            $horario = getHorarioUsuario($user->id);
 
-<div id="modalJustificacion" style="display: none;" class="modal-justificacion">
-    <div class="modal-contenido">
-        <h3>✏️ Justificación de salida anticipada</h3>
-        <p>Tu hora de salida prevista aún no ha llegado. Indica el motivo por el cual deseas registrar la salida:</p>
-        <textarea id="textoJustificacion" placeholder="Escribe aquí tu motivo..." rows="4"></textarea>
-        <div class="modal-buttons">
-            <button type="button" onclick="enviarJustificacion()">✅ Confirmar</button>
-            <button type="button" onclick="cerrarModalJustificacion()">❌ Cancelar</button>
+            if ($autoSalidaActiva && $horario && $horario->hora_salida) {
+                echo '
+                <div class="salida-auto-alert">
+                    🕒 <strong>Recuerda:</strong> La <strong>salida automática</strong> está activada hoy a las <strong>' . dol_escape_htmltag($horario->hora_salida) . '</strong>.<br>
+                </div>';
+            }
+    ?>
+</footer>
+
+<!-- ============================= -->
+<!--   MODAL JUSTIFICACIÓN SALIDA  -->
+<!-- ============================= -->
+<div id="modalJustificacion" class="modal-overlay">
+  <div class="modal-content">
+    <button class="cerrarModal" onclick="cerrarModalJustificacion()">✖</button>
+    <div class="modal-inner-form">
+      <h2>✏️ Justificación de salida anticipada</h2>
+      <p>Tu hora de salida prevista aún no ha llegado. Indica el motivo por el cual deseas registrar la salida:</p>
+      <form onsubmit="event.preventDefault(); enviarJustificacion();">
+        <label>Tipo de incidencia:</label>
+        <div class="toggle-group">
+            <input type="radio" id="opcion_extra" name="tipoIncidencia" value="horas_extra" required hidden>
+            <label for="opcion_extra" class="toggle-btn">Horas extra</label>
+
+            <input type="radio" id="opcion_anticipada" name="tipoIncidencia" value="salida_anticipada" required hidden>
+            <label for="opcion_anticipada" class="toggle-btn">Salida anticipada</label>
         </div>
+ 
+        <label for="textoJustificacion">Motivo:</label>
+            <textarea id="textoJustificacion" placeholder="Escribe aquí tu motivo..." rows="4" required></textarea>
+
+        <div class="modal-actions">
+            <button type="button" onclick="cerrarModalJustificacion()">Cancelar</button>
+            <button type="submit" class="guardarButton">Confirmar</button>
+        </div>
+      </form>
+ 
     </div>
+  </div>
 </div>
 
-<input type="hidden" name="justificacion" id="inputJustificacion">
+<div id="toast" class="toast" style="display:none;"></div>
 
+<!-- ============================= -->
+<!--   VARIABLES GLOBALES JS DESDE PHP   -->
+<!-- ============================= -->
+<script>
+  const csrfToken = '<?php echo $token; ?>';
+</script>
+
+<!-- ============================= -->
+<!--   SCRIPT PRINCIPAL DEL MÓDULO -->
+<!-- ============================= -->
 <script src="<?php echo dol_buildpath('/custom/picaje/js/picaje.js', 1); ?>"></script>
 
 <script>
-    const haEntrada = <?php echo $ha_entrada ? 'true' : 'false'; ?>;
-    const haSalida = <?php echo $ha_salida ? 'true' : 'false'; ?>;
+  const haEntrada = <?php echo $ha_entrada ? 'true' : 'false'; ?>;
+  const haSalida = <?php echo $ha_salida ? 'true' : 'false'; ?>;
+  const salidaManualJustificada = <?php echo getDolGlobalInt('PICAR_SALIDA_MANUAL_JUSTIFICADA') ? 'true' : 'false'; ?>;
 
-    console.log("🧪 haEntrada:", haEntrada);
-    console.log("🧪 haSalida:", haSalida);
-
-    inicializarPicaje(haEntrada, haSalida);
+  inicializarPicaje(haEntrada, haSalida, salidaManualJustificada);
 </script>
 
 
@@ -137,5 +190,6 @@ $token = newToken();
         </svg>
     </a>
 </div>
+
 
 

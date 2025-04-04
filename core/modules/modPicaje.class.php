@@ -42,7 +42,6 @@ class modPicaje extends DolibarrModules
 	public function __construct($db)
 	{
 
-		file_put_contents(DOL_DOCUMENT_ROOT . "/custom/picaje/log_prueba.txt", "🚀 Constructor del módulo Picaje ejecutado\n", FILE_APPEND);
 
 
 		global $conf, $langs;

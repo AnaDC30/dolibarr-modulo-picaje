@@ -1,7 +1,7 @@
 
-// =========================
+// ==========================
 // MODAL DE EDICIÓN DE PICAJE
-// =========================
+// ==========================
 
 function abrirModalEditar(id) {
     document.getElementById("modalEditar").style.display = "flex";
@@ -23,9 +23,9 @@ function cerrarModalEditar() {
 }
 
 
-// =========================
+// ==================
 // MENSAJE DE ÉXITO
-// =========================
+// ==================
 
 function mostrarMensajeExito(mensaje) {
     const contenedor = document.getElementById("modalEditarContenido");
@@ -89,19 +89,23 @@ function guardarEdicion(event) {
 }
 
 
-// ==========
-// UBICACIÓN
-// ==========
+// ==============================
+// CONTROL DE PICAJE Y UBICACIÓN
+// ==============================
 
-function inicializarPicaje(haEntrada, haSalida) {
+function inicializarPicaje(haEntrada, haSalida, salidaManualJustificada) {
     const form = document.getElementById('form-picaje');
     const latInput = document.getElementById("latitud");
     const lonInput = document.getElementById("longitud");
-    const tipoInput = document.getElementById("tipo_picaje");
-
-    //Diferenciar boton segun registro de picaje
+    const tipoInput = document.querySelector('input[name="tipo"]');
+    const modalJustificacion = document.getElementById('modalJustificacion');
     const boton = document.getElementById('boton-picar');
 
+    let ubicacionObtenida = false;
+
+    // =======================================
+    // 1. Ajustar texto del botón según estado
+    // =======================================
     if (!boton) {
         console.warn("⚠️ No se encontró el botón de picaje en el DOM.");
         return;
@@ -114,14 +118,12 @@ function inicializarPicaje(haEntrada, haSalida) {
     } else if (haEntrada && haSalida) {
         boton.textContent = "✅ Picaje completado";
         boton.disabled = true;
-        boton.classList.add('disabled'); // Opcional: si tienes estilos CSS para botón desactivado
+        boton.classList.add('disabled');
     }
 
-
-    const modalJustificacion = document.getElementById('modalJustificacion');
-    let ubicacionObtenida = false;
-
-    // Obtener ubicación del navegador
+    // ==================================
+    // 2. Obtener ubicación del navegador
+    // ==================================
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (position) {
             latInput.value = position.coords.latitude;
@@ -134,61 +136,107 @@ function inicializarPicaje(haEntrada, haSalida) {
         alert("⚠️ Este navegador no soporta geolocalización.");
     }
 
-    // Evento al enviar formulario
+    // ==================================
+    // 3. Evento de envío del formulario
+    // ==================================
     form.addEventListener('submit', function (e) {
+        // Verificar ubicación
         if (!latInput.value || !lonInput.value || !ubicacionObtenida) {
             e.preventDefault();
             alert("❌ No se ha detectado la ubicación. No se puede registrar el picaje.");
             return;
         }
 
+        const tipo = tipoInput.value;
+
+        // Caso: salida manual con justificación
+        if (tipo === 'salida' && salidaManualJustificada) {
+            e.preventDefault();
+            modalJustificacion.style.display = 'flex';
+            return;
+        }
+
+        // Caso: lógica antigua (opcional)
         if (!haEntrada) {
             tipoInput.value = 'entrada';
         } else if (haEntrada && !haSalida) {
-            e.preventDefault(); // Detenemos el envío hasta validar si es salida anticipada
-
-            fetch('../ajax/validar_salida.php')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.salida_anticipada) {
-                        modalJustificacion.style.display = 'flex';
-                    } else {
-                        tipoInput.value = 'salida';
-                        form.submit();
-                    }
-                })
-                .catch(err => {
-                    alert("❌ Error al validar hora de salida.");
-                    console.error(err);
-                });
+            // Si no hay salida manual justificada activa, validar si es salida anticipada
+            if (!salidaManualJustificada) {
+                e.preventDefault();
+                fetch('../ajax/validar_salida.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.salida_anticipada) {
+                            modalJustificacion.style.display = 'flex';
+                        } else {
+                            tipoInput.value = 'salida';
+                            form.submit();
+                        }
+                    })
+                    .catch(err => {
+                        alert("❌ Error al validar hora de salida.");
+                        console.error(err);
+                    });
+            }
         }
     });
 }
 
-
-// Función para cerrar el modal de justificación
-function cerrarModalJustificacion() {
-    const modal = document.getElementById('modalJustificacion');
-    modal.style.display = 'none';
-}
-
-// Función para confirmar y enviar justificación
+// =======================================
+//   MODAL DE JUSTIFICACION/INCIDENCIAS
+// =======================================
 function enviarJustificacion() {
-    const justificacion = document.getElementById('textoJustificacion').value.trim();
-    const inputHidden = document.getElementById('inputJustificacion');
-    const tipoInput = document.getElementById("tipo_picaje");
-
-    if (!justificacion) {
-        alert("⚠️ Debes indicar un motivo.");
-        return;
+    const tipo = document.querySelector('input[name="tipoIncidencia"]:checked');
+    const motivo = document.getElementById('textoJustificacion').value.trim();
+  
+    if (!tipo || !motivo) {
+      alert("Debes seleccionar el tipo de incidencia y escribir una justificación.");
+      return;
     }
-
-    inputHidden.value = justificacion;
-    tipoInput.value = 'salida';
-
-    document.getElementById('form-picaje').submit();
+  
+    fetch('/dolibarr/custom/picaje/ajax/registrar_incidencia.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        token: csrfToken, // 
+        tipo: tipo.value,
+        justificacion: motivo
+      })
+    })
+    .then(async res => {
+      try {
+        const data = await res.json();
+  
+        if (data.success) {
+          mostrarToast("✅ Justificación registrada correctamente."); 
+          cerrarModalJustificacion();
+        } else {
+          alert("❌ Error: " + (data.error || "No se pudo registrar la incidencia."));
+        }
+      } catch (e) {
+        console.error("❌ Error al interpretar JSON:", e);
+        alert("❌ Respuesta inesperada del servidor.");
+      }
+    })
+    .catch(err => {
+      console.error("❌ Error de red:", err);
+      alert("❌ No se pudo conectar con el servidor.");
+    });
 }
+  
 
+function abrirModalJustificacion() {
+    document.getElementById('modalJustificacion').style.display = 'flex';
+  }
+  
+
+
+
+// ==========================
+// VER UBICACION EN REGISTRO
+// ==========================
 
 function verUbicacion(id) {
     document.getElementById("modalUbicacion").style.display = "flex";
@@ -220,10 +268,8 @@ function verUbicacion(id) {
 }
 
 
-
-
 // =================
-//  CERRAR MODALES
+//  CERRAR MODALES 
 // =================
 
 window.addEventListener('click', function (event) {
@@ -259,125 +305,22 @@ function cerrarModalUbicacion() {
     }
 }
 
-
-// =====================
-// JUSTIFICACIÓN PICAJE
-// =====================
-
-function enviarJustificacion() {
-    const texto = document.getElementById('textoJustificacion').value.trim();
-    if (!texto) {
-        alert("⚠️ Debes escribir una justificación.");
-        return;
-    }
-
-    document.getElementById('inputJustificacion').value = texto;
-    document.getElementById('tipo_picaje').value = 'salida';
-    document.getElementById('form-picaje').submit();
-}
-
 function cerrarModalJustificacion() {
     document.getElementById('modalJustificacion').style.display = 'none';
 }
 
 
-// ==========================
-// PICAJE AJAX (entrada/salida)
-// ==========================
+// ================
+//  MOSTRAR TOAST 
+// ================
 
-function inicializarPicaje(haEntrada, haSalida) {
-    const tipoInput = document.getElementById('tipo_picaje');
-
-    if (!tipoInput) return;
-
-    if (!haEntrada && !haSalida) {
-        tipoInput.value = 'entrada';
-    } else if (haEntrada && !haSalida) {
-        tipoInput.value = 'salida';
-    } else {
-        tipoInput.value = ''; 
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const formPicaje = document.getElementById('form-picaje');
-    const botonPicar = document.getElementById('boton-picar');
-
-    if (formPicaje && botonPicar) {
-        formPicaje.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            botonPicar.disabled = true;
-            botonPicar.textContent = '⏳ Obteniendo ubicación...';
-
-            if (!navigator.geolocation) {
-                alert("⚠️ Tu navegador no soporta geolocalización.");
-                botonPicar.disabled = false;
-                botonPicar.textContent = '📍 Picar';
-                return;
-            }
-
-            navigator.geolocation.getCurrentPosition(function (position) {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-
-                document.getElementById('latitud').value = lat;
-                document.getElementById('longitud').value = lng;
-
-                // Confirmación visual
-                console.log("✅ Latitud recogida:", lat);
-                console.log("✅ Longitud recogida:", lng);
-
-                const formData = new FormData(formPicaje);
-                const tokenInput = document.querySelector('input[name="token"]');
-                if (tokenInput) {
-                    formData.append('token', tokenInput.value);
-                }
-
-                const actionURL = formPicaje.getAttribute('action');
-                botonPicar.textContent = '⏳ Registrando...';
-
-                fetch(actionURL, {
-                    method: 'POST',
-                    body: formData,
-                    credentials: 'same-origin'
-                })
-                .then(response => response.text())
-                .then(text => {
-                    console.log("🔍 Respuesta cruda del servidor:", text);
-                    try {
-                        const data = JSON.parse(text);
-                        if (data.success) {
-                            alert(data.message || "✔ Picaje registrado correctamente");
-                            location.reload();
-                        } else {
-                            alert("❌ " + (data.error || "Error al registrar el picaje."));
-                            botonPicar.disabled = false;
-                            botonPicar.textContent = '📍 Picar';
-                        }
-                    } catch (e) {
-                        console.error("❌ No es JSON válido:", text);
-                        alert("❌ Error inesperado del servidor. Revisa la consola.");
-                        botonPicar.disabled = false;
-                        botonPicar.textContent = '📍 Picar';
-                    }
-                })
-                .catch(error => {
-                    console.error("Error en el picaje:", error);
-                    alert("❌ Error inesperado.");
-                    botonPicar.disabled = false;
-                    botonPicar.textContent = '📍 Picar';
-                });
-
-            }, function (error) {
-                alert("⚠️ No se pudo obtener la ubicación. Verifica los permisos del navegador.");
-                botonPicar.disabled = false;
-                botonPicar.textContent = '📍 Picar';
-            });
-        });
-    }
-});
-
-
-
-
+function mostrarToast(mensaje) {
+    const toast = document.getElementById('toast');
+    toast.textContent = mensaje;
+    toast.style.display = 'block';
+  
+    setTimeout(() => {
+      toast.style.display = 'none';
+    }, 4000);
+  }
+  
