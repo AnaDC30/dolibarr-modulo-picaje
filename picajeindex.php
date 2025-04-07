@@ -38,8 +38,12 @@ switch ($view) {
     case 'log_modificaciones':
         include dol_buildpath('/custom/picaje/tpl/log_modificaciones.php', 0);
         break;
+    case 'incidencias_user':
+        include dol_buildpath('/custom/picaje/tpl/incidencias_user.php', 0);
+        break;
     default:
         include dol_buildpath('/custom/picaje/tpl/principal.php', 0);
+        
 }
 
 // Pie de página estándar Dolibarr

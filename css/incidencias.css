@@ -61,6 +61,23 @@
     border: 1px solid #2ecc71;
   }
   
+
+/* ===================== */
+/*   BOTÓN HISTORIAL     */
+/* ===================== */
+.btn-historial-incidencias {
+    padding: 0.4rem 0.8rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.85rem;
+    background-color: #fdecea;
+    color: #789fe6;
+    border: 1px solid #4a66e4;
+  }
+
+
 /* ===================== */
 /*     BOTÓN VOLVER      */
 /* ===================== */

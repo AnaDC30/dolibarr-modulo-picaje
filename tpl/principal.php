@@ -30,3 +30,11 @@ echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/layout.
         </div>
     </div>
 <?php endif; ?>
+
+<?php if (!$user->admin) : ?>
+  <div style="text-align:center; margin-top:2rem;">
+    <a href="<?php echo dol_buildpath('/custom/picaje/picajeindex.php?view=incidencias_user', 1); ?>" class="btn-historial">
+      📋 Mis incidencias
+    </a>
+  </div>
+<?php endif; ?>

@@ -311,6 +311,46 @@ document.addEventListener('DOMContentLoaded', function () {
   
 
 // ==========================
+// MODAL DE INCIDENCIA USER
+// ==========================
+
+const modalNueva = document.getElementById('modal-nueva-incidencia');
+const formNueva = document.getElementById('form-nueva-incidencia');
+
+window.cerrarModalNuevaIncidencia = function () {
+  modalNueva.style.display = 'none';
+};
+
+if (formNueva) {
+  formNueva.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const tipo = document.getElementById('tipo').value;
+    const comentario = document.getElementById('comentario').value;
+
+    fetch('ajax/insert_incidencia_user.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `tipo=${encodeURIComponent(tipo)}&comentario=${encodeURIComponent(comentario)}`
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        modalNueva.style.display = 'none';
+        location.reload();
+      } else {
+        alert('Error al guardar: ' + data.error);
+      }
+    })
+    .catch(err => {
+      console.error('Error en la solicitud:', err);
+      alert('Error inesperado al enviar la incidencia.');
+    });
+  });
+}
+
+
+// ==========================
 // VER UBICACION EN REGISTRO
 // ==========================
 

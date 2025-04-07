@@ -68,7 +68,7 @@ if ($res && $db->num_rows($res)) {
 
 
         // Columna de acción
-        print '<td><a class="btn-historial" href="' . dol_buildpath('/custom/picaje/picajeindex.php?view=historial&user_id=' . $obj->fk_user, 1) . '">Ver historial</a></td>';
+        print '<td><a class="btn-historial-incidenciasº " href="' . dol_buildpath('/custom/picaje/picajeindex.php?view=historial&user_id=' . $obj->fk_user, 1) . '">Ver historial</a></td>';
         print '</tr>';
     }
 
