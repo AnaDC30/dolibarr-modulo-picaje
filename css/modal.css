@@ -1,17 +1,18 @@
 /* Fondo oscuro y desenfocado del modal */
 .modal-overlay {
-    position: fixed; /* Se queda fijo sobre toda la pantalla */
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.5); /* Fondo negro semitransparente */
-    backdrop-filter: blur(2px); /* Desenfoque de fondo */
-    display: none; /* Oculto por defecto */
-    justify-content: center; /* Centra el contenido horizontalmente */
-    align-items: center; /* Centra el contenido verticalmente */
-    z-index: 1000; /* Se asegura de estar por encima de todo */
-  }
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
   
   /* Contenedor principal del contenido del modal */
   .modal-content {
@@ -215,3 +216,4 @@ input[type="radio"]:checked + label.toggle-btn {
   color: white;
   border-color: #532d54;
 }
+

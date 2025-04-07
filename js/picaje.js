@@ -233,6 +233,82 @@ function abrirModalJustificacion() {
   
 
 
+// ===============================
+//   MODAL DE STATUS INCIDENCIAS
+// ===============================
+document.addEventListener('DOMContentLoaded', function () {
+    // Mostrar modal al hacer clic en el botón
+    document.querySelectorAll('.btn-status').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const status = btn.dataset.status;
+  
+        if (!id || !status) return;
+  
+        document.getElementById('incidencia_id').value = id;
+        document.getElementById('nuevo_status').value = status;
+  
+        // Aplicar color visual al <select> según estado
+        applySelectStyle(status);
+  
+        // Mostrar el modal centrado
+        document.getElementById('modal-status').style.display = 'flex';
+      });
+    });
+  
+    // Cerrar modal desde función global
+    window.cerrarModal = function () {
+      document.getElementById('modal-status').style.display = 'none';
+    };
+  
+    // Enviar formulario con fetch
+    const formStatus = document.getElementById('form-status');
+    if (formStatus) {
+      formStatus.addEventListener('submit', function (e) {
+        e.preventDefault();
+  
+        const id = document.getElementById('incidencia_id').value;
+        const status = document.getElementById('nuevo_status').value;
+  
+        fetch('ajax/cambiar_status_incidencia.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `id=${id}&status=${encodeURIComponent(status)}`
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              document.getElementById('modal-status').style.display = 'none';
+              location.reload();
+            } else {
+              alert('Error: ' + data.error);
+            }
+          })
+          .catch(err => {
+            console.error('Error AJAX:', err);
+            alert('Error inesperado al guardar.');
+          });
+      });
+    }
+  
+    // Detectar cambios manuales en el <select>
+    const selectStatus = document.getElementById('nuevo_status');
+    if (selectStatus) {
+      selectStatus.addEventListener('change', () => {
+        applySelectStyle(selectStatus.value);
+      });
+    }
+  
+    // Función para aplicar clases visuales al select
+    function applySelectStyle(value) {
+      const select = document.getElementById('nuevo_status');
+      select.classList.remove('pendiente', 'resuelta');
+  
+      if (value === 'Pendiente') select.classList.add('pendiente');
+      if (value === 'Resuelta') select.classList.add('resuelta');
+    }
+  });
+  
 
 // ==========================
 // VER UBICACION EN REGISTRO

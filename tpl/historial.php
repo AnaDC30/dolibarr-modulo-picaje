@@ -1,4 +1,5 @@
 <?php
+
 // =====================
 //  ENTORNO DE DOLIBARR
 // =====================
@@ -15,13 +16,16 @@ echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/modal.c
 //   OBTENER DATOS BBDD
 // =====================
 $filtroFecha = GETPOST('fecha', 'alpha');
-$filtroUsuario = GETPOST('usuario', 'alpha');
 $filtroUserId = GETPOST('user_id', 'int');
+
+$nombreUsuario = '';
+$historial = [];
+
 if ($filtroUserId > 0) {
-    $filtroUsuario = getNombreUsuarioPorId($filtroUserId); // función personalizada que haremos
+    $nombreUsuario = getNombreUsuarioPorId($filtroUserId);
+    $historial = obtenerHistorialPorUsuarioId($filtroUserId, $filtroFecha);
 }
 
-$historial = obtenerHistorialPicajes($filtroFecha, $filtroUsuario);
 
 ?>
 

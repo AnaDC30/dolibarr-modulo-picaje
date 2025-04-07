@@ -97,7 +97,7 @@ function obtenerHistorialPicajes($filtroFecha = null, $filtroUsuario = null) {
 
 
 
-// función para obtener un registro específico por ID 
+// función para obtener un registro específico por ID de Picaje
 function obtenerPicajePorId($id) {
     global $db;
     $sql = "SELECT * FROM llx_picaje WHERE id = " . (int)$id;
@@ -188,15 +188,59 @@ function getHoraSalidaEmpresaPorDefecto() {
     return '14:00:00'; // fallback
 }
 
+//Obtener Nombre por ID
 function getNombreUsuarioPorId($id) {
     global $db;
+
     $sql = "SELECT firstname, lastname FROM " . MAIN_DB_PREFIX . "user WHERE rowid = " . (int) $id;
     $res = $db->query($sql);
     if ($res && $db->num_rows($res)) {
         $obj = $db->fetch_object($res);
-        return trim($obj->firstname . ' ' . $obj->lastname);
+        $nombre = trim($obj->firstname . ' ' . $obj->lastname);
+        return $nombre;
     }
+    echo "No se encontró el usuario con ese ID\n";
     return '';
+}
+
+//Obtener picaje por ID de User
+function obtenerHistorialPorUsuarioId($userId, $fecha = null) {
+    global $db;
+
+    $sql = "SELECT 
+                p.id, 
+                DATE(p.fecha_hora) AS fecha, 
+                TIME(p.fecha_hora) AS hora, 
+                p.tipo, 
+                p.tipo_registro,
+                CONCAT(u.firstname, ' ', u.lastname) AS usuario
+            FROM llx_picaje p
+            LEFT JOIN llx_user u ON u.rowid = p.fk_user
+            WHERE p.fk_user = " . (int) $userId;
+
+    if (!empty($fecha)) {
+        $sql .= " AND DATE(p.fecha_hora) = '" . $db->escape($fecha) . "'";
+    }
+
+    $sql .= " ORDER BY p.fecha_hora DESC";
+
+    $resql = $db->query($sql);
+    $historial = [];
+
+    if ($resql) {
+        while ($row = $db->fetch_object($resql)) {
+            $historial[] = [
+                'id' => $row->id,
+                'fecha' => $row->fecha,
+                'hora' => $row->hora,
+                'tipo' => ucfirst($row->tipo),
+                'tipo_registro' => $row->tipo_registro ?? 'manual',
+                'usuario' => $row->usuario
+            ];
+        }
+    }
+
+    return $historial;
 }
 
 
