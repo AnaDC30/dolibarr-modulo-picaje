@@ -68,6 +68,31 @@
     color: #444;
 }
 
+.btn-reset-flotante {
+    margin-top: 10px;
+    text-align: left;
+    margin-left: 10px;
+}
+
+.btn-reset-flotante .btn-reset {
+    background-color: #eee;
+    border: 1px solid #ccc;
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+    color: #333;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.btn-reset-flotante .btn-reset:hover {
+    background-color: #ddd;
+}
+
+.oculto {
+    display: none;
+}
+
 /* ============ */
 /* FILTRO OCULTO / MOSTRAR OCULTAR */
 /* ============ */

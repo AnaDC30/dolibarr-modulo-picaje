@@ -16,16 +16,15 @@ echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/modal.c
 //   OBTENER DATOS BBDD
 // =====================
 $filtroFecha = GETPOST('fecha', 'alpha');
-$filtroUserId = GETPOST('user_id', 'int');
+$filtroUsuario = GETPOST('usuario', 'alpha');
+$filtroUserId = GETPOST('user_id', 'int');   
+$desdeIncidencias = GETPOST('desde', 'alpha');
 
-$nombreUsuario = '';
-$historial = [];
-
-if ($filtroUserId > 0) {
-    $nombreUsuario = getNombreUsuarioPorId($filtroUserId);
-    $historial = obtenerHistorialPorUsuarioId($filtroUserId, $filtroFecha);
+if ($desdeIncidencias === 'incidencias') {
+    $historial = obtenerHistorialPicajes(null, null, $filtroUserId); 
+} else {
+    $historial = obtenerHistorialPicajes($filtroFecha, $filtroUsuario); 
 }
-
 
 ?>
 
@@ -42,6 +41,9 @@ if ($filtroUserId > 0) {
 
 <!-- BOTON FILTRO -->
 <button type="button" class="toggle-filtros" onclick="toggleFiltros()">🔍</button>
+<div id="botonQuitarFlotante" class="btn-reset-flotante oculto">
+    <a href="picajeindex.php?view=historial" class="btn-reset">🔄 Quitar filtros</a>
+</div>
 
 <!-- Contenedor del formulario oculto inicialmente -->
 <div id="filtrosContainer" class="filtro-formulario oculto">
@@ -57,11 +59,12 @@ if ($filtroUserId > 0) {
             <?php endif; ?>
 
             <button type="submit">🔍 Buscar</button>
-
-            <!-- 🔄 Botón de quitar filtros -->
-            <a href="picajeindex.php?view=historial" class="btn-reset">🔄 Quitar filtros</a>
         </div>
     </form>
+</div>
+
+<div id="botonQuitarFlotante" class="btn-reset-flotante oculto">
+    <a href="picajeindex.php?view=historial" class="btn-reset">🔄 Quitar filtros</a>
 </div>
 
 
@@ -82,7 +85,7 @@ if ($filtroUserId > 0) {
         <!-- SI NO HAY DATOS -->
         <?php if (empty($historial)): ?>
             <div class="row-wrapper no-data">
-                <div class="cell" colspan="3">No hay registros disponibles.</div>
+                <div class="cell">No hay registros disponibles.</div>
             </div>
 
         <!-- MOSTRAR DATOS -->
@@ -100,10 +103,8 @@ if ($filtroUserId > 0) {
                     <div class="cell"><?php echo dol_escape_htmltag($registro['tipo_registro'] ?? 'manual'); ?></div>
 
                     <div class="floating-buttons">
-                        <!-- Botón visible para todos -->
                         <button type="button" class="locButton tableButton" onclick="verUbicacion(<?php echo (int)$registro['id']; ?>)">📍</button>
 
-                        <!-- Botón de edición solo para admins -->
                         <?php if ($user->admin == 1): ?>
                             <button type="button" class="editButton tableButton" onclick="abrirModalEditar(<?php echo (int)$registro['id']; ?>)">✏️</button>  
                         <?php endif; ?>
@@ -127,24 +128,15 @@ if ($filtroUserId > 0) {
     </a>
 </div>
 
-
 <!-- MODAL PARA EDITAR -->
 <div id="modalEditar" class="modal-overlay" style="display: none;">
-    <div class="modal-content" id="modalEditarContenido">
-        <!-- El contenido se cargará dinámicamente -->
-    </div>
+    <div class="modal-content" id="modalEditarContenido"></div>
 </div>
 
 <!-- MODAL PARA VER UBICACIÓN -->
 <div id="modalUbicacion" class="modal-overlay" style="display: none;">
-    <div class="modal-content" id="modalUbicacionContenido">
-        <!-- El contenido se cargará dinámicamente -->
-    </div>
+    <div class="modal-content" id="modalUbicacionContenido"></div>
 </div>
-
-
-
-<!-- Scripts JS -->
 
 <script>
     const URL_GET_UBICACION = '<?php echo dol_buildpath("/custom/picaje/ajax/get_ubicacion.php", 1); ?>';
@@ -162,5 +154,18 @@ if ($filtroUserId > 0) {
         const contenedor = document.getElementById("filtrosContainer");
         contenedor.classList.toggle("oculto");
     }
+
+     // Mostrar botón flotante de quitar filtros si hay filtros activos
+     document.addEventListener("DOMContentLoaded", function () {
+        const fecha = "<?php echo dol_escape_htmltag($filtroFecha); ?>";
+        const usuario = "<?php echo dol_escape_htmltag($filtroUsuario); ?>";
+
+        const tieneFiltros = fecha.length > 0 || usuario.length > 0;
+        const botonFlotante = document.getElementById("botonQuitarFlotante");
+
+        if (tieneFiltros && botonFlotante) {
+            botonFlotante.classList.remove("oculto");
+        }
+    });
 </script>
 

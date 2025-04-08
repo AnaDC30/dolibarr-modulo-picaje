@@ -35,37 +35,37 @@ function obtenerRegistrosDiarios() {
     return $registros;
 }
 
-// Obtener el historial completo de picajes para el usuario autenticado.
-function obtenerHistorialPicajes($filtroFecha = null, $filtroUsuario = null) {
+// Función unificada para obtener historial de picajes
+function obtenerHistorialPicajes($filtroFecha = null, $filtroUsuario = null, $filtroUserId = null) {
     global $db, $user;
 
-    $sql = "SELECT p.id, DATE(p.fecha_hora) AS fecha, TIME(p.fecha_hora) AS hora, p.tipo, p.tipo_registro";
-    if ($user->admin == 1) {
-        $sql .= ", CONCAT(u.firstname, ' ', u.lastname) AS usuario";
-    }
-    $sql .= " FROM llx_picaje p";
-
-    if ($user->admin == 1) {
-        $sql .= " LEFT JOIN llx_user u ON u.rowid = p.fk_user";
-    }
+    $sql = "SELECT 
+                p.id, 
+                DATE(p.fecha_hora) AS fecha, 
+                TIME(p.fecha_hora) AS hora, 
+                p.tipo, 
+                p.tipo_registro,
+                CONCAT(u.firstname, ' ', u.lastname) AS usuario
+            FROM llx_picaje p
+            LEFT JOIN llx_user u ON u.rowid = p.fk_user";
 
     $where = [];
 
-    // Filtro por usuario (solo admin)
+    if (!empty($filtroUserId)) {
+        $where[] = "p.fk_user = " . (int) $filtroUserId;
+    }
+
     if ($user->admin == 1 && strlen(trim($filtroUsuario)) >= 2) {
         $filtroUsuarioEscapado = $db->escape($filtroUsuario);
         $where[] = "(u.firstname LIKE '%$filtroUsuarioEscapado%' OR u.lastname LIKE '%$filtroUsuarioEscapado%')";
     }
 
-    // Filtro por fecha (usamos fecha_hora)
     if (isset($filtroFecha) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $filtroFecha)) {
         $filtroFechaEscapado = $db->escape($filtroFecha);
         $where[] = "DATE(p.fecha_hora) = '$filtroFechaEscapado'";
     }
-    
 
-    // Si no es admin, mostrar solo sus registros
-    if ($user->admin != 1) {
+    if ($user->admin != 1 && empty($filtroUserId)) {
         $where[] = "p.fk_user = " . (int) $user->id;
     }
 
@@ -86,15 +86,13 @@ function obtenerHistorialPicajes($filtroFecha = null, $filtroUsuario = null) {
                 'hora' => $row->hora,
                 'tipo' => ucfirst($row->tipo),
                 'tipo_registro' => $row->tipo_registro ?? 'manual',
-                'usuario' => $user->admin == 1 ? $row->usuario : null
+                'usuario' => $row->usuario
             ];
         }
     }
 
     return $historial;
 }
-
-
 
 
 // función para obtener un registro específico por ID de Picaje
@@ -202,46 +200,5 @@ function getNombreUsuarioPorId($id) {
     echo "No se encontró el usuario con ese ID\n";
     return '';
 }
-
-//Obtener picaje por ID de User
-function obtenerHistorialPorUsuarioId($userId, $fecha = null) {
-    global $db;
-
-    $sql = "SELECT 
-                p.id, 
-                DATE(p.fecha_hora) AS fecha, 
-                TIME(p.fecha_hora) AS hora, 
-                p.tipo, 
-                p.tipo_registro,
-                CONCAT(u.firstname, ' ', u.lastname) AS usuario
-            FROM llx_picaje p
-            LEFT JOIN llx_user u ON u.rowid = p.fk_user
-            WHERE p.fk_user = " . (int) $userId;
-
-    if (!empty($fecha)) {
-        $sql .= " AND DATE(p.fecha_hora) = '" . $db->escape($fecha) . "'";
-    }
-
-    $sql .= " ORDER BY p.fecha_hora DESC";
-
-    $resql = $db->query($sql);
-    $historial = [];
-
-    if ($resql) {
-        while ($row = $db->fetch_object($resql)) {
-            $historial[] = [
-                'id' => $row->id,
-                'fecha' => $row->fecha,
-                'hora' => $row->hora,
-                'tipo' => ucfirst($row->tipo),
-                'tipo_registro' => $row->tipo_registro ?? 'manual',
-                'usuario' => $row->usuario
-            ];
-        }
-    }
-
-    return $historial;
-}
-
 
 ?>

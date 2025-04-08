@@ -158,9 +158,9 @@ if (!$ha_entrada) {
 
 <div id="toast" class="toast" style="display:none;"></div>
 
-<!-- ============================= -->
-<!--   VARIABLES GLOBALES JS DESDE PHP   -->
-<!-- ============================= -->
+<!-- =============== -->
+<!--  TOKEN Y CRSF   -->
+<!-- =============== -->
 <script>
   const csrfToken = '<?php echo $token; ?>';
 </script>
@@ -170,12 +170,15 @@ if (!$ha_entrada) {
 <!-- ============================= -->
 <script src="<?php echo dol_buildpath('/custom/picaje/js/picaje.js', 1); ?>"></script>
 
+<script src="<?php echo dol_buildpath('/custom/picaje/js/picaje.js', 1); ?>"></script>
+
 <script>
   const haEntrada = <?php echo $ha_entrada ? 'true' : 'false'; ?>;
   const haSalida = <?php echo $ha_salida ? 'true' : 'false'; ?>;
   const salidaManualJustificada = <?php echo getDolGlobalInt('PICAR_SALIDA_MANUAL_JUSTIFICADA') ? 'true' : 'false'; ?>;
+  const salidaAutomaticaActiva = <?php echo getDolGlobalInt('PICAR_SALIDA_AUTOMATICA') ? 'true' : 'false'; ?>;
 
-  inicializarPicaje(haEntrada, haSalida, salidaManualJustificada);
+  inicializarPicaje(haEntrada, haSalida, salidaManualJustificada, salidaAutomaticaActiva);
 </script>
 
 

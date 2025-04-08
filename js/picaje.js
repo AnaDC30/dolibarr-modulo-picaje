@@ -93,7 +93,7 @@ function guardarEdicion(event) {
 // CONTROL DE PICAJE Y UBICACIÓN
 // ==============================
 
-function inicializarPicaje(haEntrada, haSalida, salidaManualJustificada) {
+function inicializarPicaje(haEntrada, haSalida, salidaManualJustificada, salidaAutomaticaActiva) {
     const form = document.getElementById('form-picaje');
     const latInput = document.getElementById("latitud");
     const lonInput = document.getElementById("longitud");
@@ -149,37 +149,44 @@ function inicializarPicaje(haEntrada, haSalida, salidaManualJustificada) {
 
         const tipo = tipoInput.value;
 
-        // Caso: salida manual con justificación
-        if (tipo === 'salida' && salidaManualJustificada) {
-            e.preventDefault();
-            modalJustificacion.style.display = 'flex';
-            return;
-        }
+         // Caso: picaje de entrada
+         if (!haEntrada) {
+          tipoInput.value = 'entrada';
 
-        // Caso: lógica antigua (opcional)
-        if (!haEntrada) {
-            tipoInput.value = 'entrada';
-        } else if (haEntrada && !haSalida) {
-            // Si no hay salida manual justificada activa, validar si es salida anticipada
-            if (!salidaManualJustificada) {
-                e.preventDefault();
-                fetch('../ajax/validar_salida.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.salida_anticipada) {
-                            modalJustificacion.style.display = 'flex';
-                        } else {
-                            tipoInput.value = 'salida';
-                            form.submit();
-                        }
-                    })
-                    .catch(err => {
-                        alert("❌ Error al validar hora de salida.");
-                        console.error(err);
-                    });
-            }
-        }
-    });
+      // Caso: picaje de salida
+      } else if (haEntrada && !haSalida) {
+
+          // Opción activa: salida manual con justificación
+          if (salidaManualJustificada) {
+              e.preventDefault();
+              modalJustificacion.style.display = 'flex';
+              return;
+          }
+
+          // Opción activa: salida automática por horario
+          if (salidaAutomaticaActiva) {
+              e.preventDefault();
+              fetch('/dolibarr/custom/picaje/ajax/validar_salida.php')
+                  .then(response => response.json())
+                  .then(data => {
+                      if (data.salida_anticipada) {
+                          modalJustificacion.style.display = 'flex';
+                      } else {
+                          tipoInput.value = 'salida';
+                          form.submit();
+                      }
+                  })
+                  .catch(err => {
+                      alert("❌ Error al validar hora de salida.");
+                      console.error(err);
+                  });
+              return;
+          }
+
+          // Caso final: salida manual simple sin ninguna lógica extra
+          tipoInput.value = 'salida';
+      }
+  });
 }
 
 // =======================================

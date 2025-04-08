@@ -6,7 +6,6 @@ class ActionsPicaje
     {
         global $db, $langs;
 
-        // Hook en ficha de usuario
         if ($parameters['currentcontext'] == 'usercard' && $object->id > 0) {
             require_once DOL_DOCUMENT_ROOT . '/custom/picaje/lib/dbController.php';
 
@@ -18,7 +17,6 @@ class ActionsPicaje
                 print 'Salida prevista: <strong>' . substr($horario->hora_salida, 0, 5) . '</strong>';
                 if (!empty($horario->salida_automatica)) print ' (automática)';
 
-                // Mostrar aviso si se hereda de un grupo
                 if (!empty($horario->heredado_de_grupo)) {
                     print '<div class="warning" style="margin-top:8px;color:#b36b00;">⚠️ Este horario se hereda del grupo <strong>' . $horario->heredado_de_grupo . '</strong>. Verifique si es válido para este usuario.</div>';
                 }
@@ -30,7 +28,6 @@ class ActionsPicaje
             print '</td></tr>';
         }
 
-        // Hook en ficha de grupo (departamento)
         if ($parameters['currentcontext'] == 'groupcard' && $object->id > 0) {
             $sql = "SELECT hora_salida, salida_automatica FROM llx_picaje_horarios 
                     WHERE fk_departement = " . (int) $object->id . " 
@@ -56,20 +53,12 @@ class ActionsPicaje
         return 0;
     }
 
-    public function top_right_menu($parameters, &$menus){
-
-        error_log("✅ Entró a top_right_menu PICAJE", 3, "C:/xampp/php/logs/ph_error_log.txt"); // <- AJUSTA ESTA RUTA SI LA TUYA ES OTRA
-        file_put_contents("C:/xampp/htdocs/dolibarr/custom/picaje/log_prueba.txt", "🚨 Entró a top_right_menu()\n", FILE_APPEND);
-
-
-
-        
+    public function top_right_menu($parameters, &$menus)
+    {
         global $user, $langs, $conf;
 
-        // Mostrar solo si está activado en configuración
         if (empty($conf->global->PICAR_MOSTRAR_BOTON_HEADER)) return 0;
 
-        // Ejecutar salida automática si aplica
         require_once DOL_DOCUMENT_ROOT . '/custom/picaje/lib/auto_salida.php';
         ejecutarSalidaAutomaticaUsuario($user->id);
 
@@ -82,7 +71,6 @@ class ActionsPicaje
             $icono = '';
             $claseEstado = '';
 
-            // Determinar estado actual
             if (!$estado['entrada']) {
                 $texto = "Picar entrada";
                 $icono = "⏱️";
@@ -97,27 +85,24 @@ class ActionsPicaje
                 $claseEstado = "picar-completado";
             }
 
-            // HTML del botón encapsulado para evitar conflictos visuales
             $iconClass = 'fa-clock-o';
             if (!$estado['entrada']) $iconClass = 'fa-sign-in';
             elseif (!$estado['salida']) $iconClass = 'fa-sign-out';
             else $iconClass = 'fa-check';
-            
+
             $html = '<div class="classfortooltip inline-block login_block_elem inline-block" style="padding-right: 2px;" title="' . dol_escape_htmltag($texto) . '">';
             $html .= '<a id="' . $idBoton . '" class="' . $claseEstado . '" href="#">';
             $html .= '<span class="fa ' . $iconClass . ' atoplogin valignmiddle"></span>';
             $html .= '</a>';
             $html .= '</div>';
-            
+
             $menus[] = array(
                 'url' => '#',
                 'titre' => $texto,
                 'level' => 0,
                 'html' => $html
             );
-            
 
-            // Script JavaScript para gestionar el clic y enviar ubicación
             print '<script>
             document.addEventListener("DOMContentLoaded", function () {
                 const btn = document.getElementById("' . $idBoton . '");
@@ -151,7 +136,7 @@ class ActionsPicaje
                                     btn.style.opacity = 1;
                                 });
 
-                        }, function (err) {
+                        }, function () {
                             alert("❌ No se pudo obtener la ubicación.");
                         });
                     } else {
@@ -172,10 +157,12 @@ class ActionsPicaje
         if (empty($conf->global->PICAR_AUTO_LOGIN)) return 0;
         if (empty($user->id)) return 0;
 
-        $fecha = date('Y-m-d');
+        $fecha_actual = date('Y-m-d');
+        $fecha_hora_actual = date('Y-m-d H:i:s');
+
         $sql = "SELECT COUNT(*) as total FROM llx_picaje 
-                WHERE usuario_id = " . (int) $user->id . " 
-                AND fecha = '" . $db->escape($fecha) . "' 
+                WHERE fk_user = " . (int) $user->id . " 
+                AND DATE(fecha_hora) = '" . $db->escape($fecha_actual) . "' 
                 AND tipo = 'entrada'";
 
         $res = $db->query($sql);
@@ -184,27 +171,23 @@ class ActionsPicaje
             if ((int) $row->total > 0) return 0;
         }
 
-        // Registrar entrada automática
-        $hora = date('H:i:s');
-        $sql_insert = "INSERT INTO llx_picaje (fecha, hora, tipo, usuario_id, latitud, longitud, tipo_registro)
-                   VALUES (
-                       '" . $db->escape($fecha) . "',
-                       '" . $db->escape($hora) . "',
-                       'entrada',
-                       " . (int) $user->id . ",
-                       NULL, NULL,
-                       'auto_login'
-                   )";
+        $sql_insert = "INSERT INTO llx_picaje (fecha_hora, tipo, fk_user, tipo_registro)
+                       VALUES (
+                           '" . $db->escape($fecha_hora_actual) . "',
+                           'entrada',
+                           " . (int) $user->id . ",
+                           'auto_login'
+                       )";
 
-        $db->query($sql_insert);
-        $_SESSION['entrada_auto_login'] = 1;
+        if ($db->query($sql_insert)) {
+            $_SESSION['entrada_auto_login'] = 1;
+        }
 
         return 0;
     }
 
     public function addMoreActionsButtons($parameters, &$object, &$action, $hookmanager)
     {
-        // Mensajes tras auto login o salida automática
         if (!empty($_SESSION['entrada_auto_login'])) {
             setEventMessages("📍 Entrada registrada automáticamente al iniciar sesión.", null, 'mesgs');
             unset($_SESSION['entrada_auto_login']);

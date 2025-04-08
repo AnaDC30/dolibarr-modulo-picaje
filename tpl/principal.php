@@ -38,3 +38,4 @@ echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/layout.
     </a>
   </div>
 <?php endif; ?>
+

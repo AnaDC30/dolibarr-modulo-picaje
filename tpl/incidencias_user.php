@@ -8,12 +8,14 @@ if ($user->admin) {
     exit;
 }
 
-
 echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/modal.css', 1) . '">';
 echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/incidencias.css', 1) . '">';
 
 global $db, $user, $conf;
 
+// ===================
+// CONSULTA INCIDENCIAS
+// ===================
 $sql = "SELECT i.*, p.fecha_hora 
         FROM llx_picaje_incidencias i
         LEFT JOIN llx_picaje p ON p.id = i.fk_picaje
@@ -24,16 +26,25 @@ $sql = "SELECT i.*, p.fecha_hora
 $res = $db->query($sql);
 ?>
 
-<div class="main-content" style="max-width: 800px; margin: auto;">
-  <h2>Mis incidencias</h2>
+<!-- =================== -->
+<!--    ENCABEZADO       -->
+<!-- =================== -->
+<header class="page-header">
+    <h2>Incidencias</h2>
+</header>
 
-    <?php if (!$user->admin) : ?>
-        <button class="btn-historial" onclick="document.getElementById('modal-nueva-incidencia').style.display='flex'">📩 Reportar incidencia</button>
-
+<?php if (!$user->admin): ?>
+        <button class="btn-historial" onclick="document.getElementById('modal-nueva-incidencia').style.display='flex'">
+            📩 Reportar incidencia
+        </button>
     <?php endif; ?>
 
+<!-- =================== -->
+<!--    TABLA LISTADO     -->
+<!-- =================== -->
+<div class="main-content" style="max-width: 900px; margin: auto;">
 
-  <table class="liste" style="margin-top: 1.5rem;">
+  <table class="liste">
     <tr>
       <th>Fecha</th>
       <th>Hora</th>
@@ -41,6 +52,7 @@ $res = $db->query($sql);
       <th>Comentario</th>
       <th>Status</th>
     </tr>
+
     <?php
     if ($res && $db->num_rows($res)) {
         while ($obj = $db->fetch_object($res)) {
@@ -59,7 +71,7 @@ $res = $db->query($sql);
   </table>
 </div>
 
-<!-- Modal para nueva incidencia -->
+<!-- MODAL NUEVA INCIDENCIA -->
 <div id="modal-nueva-incidencia" class="modal-overlay" style="display: none;">
   <div class="modal-content">
     <div class="modal-inner-form">
@@ -85,5 +97,19 @@ $res = $db->query($sql);
   </div>
 </div>
 
+<!-- JS -->
 <script src="<?php echo dol_buildpath('/custom/picaje/js/picaje.js', 1); ?>"></script>
 
+
+<!-- =================== -->
+<!--    BOTÓN VOLVER     -->
+<!-- =================== -->
+
+<div class="backContainer">
+    <a href="<?php echo dol_buildpath('/custom/picaje/picajeindex.php', 1); ?>" class="backArrow">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-big-left-icon lucide-arrow-big-left">
+            <path d="M18 15h-6v4l-7-7 7-7v4h6v6z"/>
+        </svg>
+    </a>
+</div>
