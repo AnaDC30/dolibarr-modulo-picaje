@@ -62,12 +62,26 @@ if ($desdeIncidencias === 'incidencias') {
         </div>
     </form>
 </div>
-
+<!-- Boton para quitar filtro-->
 <div id="botonQuitarFlotante" class="btn-reset-flotante oculto">
     <a href="picajeindex.php?view=historial" class="btn-reset">🔄 Quitar filtros</a>
 </div>
 
+<!-- Botones para exportar-->
+<?php
+$params = http_build_query([
+    'fecha' => $filtroFecha,
+    'usuario' => $filtroUsuario,
+    'user_id' => GETPOST('user_id', 'int'),
+    'desde' => GETPOST('desde', 'alpha')
+]);
+?>
+<div class="export-buttons">
+    <a href="export/exportar_pdf.php?<?php echo $params; ?>" class="butAction">📄 Exportar a PDF</a>
+    <a href="export/exportar_csv.php?<?php echo $params; ?>" class="butAction">📤 Exportar a CSV</a>
+</div>
 
+<!-- TABLA  -->
 <div class="table-container">
     <div class="table-wrapper">
 

@@ -68,7 +68,7 @@ if (!$ha_entrada) {
         <h2>Registro de Picaje</h2>
 
         <?php if ($mostrarBoton): ?>
-            <form method="post" action="<?php echo dol_buildpath('/custom/picaje/ajax/procesar_picaje.php', 1); ?>" id="form-picaje">
+            <form id="form-picaje" method="post">
                 <input type="hidden" name="token" value="<?php echo $token; ?>">
                 <input type="hidden" name="tipo" value="<?php echo $tipoRegistro; ?>">
                 <input type="hidden" name="latitud" id="latitud">

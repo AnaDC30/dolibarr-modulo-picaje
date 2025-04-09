@@ -216,6 +216,36 @@
 }
 
 /* ===================== */
+/*    BOTÓN EXOPORTAR    */
+/* ===================== */
+
+.export-buttons {
+    display: flex;
+    gap: 12px;
+    margin: 20px 0;
+    justify-content: flex-end;
+}
+
+.export-buttons .butAction {
+    background-color: #6a2c70;
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.export-buttons .butAction:hover {
+    background-color: #854c8d;
+    transform: scale(1.05);
+    text-decoration: none;
+}
+
+
+/* ===================== */
 /*     BOTÓN VOLVER      */
 /* ===================== */
 

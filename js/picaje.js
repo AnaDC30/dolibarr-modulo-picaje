@@ -92,133 +92,154 @@ function guardarEdicion(event) {
 // ==============================
 // CONTROL DE PICAJE Y UBICACIÓN
 // ==============================
-
 function inicializarPicaje(haEntrada, haSalida, salidaManualJustificada, salidaAutomaticaActiva) {
-    const form = document.getElementById('form-picaje');
-    const latInput = document.getElementById("latitud");
-    const lonInput = document.getElementById("longitud");
-    const tipoInput = document.querySelector('input[name="tipo"]');
-    const modalJustificacion = document.getElementById('modalJustificacion');
-    const boton = document.getElementById('boton-picar');
+  const form = document.getElementById('form-picaje');
+  const latInput = document.getElementById("latitud");
+  const lonInput = document.getElementById("longitud");
+  const tipoInput = document.querySelector('input[name="tipo"]');
+  const modalJustificacion = document.getElementById('modalJustificacion');
+  const boton = document.getElementById('boton-picar');
 
-    let ubicacionObtenida = false;
+  let ubicacionObtenida = false;
 
-    // =======================================
-    // 1. Ajustar texto del botón según estado
-    // =======================================
-    if (!boton) {
-        console.warn("⚠️ No se encontró el botón de picaje en el DOM.");
-        return;
-    }
+  // Estado inicial del botón
+  if (!boton) return;
 
-    if (!haEntrada) {
-        boton.textContent = "📍 Picar entrada";
-    } else if (haEntrada && !haSalida) {
-        boton.textContent = "📍 Picar salida";
-    } else if (haEntrada && haSalida) {
-        boton.textContent = "✅ Picaje completado";
-        boton.disabled = true;
-        boton.classList.add('disabled');
-    }
+  if (!haEntrada) {
+      boton.textContent = "📍 Picar entrada";
+  } else if (haEntrada && !haSalida) {
+      boton.textContent = "📍 Picar salida";
+  } else if (haEntrada && haSalida) {
+      boton.textContent = "✅ Picaje completado";
+      boton.disabled = true;
+      boton.classList.add('disabled');
+  }
 
-    // ==================================
-    // 2. Obtener ubicación del navegador
-    // ==================================
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function (position) {
-            latInput.value = position.coords.latitude;
-            lonInput.value = position.coords.longitude;
-            ubicacionObtenida = true;
-        }, function () {
-            alert("❌ No se pudo obtener la ubicación. No podrás picar sin permitir la localización.");
-        });
-    } else {
-        alert("⚠️ Este navegador no soporta geolocalización.");
-    }
+  // Obtener ubicación
+  if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+          latInput.value = position.coords.latitude;
+          lonInput.value = position.coords.longitude;
+          ubicacionObtenida = true;
+      }, function () {
+          alert("❌ No se pudo obtener la ubicación.");
+      });
+  }
 
-    // ==================================
-    // 3. Evento de envío del formulario
-    // ==================================
-    form.addEventListener('submit', function (e) {
-        // Verificar ubicación
-        if (!latInput.value || !lonInput.value || !ubicacionObtenida) {
-            e.preventDefault();
-            alert("❌ No se ha detectado la ubicación. No se puede registrar el picaje.");
-            return;
-        }
+  // Evento de envío del formulario
+  form.addEventListener('submit', function (e) {
+      e.preventDefault();
 
-        const tipo = tipoInput.value;
-
-         // Caso: picaje de entrada
-         if (!haEntrada) {
-          tipoInput.value = 'entrada';
-
-      // Caso: picaje de salida
-      } else if (haEntrada && !haSalida) {
-
-          // Opción activa: salida manual con justificación
-          if (salidaManualJustificada) {
-              e.preventDefault();
-              modalJustificacion.style.display = 'flex';
-              return;
-          }
-
-          // Opción activa: salida automática por horario
-          if (salidaAutomaticaActiva) {
-              e.preventDefault();
-              fetch('/dolibarr/custom/picaje/ajax/validar_salida.php')
-                  .then(response => response.json())
-                  .then(data => {
-                      if (data.salida_anticipada) {
-                          modalJustificacion.style.display = 'flex';
-                      } else {
-                          tipoInput.value = 'salida';
-                          form.submit();
-                      }
-                  })
-                  .catch(err => {
-                      alert("❌ Error al validar hora de salida.");
-                      console.error(err);
-                  });
-              return;
-          }
-
-          // Caso final: salida manual simple sin ninguna lógica extra
-          tipoInput.value = 'salida';
+      if (!latInput.value || !lonInput.value || !ubicacionObtenida) {
+          alert("❌ Ubicación no detectada. No se puede registrar el picaje.");
+          return;
       }
+
+      const tipo = tipoInput.value;
+
+      // CASO: Salida anticipada con justificación
+      if (haEntrada && !haSalida && salidaManualJustificada) {
+          modalJustificacion.style.display = 'flex';
+          return;
+      }
+
+      // CASO: Validar salida anticipada (modo automático)
+      if (haEntrada && !haSalida && salidaAutomaticaActiva) {
+          fetch('/dolibarr/custom/picaje/ajax/validar_salida.php')
+              .then(res => res.json())
+              .then(data => {
+                  if (data.salida_anticipada) {
+                      modalJustificacion.style.display = 'flex';
+                  } else {
+                      enviarPicaje(tipo); // normal
+                  }
+              })
+              .catch(err => {
+                  console.error("❌ Error al validar salida:", err);
+                  alert("❌ Error al validar salida.");
+              });
+          return;
+      }
+
+      // Envío normal: entrada o salida simple
+      enviarPicaje(tipo);
   });
 }
+
+function enviarPicaje(tipo) {
+  const lat = document.getElementById("latitud").value;
+  const lon = document.getElementById("longitud").value;
+
+  const formData = new URLSearchParams();
+  formData.append('token', csrfToken);
+  formData.append('tipo', tipo);
+  formData.append('latitud', lat);
+  formData.append('longitud', lon);
+
+  fetch('/dolibarr/custom/picaje/ajax/procesar_picaje.php', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: formData
+  })
+  .then(res => res.json())
+  .then(data => {
+      if (data.success) {
+          mostrarToast("✅ " + data.message);
+          setTimeout(() => {
+              location.reload();
+          }, 2000);
+      } else {
+          alert("❌ Error: " + (data.message || "No se pudo registrar el picaje."));
+      }
+  })
+  .catch(err => {
+      console.error("❌ Error de red:", err);
+      alert("❌ No se pudo conectar con el servidor.");
+  });
+}
+
 
 // =======================================
 //   MODAL DE JUSTIFICACION/INCIDENCIAS
 // =======================================
 function enviarJustificacion() {
-    const tipo = document.querySelector('input[name="tipoIncidencia"]:checked');
-    const motivo = document.getElementById('textoJustificacion').value.trim();
-  
-    if (!tipo || !motivo) {
-      alert("Debes seleccionar el tipo de incidencia y escribir una justificación.");
-      return;
-    }
-  
-    fetch('/dolibarr/custom/picaje/ajax/registrar_incidencia.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        token: csrfToken, // 
-        tipo: tipo.value,
-        justificacion: motivo
-      })
+  const tipo = document.querySelector('input[name="tipoIncidencia"]:checked');
+  const motivo = document.getElementById('textoJustificacion').value.trim();
+
+  if (!tipo || !motivo) {
+    alert("Debes seleccionar el tipo de incidencia y escribir una justificación.");
+    return;
+  }
+
+  fetch('/dolibarr/custom/picaje/ajax/registrar_incidencia.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({
+      token: csrfToken,
+      tipo: tipo.value,
+      justificacion: motivo
     })
+  })
     .then(async res => {
       try {
         const data = await res.json();
-  
+
         if (data.success) {
-          mostrarToast("✅ Justificación registrada correctamente."); 
+          mostrarToast("✅ Justificación registrada correctamente.");
           cerrarModalJustificacion();
+
+          // ✅ Registrar salida tras justificar
+          const formPicaje = document.getElementById('form-picaje');
+          if (formPicaje) {
+            formPicaje.submit();
+          } else {
+            console.warn("⚠️ Formulario de picaje no encontrado al intentar registrar salida.");
+          }
+
         } else {
           alert("❌ Error: " + (data.error || "No se pudo registrar la incidencia."));
         }
@@ -232,7 +253,7 @@ function enviarJustificacion() {
       alert("❌ No se pudo conectar con el servidor.");
     });
 }
-  
+
 
 function abrirModalJustificacion() {
     document.getElementById('modalJustificacion').style.display = 'flex';
@@ -446,4 +467,4 @@ function mostrarToast(mensaje) {
       toast.style.display = 'none';
     }, 4000);
   }
-  
+

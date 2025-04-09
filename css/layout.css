@@ -102,3 +102,20 @@ body {
     background-color: #732d91;
   }
   
+/* ================ */
+/*  BOTÓN AJUSTES   */
+/* ================ */
+
+.icon-ajustes {
+    display: inline-block;
+    position: absolute;
+    top: 200px; /* Ajusta según tu diseño */
+    right: 30px;
+    color: #333;
+    transition: transform 0.2s ease;
+}
+
+.icon-ajustes:hover {
+    transform: scale(1.2);
+    color: #6b4d6b;
+}

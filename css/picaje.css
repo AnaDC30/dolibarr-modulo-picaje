@@ -200,17 +200,18 @@ footer {
 
 .toast {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background-color: #532d54;
-    color: #fff;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    z-index: 9999;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4caf50;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 6px;
     font-weight: bold;
-    animation: fadeInOut 4s ease-in-out;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
   }
+  
   
   @keyframes fadeInOut {
     0% {opacity: 0;}
