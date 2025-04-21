@@ -52,41 +52,53 @@ document.addEventListener('DOMContentLoaded', function () {
     const toast = document.getElementById('toast');
 
     boton.addEventListener('click', function () {
-        fetch('<?php echo dol_buildpath("/custom/picaje/ajax/picar_desde_panel.php", 1); ?>', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({})
-        })
-        .then(response => response.json())
-        .then(data => {
-            toast.textContent = data.mensaje;
-            toast.style.backgroundColor = data.exito ? '#28a745' : '#dc3545';
-            toast.style.display = 'block';
+        if (!navigator.geolocation) {
+            mostrarToast("⚠️ Geolocalización no soportada", false);
+            return;
+        }
 
-            // Cambiar estilo del botón según siguiente picada
-            if (data.siguiente === 'entrada') {
-                boton.classList.remove('salida');
-                boton.classList.add('entrada');
-                boton.textContent = 'Picar entrada';
-            } else {
-                boton.classList.remove('entrada');
-                boton.classList.add('salida');
-                boton.textContent = 'Picar salida';
-            }
+        navigator.geolocation.getCurrentPosition(function (position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
 
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 4000);
-        })
-        .catch(() => {
-            toast.textContent = "Error en la petición.";
-            toast.style.backgroundColor = '#dc3545';
-            toast.style.display = 'block';
+            fetch('<?php echo dol_buildpath("/custom/picaje/ajax/picar_desde_panel.php", 1); ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ latitud: lat, longitud: lon })
+            })
+            .then(response => response.json())
+            .then(data => {
+                mostrarToast(data.mensaje, data.exito);
+
+                // Cambiar estilo del botón según siguiente picada
+                if (data.siguiente === 'entrada') {
+                    boton.classList.remove('salida');
+                    boton.classList.add('entrada');
+                    boton.textContent = 'Picar entrada';
+                } else {
+                    boton.classList.remove('entrada');
+                    boton.classList.add('salida');
+                    boton.textContent = 'Picar salida';
+                }
+            })
+            .catch(() => {
+                mostrarToast("❌ Error en la petición", false);
+            });
+
+        }, function () {
+            mostrarToast("❌ No se pudo obtener la ubicación", false);
         });
     });
+
+    function mostrarToast(mensaje, exito) {
+        toast.textContent = mensaje;
+        toast.style.backgroundColor = exito ? '#28a745' : '#dc3545';
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 4000);
+    }
 });
 </script>
-
-

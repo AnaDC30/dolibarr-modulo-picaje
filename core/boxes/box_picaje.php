@@ -58,39 +58,56 @@ class box_picaje extends ModeleBoxes
 
 				if (boton) {
 					boton.addEventListener("click", function () {
-						fetch("'.dol_buildpath('/custom/picaje/ajax/picar_desde_panel.php', 1).'", {
-							method: "POST",
-							headers: {
-								"Content-Type": "application/json"
-							},
-							body: JSON.stringify({})
-						})
-						.then(response => response.json())
-						.then(data => {
-							if (toast) {
-								toast.textContent = data.mensaje;
-								toast.style.background = data.exito ? "#28a745" : "#dc3545";
-								toast.style.display = "block";
-								setTimeout(() => { toast.style.display = "none"; }, 4000);
-							}
+						if (!navigator.geolocation) {
+							toast.textContent = "⚠️ Geolocalización no soportada.";
+							toast.style.background = "#dc3545";
+							toast.style.display = "block";
+							setTimeout(() => { toast.style.display = "none"; }, 4000);
+							return;
+						}
 
-							// Actualizar estilo y texto del botón según siguiente picada
-							if (data.siguiente === "entrada") {
-								boton.classList.remove("salida");
-								boton.classList.add("entrada");
-								boton.textContent = "Picar entrada";
-							} else {
-								boton.classList.remove("entrada");
-								boton.classList.add("salida");
-								boton.textContent = "Picar salida";
-							}
-						})
-						.catch(() => {
-							if (toast) {
-								toast.textContent = "Error en la petición.";
-								toast.style.background = "#dc3545";
-								toast.style.display = "block";
-							}
+						navigator.geolocation.getCurrentPosition(function (position) {
+							const lat = position.coords.latitude;
+							const lon = position.coords.longitude;
+
+							fetch("'.dol_buildpath('/custom/picaje/ajax/picar_desde_panel.php', 1).'", {
+								method: "POST",
+								headers: {
+									"Content-Type": "application/json"
+								},
+								body: JSON.stringify({ latitud: lat, longitud: lon })
+							})
+							.then(response => response.json())
+							.then(data => {
+								if (toast) {
+									toast.textContent = data.mensaje;
+									toast.style.background = data.exito ? "#28a745" : "#dc3545";
+									toast.style.display = "block";
+									setTimeout(() => { toast.style.display = "none"; }, 4000);
+								}
+
+								if (data.siguiente === "entrada") {
+									boton.classList.remove("salida");
+									boton.classList.add("entrada");
+									boton.textContent = "Picar entrada";
+								} else {
+									boton.classList.remove("entrada");
+									boton.classList.add("salida");
+									boton.textContent = "Picar salida";
+								}
+							})
+							.catch(() => {
+								if (toast) {
+									toast.textContent = "Error en la petición.";
+									toast.style.background = "#dc3545";
+									toast.style.display = "block";
+								}
+							});
+						}, function () {
+							toast.textContent = "❌ No se pudo obtener la ubicación.";
+							toast.style.background = "#dc3545";
+							toast.style.display = "block";
+							setTimeout(() => { toast.style.display = "none"; }, 4000);
 						});
 					});
 				}
@@ -106,8 +123,6 @@ class box_picaje extends ModeleBoxes
 		'asis' => 1
 	);
 }
-
-
 
 	public function showBox($head = null, $contents = null, $nooutput = 0)
 	{

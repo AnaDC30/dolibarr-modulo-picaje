@@ -9,13 +9,18 @@ require_once DOL_DOCUMENT_ROOT . '/custom/picaje/lib/picajePanelController.php';
 
 header('Content-Type: application/json');
 
+// Obtener coordenadas del navegador si se han enviado
+$data = json_decode(file_get_contents('php://input'), true);
+$latitud = $data['latitud'] ?? null;
+$longitud = $data['longitud'] ?? null;
+
 $controller = new PicajePanelController($db);
-$resultado = $controller->registrarPicajeInteligente($user->id);
+$resultado = $controller->registrarPicajeInteligente($user->id, $latitud, $longitud);
 
 // Calcular la siguiente picada lógica del usuario tras registrar
 $sql = "SELECT tipo FROM llx_picaje 
-        WHERE fk_user = ".(int)$user->id." 
-        AND DATE(fecha_hora) = '".date('Y-m-d')."' 
+        WHERE fk_user = " . (int)$user->id . " 
+        AND DATE(fecha_hora) = '" . date('Y-m-d') . "' 
         ORDER BY fecha_hora ASC";
 
 $resql = $db->query($sql);

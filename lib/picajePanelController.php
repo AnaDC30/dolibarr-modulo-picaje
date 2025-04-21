@@ -6,10 +6,10 @@ class PicajePanelController {
         $this->db = $db;
     }
 
-    public function registrarPicajeInteligente($user_id) {
+    public function registrarPicajeInteligente($user_id, $latitud = null, $longitud = null) {
         $sql = "SELECT tipo FROM llx_picaje 
-                WHERE fk_user = ".(int)$user_id." 
-                AND DATE(fecha_hora) = '".date('Y-m-d')."'
+                WHERE fk_user = " . (int) $user_id . " 
+                AND DATE(fecha_hora) = '" . date('Y-m-d') . "'
                 ORDER BY fecha_hora ASC";
 
         $resql = $this->db->query($sql);
@@ -33,8 +33,16 @@ class PicajePanelController {
         $now = dol_now();
         $this->db->begin();
 
-        $sqlInsert = "INSERT INTO llx_picaje (fk_user, fecha_hora, tipo, tipo_registro) 
-                      VALUES ($user_id, '".$this->db->idate($now)."', '".$this->db->escape($tipo)."', 'desde_panel')";
+        $sqlInsert = "INSERT INTO llx_picaje (fk_user, fecha_hora, tipo, tipo_registro, latitud, longitud) 
+                      VALUES (
+                        $user_id,
+                        '" . $this->db->idate($now) . "',
+                        '" . $this->db->escape($tipo) . "',
+                        'panel',
+                        " . ($latitud !== null ? "'" . $this->db->escape($latitud) . "'" : "NULL") . ",
+                        " . ($longitud !== null ? "'" . $this->db->escape($longitud) . "'" : "NULL") . "
+                      )";
+
         $resInsert = $this->db->query($sqlInsert);
 
         if ($resInsert) {
@@ -55,4 +63,5 @@ class PicajePanelController {
         }
     }
 }
+
 
