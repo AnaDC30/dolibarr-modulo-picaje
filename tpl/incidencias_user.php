@@ -59,7 +59,15 @@ $res = $db->query($sql);
             echo '<tr>';
             echo '<td>' . dol_print_date(dol_stringtotime($obj->fecha), 'day') . '</td>';
             echo '<td>' . substr($obj->hora, 0, 5) . '</td>';
-            echo '<td>' . ucfirst($obj->tipo) . '</td>';
+            $tipo_legible = match ($obj->tipo) {
+              'salida_anticipada' => 'Salida anticipada',
+              'horas_extra' => 'Horas extra',
+              'olvido_picaje' => 'Olvido de picaje',
+              'otro' => 'Otro',
+              default => ucfirst($obj->tipo)
+            };
+            echo '<td>' . $tipo_legible . '</td>';
+          ;
             echo '<td>' . dol_escape_htmltag($obj->justificacion) . '</td>';
             echo '<td><span class="status-btn ' . strtolower($obj->status) . '">' . $obj->status . '</span></td>';
             echo '</tr>';

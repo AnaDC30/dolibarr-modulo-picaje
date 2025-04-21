@@ -141,6 +141,9 @@ if (!$ha_entrada) {
 
             <input type="radio" id="opcion_anticipada" name="tipoIncidencia" value="salida_anticipada" required hidden>
             <label for="opcion_anticipada" class="toggle-btn">Salida anticipada</label>
+
+            <input type="radio" id="opcion_olvido" name="tipoIncidencia" value="olvido_picaje" required hidden>
+            <label for="opcion_olvido" class="toggle-btn">Olvido de picaje</label>
         </div>
  
         <label for="textoJustificacion">Motivo:</label>

@@ -200,5 +200,7 @@ function getNombreUsuarioPorId($id) {
     echo "No se encontró el usuario con ese ID\n";
     return '';
 }
-
 ?>
+
+
+

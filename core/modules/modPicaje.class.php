@@ -104,14 +104,13 @@ class modPicaje extends DolibarrModules
 			'printing' => 0,
 			'theme' => 0,
 			'css' => array(
-				//    '/picaje/css/picaje.css.php',
+    			'/picaje/css/panel.css',
 			),
 			'js' => array(
 				//   '/picaje/js/picaje.js.php',
 			),
 			'hooks' => array(
 				'data' => array(
-					'top_right_menu',
 					'usercard',
 					'groupcard',
 					'login',
@@ -243,11 +242,11 @@ class modPicaje extends DolibarrModules
 		// Add here list of php file(s) stored in picaje/core/boxes that contains a class to show a widget.
 		/* BEGIN MODULEBUILDER WIDGETS */
 		$this->boxes = array(
-			//  0 => array(
-			//      'file' => 'picajewidget1.php@picaje',
-			//      'note' => 'Widget provided by Picaje',
-			//      'enabledbydefaulton' => 'Home',
-			//  ),
+			  0 => array(
+			      'file' => 'box_picaje.php@picaje',
+			      'note' => 'Widget provided by Picaje',
+			      'enabledbydefaulton' => 'Home',
+			  ),
 			//  ...
 		);
 		/* END MODULEBUILDER WIDGETS */
@@ -281,18 +280,20 @@ class modPicaje extends DolibarrModules
 		$this->rights = array();
 		$r = 0;
 
-		$this->rights[$r][0] = 500001; // ID único (usa uno libre y no repetido)
+		$this->rights[$r][0] = 500001;
 		$this->rights[$r][1] = 'Ver registros de picaje';
-		$this->rights[$r][2] = 'r'; // Permiso de lectura
-		$this->rights[$r][3] = 1; // Activado por defecto
-		$this->rights[$r][4] = 'ver'; // Se usará como: $user->rights->picaje->ver
+		$this->rights[$r][2] = 'r';
+		$this->rights[$r][3] = 1;
+		$this->rights[$r][4] = 'ver';    // Se usará como: $user->rights->picaje->ver
+		$this->rights[$r][5] = 'read';
 		$r++;
 
 		$this->rights[$r][0] = 500002;
 		$this->rights[$r][1] = 'Editar registros de picaje';
-		$this->rights[$r][2] = 'w'; // Permiso de escritura
+		$this->rights[$r][2] = 'w';
 		$this->rights[$r][3] = 1;
 		$this->rights[$r][4] = 'editar'; // Se usará como: $user->rights->picaje->editar
+		$this->rights[$r][5] = 'write';
 		$r++;
 
 		// Add here entries to declare new permissions
@@ -337,6 +338,21 @@ class modPicaje extends DolibarrModules
 			'perms' => '1', // Use 'perms'=>'$user->hasRight("picaje", "myobject", "read")' if you want your menu with a permission rules
 			'target' => '',
 			'user' => 2, // 0=Menu for internal users, 1=external users, 2=both
+		);
+
+		$this->menu[$r++] = array(
+			'fk_menu' => 'fk_mainmenu=picaje', // Left menu bajo 'picaje'
+			'type' => 'left',
+			'titre' => 'Panel de Picaje',
+			'mainmenu' => 'picaje',
+			'leftmenu' => 'picaje_panel',
+			'url' => '/picaje/core/boxes/panel_picaje.php',
+			'langs' => 'picaje@picaje',
+			'position' => 1000 + $r,
+			'enabled' => 'isModEnabled("picaje")',
+			'perms' => '1',
+			'target' => '',
+			'user' => 2
 		);
 		/* END MODULEBUILDER TOPMENU */
 

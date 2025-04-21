@@ -1,0 +1,66 @@
+/* ===================== */
+/*    BOTÓN DESTACADO    */
+/* ===================== */
+#btnPicajePanel,
+#btnBoxPicaje {
+    padding: 16px 30px;
+    margin: 20px auto;
+    display: inline-block;
+    background: linear-gradient(145deg, #6f42c1, #a26ed8);
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+    box-shadow: 0 8px 18px rgba(111, 66, 193, 0.35);
+    position: relative;
+    overflow: hidden;
+}
+
+#btnPicajePanel::before,
+#btnBoxPicaje::before {
+    content: "🕘 ";
+    position: relative;
+    left: 0;
+    margin-right: 10px;
+}
+
+#btnPicajePanel:hover,
+#btnBoxPicaje:hover {
+    background: linear-gradient(145deg, #5c36a4, #8e5ec2);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(93, 36, 179, 0.5);
+}
+
+#btnPicajePanel:active,
+#btnBoxPicaje:active {
+    transform: scale(0.97);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* ===================== */
+/*      TOAST ESTILO     */
+/* ===================== */
+#toast,
+#boxToast {
+    margin-top: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 15px;
+    text-align: center;
+    color: white;
+    display: none;
+    background-color: #333;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* ===================== */
+/*    CONTENEDOR PANEL   */
+/* ===================== */
+.center {
+    text-align: center;
+    padding-top: 30px;
+}

@@ -114,10 +114,6 @@ $item = $formSetup->newItem('PICAR_AUTO_LOGIN');
 $item->setAsYesNo();
 $item->nameText = "✅ Picaje automático al iniciar sesión (login)";
 
-$item = $formSetup->newItem('PICAR_MOSTRAR_BOTON_HEADER');
-$item->setAsYesNo();
-$item->nameText = "✅ Mostrar botón 'Picar' en el header";
-
 $item = $formSetup->newItem('PICAR_SALIDA_AUTOMATICA');
 $item->setAsYesNo();
 $item->nameText = "✅ Activar salida automática según horario";

@@ -31,7 +31,7 @@ $tipo = GETPOST('tipo', 'alpha');
 $justificacion = trim(GETPOST('justificacion', 'restricthtml'));
 
 // Validaciones básicas
-if (!in_array($tipo, ['horas_extra', 'salida_anticipada']) || empty($justificacion)) {
+if (!in_array($tipo, ['horas_extra', 'salida_anticipada', 'olvido_picaje']) || empty($justificacion)) {
     echo json_encode(['success' => false, 'error' => 'Datos incompletos']);
     exit;
 }

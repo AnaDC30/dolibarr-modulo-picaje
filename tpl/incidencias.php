@@ -41,44 +41,37 @@ if ($res && $db->num_rows($res)) {
     print '<tr><th>Usuario</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Motivo</th><th>Estado</th><th>Acción</th></tr>';
 
     while ($obj = $db->fetch_object($res)) {
-        $nombre = dol_escape_htmltag($obj->firstname . ' ' . $obj->lastname);
-        $tipo = $obj->tipo === 'horas_extra' ? 'Horas extra' : 'Salida anticipada';
-        $fecha = dol_print_date(dol_stringtotime($obj->fecha), 'day');
-        $hora = substr($obj->hora, 0, 5);
-        $estado = dol_escape_htmltag($obj->status);
-
-        print '<tr>';
-        print "<td>$nombre</td>";
-        print "<td>$fecha</td>";
-        print "<td>$hora</td>";
-        print "<td>$tipo</td>";
-        print "<td>" . dol_escape_htmltag($obj->justificacion) . "</td>";
-
-        // Columna de status (editable solo para root/admin)
-        $estado = dol_escape_htmltag($obj->status);
-        $estadoClase = strtolower($estado); // pendiente o resuelta
-
-        print '<td>';
-        if ($user->admin == 1) {
-            print '<button class="btn-status status-btn ' . $estadoClase . '" data-id="' . $obj->rowid . '" data-status="' . $estado . '">' . $estado . '</button>';
-        } else {
-            print '<span class="status-btn ' . $estadoClase . '">' . $estado . '</span>';
-        }
-        print '</td>';
-
-
-        // Columna de acción
-        $urlHistorial = dol_buildpath('/custom/picaje/picajeindex.php', 1) . '?view=historial&user_id=' . $obj->fk_user . '&desde=incidencias';
-        print '<td><a class="btn-historial-incidencias" href="' . $urlHistorial . '">Ver historial</a></td>';
-
-    }
-
-    print '</table>';
-    print '</div>';
-} else {
-    print '<p class="center">No hay incidencias registradas.</p>';
-}
-
+      $nombre = dol_escape_htmltag($obj->firstname . ' ' . $obj->lastname);
+      $tipo = $obj->tipo === 'horas_extra' ? 'Horas extra' : ($obj->tipo === 'olvido_picaje' ? 'Olvido de picaje' : 'Salida anticipada');
+      $fecha = dol_print_date(dol_stringtotime($obj->fecha), 'day');
+      $hora = substr($obj->hora, 0, 5);
+      $estado = dol_escape_htmltag($obj->status);
+      $estadoClase = strtolower($estado); // pendiente o resuelta
+      $urlHistorial = dol_buildpath('/custom/picaje/picajeindex.php', 1) . '?view=historial&user_id=' . $obj->fk_user . '&desde=incidencias';
+  
+      print '<tr>';
+      print "<td>$nombre</td>";
+      print "<td>$fecha</td>";
+      print "<td>$hora</td>";
+      print "<td>$tipo</td>";
+      print "<td>" . dol_escape_htmltag($obj->justificacion) . "</td>";
+  
+      // Columna de estado (editable solo por admin)
+      print '<td>';
+      if ($user->admin == 1) {
+          print '<button class="btn-status status-btn ' . $estadoClase . '" data-id="' . $obj->rowid . '" data-status="' . $estado . '">' . $estado . '</button>';
+      } else {
+          print '<span class="status-btn ' . $estadoClase . '">' . $estado . '</span>';
+      }
+      print '</td>';
+  
+      // Columna de acción (Ver historial + Registrar picada si corresponde)
+      print '<td>';
+      print '<a class="btn-historial-incidencias" href="' . $urlHistorial . '">Ver historial</a>';
+      
+  }
+  
+  }
 ?>
 
 <!-- =================== -->
