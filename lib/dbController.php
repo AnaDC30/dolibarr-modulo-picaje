@@ -200,6 +200,39 @@ function getNombreUsuarioPorId($id) {
     echo "No se encontró el usuario con ese ID\n";
     return '';
 }
+
+function obtenerResumenMensualUsuario($user_id, $mes, $anio) {
+    global $db;
+
+    $fechaInicio = "$anio-$mes-01";
+    $fechaFin = date("Y-m-t", strtotime($fechaInicio));
+
+    $sql = "SELECT 
+                DATE(fecha_hora) AS fecha,
+                tipo,
+                TIME(fecha_hora) AS hora,
+                tipo_registro
+            FROM llx_picaje
+            WHERE fk_user = " . (int)$user_id . "
+            AND DATE(fecha_hora) BETWEEN '$fechaInicio' AND '$fechaFin'
+            ORDER BY fecha_hora ASC";
+
+    $resql = $db->query($sql);
+    $registros = [];
+
+    if ($resql) {
+        while ($row = $db->fetch_object($resql)) {
+            $registros[$row->fecha][] = [
+                'hora' => $row->hora,
+                'tipo' => $row->tipo,
+                'registro' => $row->tipo_registro
+            ];
+        }
+    }
+
+    return $registros;
+}
+
 ?>
 
 

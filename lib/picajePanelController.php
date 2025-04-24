@@ -9,7 +9,7 @@ class PicajePanelController {
     public function registrarPicajeInteligente($user_id, $latitud = null, $longitud = null) {
         $sql = "SELECT tipo FROM llx_picaje 
                 WHERE fk_user = " . (int) $user_id . " 
-                AND DATE(fecha_hora) = '" . date('Y-m-d') . "'
+                AND DATE(fecha_hora) = '" . $this->db->escape(date('Y-m-d')) . "'
                 ORDER BY fecha_hora ASC";
 
         $resql = $this->db->query($sql);
@@ -21,7 +21,7 @@ class PicajePanelController {
                 $tipos[] = $obj->tipo;
             }
 
-            // Si ya hay una entrada sin salida, siguiente debe ser salida
+            // Si ya hay más entradas que salidas, siguiente debe ser salida
             $countEntrada = count(array_filter($tipos, fn($t) => $t === 'entrada'));
             $countSalida  = count(array_filter($tipos, fn($t) => $t === 'salida'));
 
@@ -34,20 +34,20 @@ class PicajePanelController {
         $this->db->begin();
 
         $sqlInsert = "INSERT INTO llx_picaje (fk_user, fecha_hora, tipo, tipo_registro, latitud, longitud) 
-                      VALUES (
-                        $user_id,
-                        '" . $this->db->idate($now) . "',
-                        '" . $this->db->escape($tipo) . "',
-                        'panel',
-                        " . ($latitud !== null ? "'" . $this->db->escape($latitud) . "'" : "NULL") . ",
-                        " . ($longitud !== null ? "'" . $this->db->escape($longitud) . "'" : "NULL") . "
-                      )";
+        VALUES (
+            " . (int)$user_id . ",
+            '" . $this->db->idate($now) . "',
+            '" . $this->db->escape($tipo) . "',
+            'panel',
+            " . ($latitud !== null ? "'" . $this->db->escape($latitud) . "'" : "NULL") . ",
+            " . ($longitud !== null ? "'" . $this->db->escape($longitud) . "'" : "NULL") . "
+        )";
+
 
         $resInsert = $this->db->query($sqlInsert);
 
         if ($resInsert) {
             $this->db->commit();
-
             $siguiente = $tipo === 'entrada' ? 'salida' : 'entrada';
 
             return [
@@ -63,5 +63,3 @@ class PicajePanelController {
         }
     }
 }
-
-
