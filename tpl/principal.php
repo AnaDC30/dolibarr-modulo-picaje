@@ -1,9 +1,16 @@
 <?php
+// === Cargar entorno Dolibarr si no se ha hecho ya ===
+if (!defined('DOL_DOCUMENT_ROOT')) {
+    // Ajusta la ruta según la profundidad de tu archivo
+    require_once __DIR__ . '/../../main.inc.php';
+}
+
+// Ahora sí podemos usar DOLIBARR y sus globals
 require_once DOL_DOCUMENT_ROOT . '/core/lib/admin.lib.php';
+global $user, $conf, $db, $langs;
 
 // Enlazar el CSS específico de esta vista
 echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/layout.css', 1) . '">';
-
 ?>
 
 

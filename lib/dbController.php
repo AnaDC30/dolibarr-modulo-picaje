@@ -1,15 +1,22 @@
 <?php
 
+// Si todavía no está cargado el entorno de Dolibarr, lo cargamos
+if (!defined('DOL_DOCUMENT_ROOT') || !isset($db) || !isset($user)) {
+    // Ajusta la ruta a main.inc.php según tu estructura de carpetas
+    require_once dirname(__DIR__, 3) . '/main.inc.php';
+}
+
+global $db, $user;
+
 // Clases Dolibarr necesarias para ExtraFields y User
 require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
 
-global $db, $user;
 
 
 // Función para obtener registros del usuario actual
 function obtenerRegistrosDiarios() {
-
+    global $db, $user;
 
     $sql = "SELECT 
                 TIME(fecha_hora) AS hora, 

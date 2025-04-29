@@ -3,16 +3,22 @@
 //  CARGA DEL ENTORNO
 // =====================
 
+// 1) Cargar Dolibarr (main.inc.php)
 if (!defined('DOL_DOCUMENT_ROOT')) {
-    require_once $_SERVER['DOCUMENT_ROOT'] . '/dolibarr/main.inc.php';
+    // Está a dos niveles: /custom/picaje/tpl/picaje.php
+    require_once dirname(__DIR__, 3) . '/main.inc.php';
 }
 
-require_once dol_buildpath('/custom/picaje/lib/dbController.php', 0);
+// 2) Asegurar globals y librerías
+global $db, $user, $conf, $langs;
+require_once DOL_DOCUMENT_ROOT . '/core/lib/admin.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/custom/picaje/lib/dbController.php';
 require_once DOL_DOCUMENT_ROOT . '/custom/picaje/class/picaje.class.php';
 
-// Cargar el estilo específico para esta vista
+// 3) Cargar estilos
 echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/picaje.css', 1) . '">';
 echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/modal.css', 1) . '">';
+
 // =====================
 //  OPCIONES DE PICAJE
 // =====================
