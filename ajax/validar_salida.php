@@ -1,58 +1,45 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/dolibarr/main.inc.php';
+// === Ajax wrapper para validar y ejecutar auto-salida ===
+
+// Forzamos entorno para evitar bloqueos
+$_SERVER['REQUEST_METHOD']  = 'GET';
+$_SERVER['REMOTE_ADDR']     = '127.0.0.1';
+$_SERVER['SCRIPT_FILENAME'] = __FILE__;
+$_SERVER['PHP_SELF']        = '/dolibarr/custom/picaje/ajax/validar_salida.php';
+
+// 1) Carga Dolibarr
+require_once dirname(__DIR__, 3) . '/main.inc.php';
+
+// 2) Incluimos controladores y lógica de negocio
 require_once DOL_DOCUMENT_ROOT . '/custom/picaje/lib/dbController.php';
+require_once DOL_DOCUMENT_ROOT . '/custom/picaje/lib/autosalida.php';
 
 global $user, $conf;
-
 header('Content-Type: application/json');
 
+// 3) Intentamos auto-salida
+$user_id   = (int)$user->id;
+$auto_exit = ejecutarSalidaAutomaticaUsuario($user_id);
 
-// ===============================
-// CONFIGURACIÓN DEL MÓDULO
-// ===============================
-$salidaAutomaticaActiva = getDolGlobalInt('PICAR_SALIDA_AUTOMATICA');
-$modoHorario = getDolGlobalString('PICAR_MODO_HORARIO', 'usuario'); // 'usuario' o 'departamento'
+// 4) Si no hubo auto-salida, comprobamos si toca justificación
+$salida_anticipada = false;
+if (!$auto_exit) {
+    $estado      = getEstadoPicajeUsuario($user_id);
+    $horarioObj  = getHorarioUsuario($user_id);
+    $hora_salida = $horarioObj->hora_salida ?: getHoraSalidaEmpresaPorDefecto();
 
-// ===============================
-// CONTROL DE LÓGICA DE SALIDA
-// ===============================
-$hora_actual = date('H:i:s');
-
-// Si no hay lógica de salida automática activa, se permite siempre picar
-if (!$salidaAutomaticaActiva) {
-    echo json_encode(['salida_anticipada' => false]);
-    exit;
-}
-
-// ===============================
-// OBTENER HORA DE SALIDA SEGÚN CONFIGURACIÓN
-// ===============================
-
-$modoHorario = getDolGlobalString('PICAR_MODO_HORARIO') ?: 'usuario'; // usuario, departamento, etc.
-$hora_salida = null;
-
-if ($modoHorario === 'usuario') {
-    $horario = getHorarioUsuario($user->id);
-    if ($horario && !empty($horario->hora_salida)) {
-        $hora_salida = $horario->hora_salida;
-    }
-} elseif ($modoHorario === 'departamento') {
-    $horario = getHorarioDepartamento($user->fk_departement);
-    if ($horario && !empty($horario->hora_salida)) {
-        $hora_salida = $horario->hora_salida;
+    if (
+        $estado['entrada'] &&
+        !$estado['salida'] &&
+        strtotime(date('H:i:s')) >= strtotime($hora_salida)
+    ) {
+        $salida_anticipada = true;
     }
 }
 
-// Si no hay horario personalizado, usar el de empresa
-if (empty($hora_salida)) {
-    $hora_salida = getHoraSalidaEmpresaPorDefecto(); // 👈 función definida en dbController
-}
-
-
-// ===============================
-// COMPARACIÓN DE HORAS
-// ===============================
-$esAnticipada = strtotime($hora_actual) < strtotime($hora_salida);
-
-echo json_encode(['salida_anticipada' => $esAnticipada]);
+// 5) Devolvemos JSON al frontend
+echo json_encode([
+    'auto_exit'         => (bool)$auto_exit,
+    'salida_anticipada' => (bool)$salida_anticipada,
+]);
 exit;

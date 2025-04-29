@@ -1,14 +1,15 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/dolibarr/main.inc.php';
 
-//Controlador de la base de datos
+// Clases Dolibarr necesarias para ExtraFields y User
+require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
+require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
 
 global $db, $user;
 
 
 // Función para obtener registros del usuario actual
 function obtenerRegistrosDiarios() {
-    global $db, $user;
+
 
     $sql = "SELECT 
                 TIME(fecha_hora) AS hora, 
