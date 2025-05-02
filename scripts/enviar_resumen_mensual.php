@@ -13,7 +13,7 @@ define('EVEN_IF_ONLY_LOGIN_ALLOWED', 1);
 $_SERVER['REQUEST_METHOD'] = 'GET';
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 $_SERVER['SCRIPT_FILENAME'] = __FILE__;
-$_SERVER['PHP_SELF'] = '/custom/picaje/scripts/enviar_resumen_mensual.php';
+$_SERVER['PHP_SELF'] = '/dolibarr/custom/picaje/scripts/enviar_resumen_mensual.php';
 
 // === Cargar entorno Dolibarr ===
 require_once dirname(__DIR__, 3) . '/main.inc.php';
@@ -82,7 +82,7 @@ while ($res_users && $userRow = $db->fetch_object($res_users)) {
 
 
 // === URL del PDF generado (para acceso web) ===
-require_once DOL_DOCUMENT_ROOT . '/custom/picaje/exports/resumen_mensual.php';
+require_once DOL_DOCUMENT_ROOT . '/custom/picaje/export/resumen_mensual.php';
 $urlToPdf = DOL_MAIN_URL_ROOT . '/documents/resumenes/' . basename($pdfpath);
 dol_mkdir(dirname($pdfpath));
 
