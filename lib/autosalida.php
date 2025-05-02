@@ -5,7 +5,7 @@
  * @param int $user_id
  * @return bool
  */
-function ejecutarSalidaAutomaticaUsuario($user_id)
+function ejecutarSalidaAutomaticaUsuario($user_id, $latitude = null, $longitude = null)
 {
     global $db, $conf;
 
@@ -26,11 +26,25 @@ function ejecutarSalidaAutomaticaUsuario($user_id)
         return false;
     }
 
-    // 3) Insertar registro de salida automática
+    // 3) Insertar registro de salida automática CON geo
     $fecha_hora = date('Y-m-d H:i:s');
-    $sql = "INSERT INTO ".MAIN_DB_PREFIX."picaje
-            (fecha_hora, tipo, fk_user, tipo_registro)
-            VALUES ('".$db->escape($fecha_hora)."','salida',".(int)$user_id.",'auto')";
+
+    // Preparamos los valores para SQL (o NULL si no vinieron)
+    $lat = $latitude  !== null ? "'".$db->escape($latitude)."'"  : "NULL";
+    $lon = $longitude !== null ? "'".$db->escape($longitude)."'" : "NULL";
+
+    $sql = "
+      INSERT INTO ".MAIN_DB_PREFIX."picaje
+        (fecha_hora, tipo, fk_user, tipo_registro, latitud, longitud)
+      VALUES
+        ('".$db->escape($fecha_hora)."',
+         'salida',
+         ".(int)$user_id.",
+         'auto',
+         {$lat},
+         {$lon}
+        )";
+
     if ($db->query($sql)) {
         $_SESSION['salida_auto_salida'] = 1;
         return true;

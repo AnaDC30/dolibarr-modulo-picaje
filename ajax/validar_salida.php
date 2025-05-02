@@ -18,8 +18,11 @@ global $user, $conf;
 header('Content-Type: application/json');
 
 // 3) Intentamos auto-salida
+$data     = json_decode(file_get_contents('php://input'), true);
 $user_id   = (int)$user->id;
-$auto_exit = ejecutarSalidaAutomaticaUsuario($user_id);
+$latitud  = isset($data['latitud'])  ? floatval($data['latitud'])  : null;
+$longitud = isset($data['longitud']) ? floatval($data['longitud']) : null;
+$auto_exit = ejecutarSalidaAutomaticaUsuario($user_id, $latitud, $longitud);
 
 // 4) Si no hubo auto-salida, comprobamos si toca justificación
 $salida_anticipada = false;
