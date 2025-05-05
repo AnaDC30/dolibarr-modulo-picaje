@@ -231,6 +231,7 @@ function enviarJustificacion() {
         if (data.success) {
           mostrarToast("✅ Justificación registrada correctamente.");
           cerrarModalJustificacion();
+          location.reload();
 
           // ✅ Registrar salida tras justificar
           const formPicaje = document.getElementById('form-picaje');
@@ -308,6 +309,9 @@ document.addEventListener('DOMContentLoaded', function () {
             if (data.success) {
               document.getElementById('modal-status').style.display = 'none';
               location.reload();
+              document.getElementById('incidencia_id').value = '';
+              document.getElementById('nuevo_status').value = '';
+
             } else {
               alert('Error: ' + data.error);
             }
@@ -377,6 +381,91 @@ if (formNueva) {
   });
 }
 
+// ================================
+// MODAL DE CREAR PICAJE INCIDENCIA
+// ================================
+
+function abrirModalCrearPicaje() {
+  const modal = document.getElementById("modalCrearPicaje");
+  const modalContent = document.getElementById("modalCrearPicajeContenido");
+
+  modal.style.display = "flex";
+  modalContent.innerHTML = "<p>Cargando formulario...</p>";
+
+  fetch('ajax/picaje_incidencia.php?ts=' + new Date().getTime())
+      .then(response => response.text())
+      .then(html => {
+          modalContent.innerHTML = html;
+
+          const select = document.getElementById('incidencia');
+          if (select) {
+              select.addEventListener('change', setUsuarioSeleccionado);
+          }
+      })
+      .catch(error => {
+          console.error("Error al cargar formulario:", error);
+          modalContent.innerHTML = "<p>❌ Error al cargar el formulario.</p>";
+      });
+}
+
+
+function setUsuarioSeleccionado() {
+  const select = document.getElementById('incidencia');
+  const selectedOption = select.options[select.selectedIndex];
+
+  const userId = selectedOption.getAttribute('data-user');
+  const userName = selectedOption.text.split('] ')[1];
+  const fecha = selectedOption.getAttribute('data-fecha');
+  const hora = selectedOption.getAttribute('data-hora');
+
+  const userInput = document.getElementById('fk_user');
+  const userNameInput = document.getElementById('usuarioNombre');
+  const fechaInput = document.getElementById('fecha');
+  const horaInput = document.getElementById('hora');
+
+  if (userInput) userInput.value = userId;
+  if (userNameInput) userNameInput.value = userName;
+  if (fechaInput) fechaInput.value = fecha;
+  if (horaInput) horaInput.value = hora.substring(0,5);
+}
+
+
+// ENVIAR FORMULARIO (SUBMIT)
+
+
+document.addEventListener('submit', function(e) {
+  if (e.target && e.target.id === 'picaje_incidencia') {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+      fetch('ajax/procesar_picaje_incidencia.php', {
+          method: 'POST',
+          body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+          if (data.success) {
+              alert("✅ Picaje creado correctamente");
+              cerrarModalCrearPicaje();
+              location.reload();
+          } else {
+              alert("❌ Error: " + data.error);
+          }
+      })
+      .catch(err => {
+          console.error("Error AJAX:", err);
+          alert("❌ Error al enviar el formulario.");
+      });
+  }
+});
+
+function cerrarModalCrearPicaje() {
+  const modal = document.getElementById('modalCrearPicaje');
+  const contenido = document.getElementById('modalCrearPicajeContenido');
+  modal.style.display = 'none';
+  contenido.innerHTML = '';
+}
+
 
 // ==========================
 // VER UBICACION EN REGISTRO
@@ -388,7 +477,7 @@ function verUbicacion(id) {
     fetch(`${URL_GET_UBICACION}?id=${id}`)
         .then(response => response.json())
         .then(data => {
-            console.log("📦 Datos de ubicación recibidos:", data); // 🔍 Aquí lo añadimos
+            console.log("📦 Datos de ubicación recibidos:", data); 
 
             const contenedor = document.getElementById("modalUbicacionContenido");
             if (data.success) {
@@ -419,6 +508,7 @@ function verUbicacion(id) {
 window.addEventListener('click', function (event) {
     const modalEditar = document.getElementById('modalEditar');
     const modalUbicacion = document.getElementById('modalUbicacion');
+    const modalCrearPicaje = document.getElementById('modalCrearPicaje');
 
     if (modalEditar && event.target === modalEditar) {
         cerrarModalEditar();
@@ -427,6 +517,10 @@ window.addEventListener('click', function (event) {
     if (modalUbicacion && event.target === modalUbicacion) {
         cerrarModalUbicacion();
     }
+
+    if (modalCrearPicaje && event.target === modalCrearPicaje) {
+      cerrarModalCrearPicaje();
+  }
 });
 
 function cerrarModalEditar() {
@@ -452,6 +546,8 @@ function cerrarModalUbicacion() {
 function cerrarModalJustificacion() {
     document.getElementById('modalJustificacion').style.display = 'none';
 }
+
+
 
 
 // ================

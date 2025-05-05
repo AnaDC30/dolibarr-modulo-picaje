@@ -81,6 +81,13 @@ $params = http_build_query([
     <a href="export/exportar_csv.php?<?php echo $params; ?>" class="butAction">📤 Exportar a CSV</a>
 </div>
 
+<!-- Botón crear picaje -->
+<?php if ($user->admin == 1): ?>
+    <div class="create-button">
+        <button type="button" class="butAction" onclick="abrirModalCrearPicaje()">➕ Crear picaje</button>
+    </div>
+<?php endif; ?>
+
 <!-- TABLA  -->
 <div class="table-container">
     <div class="table-wrapper">
@@ -152,11 +159,18 @@ $params = http_build_query([
     <div class="modal-content" id="modalUbicacionContenido"></div>
 </div>
 
+<!-- MODAL PARA CREAR PICAJE -->
+<div id="modalCrearPicaje" class="modal-overlay" style="display: none;">
+    <div class="modal-content" id="modalCrearPicajeContenido"></div>
+</div>
+
+
 <script>
     const URL_GET_UBICACION = '<?php echo dol_buildpath("/custom/picaje/ajax/get_ubicacion.php", 1); ?>';
     const URL_GET_PICAJE = '<?php echo dol_buildpath("/custom/picaje/ajax/get_picaje.php", 1); ?>';
     const URL_MODIFICAR_PICAJE = '<?php echo dol_buildpath("/custom/picaje/ajax/modificar_picaje.php", 1); ?>';
     const URL_LOG_MODIFICACIONES = '<?php echo dol_buildpath('/custom/picaje/picajeindex.php?view=log_modificaciones', 1); ?>';
+    const URL_GET_CREAR_PICAJE = '<?php echo dol_buildpath("/custom/picaje/ajax/procesar_picaje_incidencia.php", 1); ?>';
 </script>
 
 <script src="<?php echo dol_buildpath('/custom/picaje/js/picaje.js', 1); ?>"></script>
