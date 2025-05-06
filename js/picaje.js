@@ -138,33 +138,59 @@ function inicializarPicaje(haEntrada, haSalida, salidaManualJustificada, salidaA
       const tipo = tipoInput.value;
 
       // CASO: Salida anticipada con justificación
-      if (haEntrada && !haSalida && salidaManualJustificada) {
-          modalJustificacion.style.display = 'flex';
-          return;
-      }
-
-      // CASO: Validar salida anticipada (modo automático)
       if (haEntrada && !haSalida && salidaAutomaticaActiva) {
-          fetch('/dolibarr/custom/picaje/ajax/validar_salida.php')
-              .then(res => res.json())
-              .then(data => {
-                  if (data.salida_anticipada) {
-                      modalJustificacion.style.display = 'flex';
-                  } else {
-                      enviarPicaje(tipo); // normal
-                  }
-              })
-              .catch(err => {
-                  console.error("❌ Error al validar salida:", err);
-                  alert("❌ Error al validar salida.");
-              });
-          return;
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                enviarAutoSalida(position.coords.latitude, position.coords.longitude, tipo);
+            }, function(error) {
+                console.warn("⚠️ No se pudo obtener ubicación, enviando sin lat/lon.");
+                enviarAutoSalida(null, null, tipo);
+            });
+        } else {
+            console.warn("⚠️ Navegador no soporta geolocalización.");
+            enviarAutoSalida(null, null, tipo);
+        }
+        return;
       }
+    
 
       // Envío normal: entrada o salida simple
       enviarPicaje(tipo);
+    });
+}
+
+function enviarAutoSalida(lat, lon, tipo) {
+  const data = {
+      latitud: lat,
+      longitud: lon
+  };
+
+  fetch('/dolibarr/custom/picaje/ajax/validar_salida.php', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+  })
+  .then(res => res.json())
+  .then(response => {
+      if (response.salida_anticipada) {
+          modalJustificacion.style.display = 'flex';
+      } else if (response.auto_exit) {
+          mostrarToast("✅ Salida automática registrada.");
+          setTimeout(() => {
+              location.reload();
+          }, 2000);
+      } else {
+          enviarPicaje(tipo); // fallback normal si no hay salida auto ni anticipada
+      }
+  })
+  .catch(err => {
+      console.error("❌ Error al validar salida:", err);
+      alert("❌ Error al validar salida.");
   });
 }
+
 
 function enviarPicaje(tipo) {
   const lat = document.getElementById("latitud").value;
@@ -437,27 +463,48 @@ document.addEventListener('submit', function(e) {
   if (e.target && e.target.id === 'picaje_incidencia') {
       e.preventDefault();
 
-      const formData = new FormData(e.target);
-      fetch('ajax/procesar_picaje_incidencia.php', {
-          method: 'POST',
-          body: formData
-      })
-      .then(res => res.json())
-      .then(data => {
-          if (data.success) {
-              alert("✅ Picaje creado correctamente");
-              cerrarModalCrearPicaje();
-              location.reload();
-          } else {
-              alert("❌ Error: " + data.error);
-          }
-      })
-      .catch(err => {
-          console.error("Error AJAX:", err);
-          alert("❌ Error al enviar el formulario.");
-      });
+      // Obtenemos la geolocalización primero
+      if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+              enviarPicajeIncidencia(e.target, position.coords.latitude, position.coords.longitude);
+          }, function(error) {
+              console.warn("⚠️ No se pudo obtener ubicación, se enviará sin lat/lon.");
+              enviarPicajeIncidencia(e.target, null, null);
+          });
+      } else {
+          console.warn("⚠️ Navegador no soporta geolocalización.");
+          enviarPicajeIncidencia(e.target, null, null);
+      }
   }
 });
+
+function enviarPicajeIncidencia(formElement, lat, lon) {
+    const formData = new FormData(formElement);
+    if (lat !== null && lon !== null) {
+        formData.append('latitud', lat);
+        formData.append('longitud', lon);
+    }
+
+    fetch('ajax/procesar_picaje_incidencia.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert("✅ Picaje creado correctamente");
+            cerrarModalCrearPicaje();
+            location.reload();
+        } else {
+            alert("❌ Error: " + data.error);
+        }
+    })
+    .catch(err => {
+        console.error("Error AJAX:", err);
+        alert("❌ Error al enviar el formulario.");
+    });
+}
+
 
 function cerrarModalCrearPicaje() {
   const modal = document.getElementById('modalCrearPicaje');
