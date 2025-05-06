@@ -205,7 +205,6 @@ function getNombreUsuarioPorId($id) {
         $nombre = trim($obj->firstname . ' ' . $obj->lastname);
         return $nombre;
     }
-    echo "No se encontró el usuario con ese ID\n";
     return '';
 }
 

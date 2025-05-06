@@ -39,11 +39,22 @@ if ($desdeIncidencias === 'incidencias') {
 <!--  CONTENEDOR PRINCIPAL -->
 <!-- ===================== -->
 
-<!-- BOTON FILTRO -->
-<button type="button" class="toggle-filtros" onclick="toggleFiltros()">🔍</button>
-<div id="botonQuitarFlotante" class="btn-reset-flotante oculto">
-    <a href="picajeindex.php?view=historial" class="btn-reset">🔄 Quitar filtros</a>
+<div class="filtros-crear-container">
+    <div class="filtros-seccion">
+        <!-- BOTON FILTRO -->
+        <button type="button" class="toggle-filtros" onclick="toggleFiltros()">🔍</button>
+        <div id="botonQuitarFlotante" class="btn-reset-flotante oculto">
+            <a href="picajeindex.php?view=historial" class="btn-reset">🔄 Quitar filtros</a>
+        </div>
+    </div>
+
+    <?php if ($user->admin == 1): ?>
+        <div class="create-button">
+            <button type="button" class="butInci" onclick="abrirModalCrearPicaje()">⚠️ Incidencia en picaje</button>
+        </div>
+    <?php endif; ?>
 </div>
+
 
 <!-- Contenedor del formulario oculto inicialmente -->
 <div id="filtrosContainer" class="filtro-formulario oculto">
@@ -81,12 +92,6 @@ $params = http_build_query([
     <a href="export/exportar_csv.php?<?php echo $params; ?>" class="butAction">📤 Exportar a CSV</a>
 </div>
 
-<!-- Botón crear picaje -->
-<?php if ($user->admin == 1): ?>
-    <div class="create-button">
-        <button type="button" class="butAction" onclick="abrirModalCrearPicaje()">➕ Crear picaje</button>
-    </div>
-<?php endif; ?>
 
 <!-- TABLA  -->
 <div class="table-container">
@@ -185,15 +190,18 @@ $params = http_build_query([
 
      // Mostrar botón flotante de quitar filtros si hay filtros activos
      document.addEventListener("DOMContentLoaded", function () {
-        const fecha = "<?php echo dol_escape_htmltag($filtroFecha); ?>";
-        const usuario = "<?php echo dol_escape_htmltag($filtroUsuario); ?>";
+    const fecha = "<?php echo dol_escape_htmltag($filtroFecha); ?>";
+    const usuario = "<?php echo dol_escape_htmltag($filtroUsuario); ?>";
 
-        const tieneFiltros = fecha.length > 0 || usuario.length > 0;
-        const botonFlotante = document.getElementById("botonQuitarFlotante");
+    const tieneFiltros = fecha.length > 0 || usuario.length > 0;
+    const botonFlotante = document.getElementById("botonQuitarFlotante");
 
-        if (tieneFiltros && botonFlotante) {
-            botonFlotante.classList.remove("oculto");
-        }
-    });
+    if (tieneFiltros && botonFlotante) {
+        botonFlotante.classList.remove("oculto");
+    } else if (botonFlotante) {
+        botonFlotante.classList.add("oculto");
+    }
+});
+
 </script>
 

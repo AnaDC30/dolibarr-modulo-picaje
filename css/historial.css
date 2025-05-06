@@ -1,10 +1,9 @@
 /* ===================== */
 /*      ENCABEZADO       */
 /* ===================== */
-
 .page-header {
-    background-color: var(--bs-primary) !important;
-    color: var(--bs-light) !important;
+    background-color: rgb(104, 63, 105);
+    color: white;
     font-size: 24px;
     text-align: center;
     border-radius: 5px;
@@ -14,10 +13,9 @@
 /* ===================== */
 /*     CONTENEDOR BASE   */
 /* ===================== */
-
 .table-container {
     width: 100%;
-    padding: 20px;
+    padding: 0 10px;
     box-sizing: border-box;
     display: flex;
     justify-content: center;
@@ -25,21 +23,44 @@
 
 .table-wrapper {
     width: 100%;
-    max-width: 1200px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    overflow-x: auto;
 }
 
 /* ===================== */
 /*        FILTRO         */
 /* ===================== */
 
+.filtros-crear-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.filtros-seccion {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.create-button {
+    display: flex;
+    align-items: center;
+}
+
 .filtro-formulario {
     margin: 1rem 0;
     padding: 1rem;
-    background-color: var(--bs-light) !important;
+    background-color: white;
     border-radius: 8px;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    overflow: hidden;
+    max-height: 500px; /* altura expandida */
+}
+
+.filtro-formulario.oculto {
+    max-height: 0;
+    padding: 0;
 }
 
 .filtros {
@@ -59,13 +80,13 @@
     padding: 0.5rem 0.75rem;
     font-size: 0.95rem;
     border-radius: 5px;
-    border: 1px solid var(--bs-border-color) !important;
+    border: 1px solid #ddd;
 }
 
 .filtros .btn-reset {
-    background-color: var(--bs-light) !important;
+    background-color: white;
     text-decoration: none;
-    color: var(--bs-dark) !important;
+    color: black;
 }
 
 .btn-reset-flotante {
@@ -75,35 +96,29 @@
 }
 
 .btn-reset-flotante .btn-reset {
-    background-color: var(--bs-light) !important;
-    border: 1px solid var(--bs-border-color) !important;
+    background-color: white;
+    border: 1px solid #ddd;
     padding: 6px 12px;
     font-size: 14px;
     border-radius: 4px;
-    color: var(--bs-dark) !important;
+    color: black;
     text-decoration: none;
     transition: background-color 0.2s ease;
 }
 
 .btn-reset-flotante .btn-reset:hover {
-    background-color: var(--bs-secondary) !important;
+    background-color: rgb(242, 221, 247);
 }
 
-.oculto {
-    display: none;
-}
-
-/* ============ */
-/* FILTRO OCULTO / MOSTRAR OCULTAR */
-/* ============ */
-
+/* ===================== */
+/*      TOGGLE FILTRO    */
+/* ===================== */
 .filtro-formulario.oculto {
     display: none;
 }
-
 .toggle-filtros {
-    background-color: var(--bs-primary) !important;
-    color: var(--bs-light) !important;
+    background-color: rgb(104, 63, 105);
+    color: white;
     border: none;
     padding: 0.6rem 1rem;
     border-radius: 5px;
@@ -113,17 +128,20 @@
 }
 
 .toggle-filtros:hover {
-    background-color: var(--bs-secondary) !important;
+    background-color: rgb(242, 221, 247);
+}
+
+.oculto {
+    display: none !important;
 }
 
 /* ===================== */
 /*   CABECERA DE TABLA   */
 /* ===================== */
-
 .table-header {
     display: flex;
-    background-color: var(--bs-primary) !important;
-    color: var(--bs-light) !important;
+    background-color: rgb(104, 63, 105);
+    color: white;
     font-weight: bold;
     border-radius: 6px;
     overflow: hidden;
@@ -138,48 +156,43 @@
 /* ===================== */
 /*     FILA DE DATOS     */
 /* ===================== */
-
 .row-wrapper {
     position: relative;
     display: flex;
-    background-color: var(--bs-light) !important;
+    background-color: white;
     border-radius: 6px;
     align-items: center;
     transition: background 0.2s ease;
 }
 
 .row-wrapper:hover {
-    background-color: var(--bs-secondary) !important;
+    background-color: #f1e3f6;
 }
 
-/* Celda interna de cada fila */
 .cell {
     flex: 1;
     text-align: center;
     padding: 8px;
 }
 
-/* Fila cuando no hay datos */
 .no-data .cell {
     flex: 1;
     text-align: center;
     font-style: italic;
-    color: var(--bs-secondary) !important;
+    color: gray;
 }
 
 /* ========================= */
 /* ESTILO PARA COLUMNA USUARIO */
 /* ========================= */
-
 .cell-usuario {
     font-weight: bold;
-    color: var(--bs-primary) !important;
+    color: rgb(104, 63, 105);
 }
 
 /* ===================== */
 /*   BOTONES FLOTANTES   */
 /* ===================== */
-
 .floating-buttons {
     position: absolute;
     right: 10px;
@@ -189,11 +202,10 @@
     gap: 8px;
 }
 
-/* Estilos generales para los botones */
 .tableButton {
-    background-color: var(--bs-danger) !important;
+    background-color: crimson;
     border: none;
-    color: var(--bs-light) !important;
+    color: white;
     padding: 6px 10px;
     border-radius: 5px;
     cursor: pointer;
@@ -201,21 +213,17 @@
     transition: background 0.3s ease;
 }
 
-/* Botón editar */
 .tableButton.editButton {
-    background-color: var(--bs-success) !important;
+    background-color: green;
 }
 
-/* Hover de editar */
 .tableButton.editButton:hover {
-    background-color: var(--bs-success) !important;
     opacity: 0.85;
 }
 
 /* ===================== */
 /*    BOTÓN EXPORTAR     */
 /* ===================== */
-
 .export-buttons {
     display: flex;
     gap: 12px;
@@ -224,8 +232,8 @@
 }
 
 .export-buttons .butAction {
-    background-color: var(--bs-primary) !important;
-    color: var(--bs-light) !important;
+    background-color: rgb(104, 63, 105);
+    color: white;
     padding: 10px 18px;
     border: none;
     border-radius: 8px;
@@ -236,27 +244,45 @@
 }
 
 .export-buttons .butAction:hover {
-    background-color: var(--bs-secondary) !important;
+    background-color: rgb(242, 221, 247);
     transform: scale(1.05);
     text-decoration: none;
 }
 
-.create-button {
-    margin-bottom: 10px;
-    text-align: right;
+
+/* ===================== */
+/*   BOTÓN INCIDENCIA    */
+/* ===================== */
+
+.create-button .butInci {
+    background-color: rgb(230, 75, 75);
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
+
+.create-button .butInci:hover {
+    background-color:  rgb(228, 139, 139);
+    transform: scale(1.05);
+    text-decoration: none;
+}
+
 
 /* ===================== */
 /*     BOTÓN VOLVER      */
 /* ===================== */
-
 .backContainer {
     position: fixed;
     bottom: 30px;
     left: 30px;
     width: 80px;
     height: 80px;
-    background-color: var(--bs-primary) !important;
+    background-color: rgb(104, 63, 105);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -267,7 +293,7 @@
 
 .backArrow {
     font-size: 40px;
-    color: var(--bs-light) !important;
+    color: white;
     text-decoration: none;
     font-weight: bold;
     display: flex;
@@ -283,7 +309,7 @@
 }
 
 .backContainer:hover {
-    background-color: var(--bs-secondary) !important;
+    background-color: rgb(242, 221, 247);
     transform: scale(1.1);
 }
 

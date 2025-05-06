@@ -1,8 +1,13 @@
 <?php
+ob_start();
+error_reporting(0);
+ini_set('display_errors', 0);
+
 require_once $_SERVER['DOCUMENT_ROOT'] . '/dolibarr/main.inc.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/custom/picaje/lib/dbController.php';
 require_once DOL_DOCUMENT_ROOT . '/includes/tecnickcom/tcpdf/tcpdf.php';
+
 
 global $db, $user;
 
@@ -60,5 +65,14 @@ foreach ($historial as $row) {
 $html .= '</table>';
 
 $pdf->writeHTML($html, true, false, true, false, '');
+
+// Debug previo (opcional)
+file_put_contents('/tmp/debug_pdf_output.txt', ob_get_contents());
+
+// Limpiar todos los buffers activos
+while (ob_get_level()) {
+    ob_end_clean();
+}
 $pdf->Output('historial_picaje_' . date('Ymd_His') . '.pdf', 'D');
+
 exit;
