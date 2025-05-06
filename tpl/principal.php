@@ -44,17 +44,17 @@ echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/layout.
 <?php if ($user->admin && $user->id == 1): ?>
     <div class="container-flex">
         <div class="main-content">
-            <p>Incidencias</p>
+            <p>Registro de Incidencias</p>
             <a class="mainButton" href="<?php echo dol_buildpath('/custom/picaje/picajeindex.php?view=incidencias', 1); ?>">Incidencias</a>
         </div>
     </div>
 <?php endif; ?>
 
 <?php if (!$user->admin) : ?>
-  <div style="text-align:center; margin-top:2rem;">
-    <a href="<?php echo dol_buildpath('/custom/picaje/picajeindex.php?view=incidencias_user', 1); ?>" class="btn-historial">
-      📋 Mis incidencias
-    </a>
-  </div>
+    <div class="container-flex">
+        <div class="main-content">
+            <p>Mis Incidencias</p>
+            <a class="mainButton" href="<?php echo dol_buildpath('/custom/picaje/picajeindex.php?view=incidencias_user', 1); ?>">Incidencias</a>
+        </div>
+    </div>
 <?php endif; ?>
-

@@ -340,20 +340,72 @@ class modPicaje extends DolibarrModules
 			'user' => 2, // 0=Menu for internal users, 1=external users, 2=both
 		);
 
+		// Submenú: Registro
 		$this->menu[$r++] = array(
-			'fk_menu' => 'fk_mainmenu=picaje', // Left menu bajo 'picaje'
-			'type' => 'left',
-			'titre' => 'Panel de Picaje',
-			'mainmenu' => 'picaje',
-			'leftmenu' => 'picaje_panel',
-			'url' => '/picaje/core/boxes/panel_picaje.php',
-			'langs' => 'picaje@picaje',
-			'position' => 1000 + $r,
-			'enabled' => 'isModEnabled("picaje")',
-			'perms' => '1',
-			'target' => '',
-			'user' => 2
+    		'fk_menu' => 'fk_mainmenu=picaje',
+    		'type' => 'left',
+    		'titre' => 'Registro',
+   	 		'mainmenu' => 'picaje',
+    		'leftmenu' => 'historial',
+    		'url' => '/custom/picaje/picajeindex.php?view=historial',
+    		'langs' => 'picaje@picaje',
+    		'position' => 1000 + $r,
+    		'enabled' => 'isModEnabled("picaje")',
+    		'perms' => '1',
+    		'target' => '',
+    		'user' => 2
 		);
+
+		// Submenú: Incidencias
+		$this->menu[$r++] = array(
+    		'fk_menu' => 'fk_mainmenu=picaje',
+    		'type' => 'left',
+    		'titre' => ' Registro Incidencias',
+   	 		'mainmenu' => 'picaje',
+    		'leftmenu' => 'incidencias',
+    		'url' => '/custom/picaje/picajeindex.php?view=incidencias',
+    		'langs' => 'picaje@picaje',
+    		'position' => 1000 + $r,
+    		'enabled' => 'isModEnabled("picaje")',
+    		'perms' => '$user->admin',
+    		'target' => '',
+    		'user' => 2
+		);
+
+		// Submenú: Incidencias User
+		$this->menu[$r++] = array(
+    		'fk_menu' => 'fk_mainmenu=picaje',
+    		'type' => 'left',
+    		'titre' => 'Incidencias',
+   	 		'mainmenu' => 'picaje',
+    		'leftmenu' => 'incidencias user',
+    		'url' => '/custom/picaje/picajeindex.php?view=incidencias_user',
+    		'langs' => 'picaje@picaje',
+    		'position' => 1000 + $r,
+    		'enabled' => 'isModEnabled("picaje")',
+    		'perms' => '1',
+    		'target' => '',
+    		'user' => 2
+		);
+
+		// Submenú: Ajustes
+		$this->menu[$r++] = array(
+    		'fk_menu' => 'fk_mainmenu=picaje',
+    		'type' => 'left',
+    		'titre' => 'Ajustes',
+   	 		'mainmenu' => 'picaje',
+    		'leftmenu' => 'ajustes',
+    		'url' => '/custom/picaje/admin/setup.php',
+    		'langs' => 'picaje@picaje',
+    		'position' => 1000 + $r,
+    		'enabled' => 'isModEnabled("picaje")',
+    		'perms' => '$user->admin',
+    		'target' => '',
+    		'user' => 2
+		);
+
+
+
 		/* END MODULEBUILDER TOPMENU */
 
 		/* BEGIN MODULEBUILDER LEFTMENU MYOBJECT */

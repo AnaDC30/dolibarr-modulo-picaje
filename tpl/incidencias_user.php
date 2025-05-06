@@ -3,10 +3,12 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/dolibarr/main.inc.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/admin.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
 
-if ($user->admin) {
-    echo json_encode(['success' => false, 'error' => 'Solo usuarios pueden enviar incidencias.']);
-    exit;
+if (!$user->id) {
+  $response['error'] = 'Debes iniciar sesión para enviar incidencias.';
+  echo json_encode($response);
+  exit;
 }
+
 
 echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/modal.css', 1) . '">';
 echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/incidencias.css', 1) . '">';
