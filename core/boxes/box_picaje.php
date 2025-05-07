@@ -100,7 +100,7 @@ class box_picaje extends ModeleBoxes
 							toast.textContent = "⚠️ Geolocalización no soportada.";
 							toast.style.background = "#dc3545";
 							toast.style.display = "block";
-							setTimeout(() => { toast.style.display = "none"; }, 4000);
+							setTimeout(() => { toast.style.display = "none"; }, 10000);
 							return;
 						}
 
@@ -118,20 +118,31 @@ class box_picaje extends ModeleBoxes
 							.then(response => response.json())
 							.then(data => {
     							if (data.anticipada) {
-        							const modal = document.getElementById("modalJustificacion");
-        							if (modal) {
-            							modal.style.display = "flex";
-        							} else {
-            							console.warn("⚠ No se encontró el modalJustificacion.");
-        							}
-        							return;
-    							}
+									const modal = document.getElementById("modalJustificacion");
+									if (modal) {
+										modal.style.display = "flex";
+
+										// Seleccionar automáticamente el tipo de incidencia según data.tipo
+										const tipo = data.tipo;
+										if (tipo) {
+											const inputRadio = document.querySelector(`input[name="tipoIncidencia"][value="${tipo}_anticipada"]`);
+											if (inputRadio) {
+												inputRadio.checked = true;
+											} else {
+												console.warn("⚠ No se encontró el input correspondiente a tipo:", tipo);
+											}
+										}
+									} else {
+										console.warn("⚠ No se encontró el modalJustificacion.");
+									}
+									return;
+								}
 
     							if (toast) {
         							toast.textContent = data.mensaje;
         							toast.style.background = data.exito ? "#28a745" : "#dc3545";
         							toast.style.display = "block";
-        							setTimeout(() => { toast.style.display = "none"; }, 4000);
+        							setTimeout(() => { toast.style.display = "none"; }, 10000);
     							}
 
     							if (data.siguiente === "entrada") {
@@ -156,7 +167,7 @@ class box_picaje extends ModeleBoxes
 							toast.textContent = "❌ No se pudo obtener la ubicación.";
 							toast.style.background = "#dc3545";
 							toast.style.display = "block";
-							setTimeout(() => { toast.style.display = "none"; }, 4000);
+							setTimeout(() => { toast.style.display = "none"; }, 10000);
 						});
 					});
 				}
