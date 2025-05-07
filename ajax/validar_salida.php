@@ -34,7 +34,7 @@ if (!$auto_exit) {
     if (
         $estado['entrada'] &&
         !$estado['salida'] &&
-        strtotime(date('H:i:s')) >= strtotime($hora_salida)
+        strtotime(date('H:i:s')) < strtotime($hora_salida)
     ) {
         $salida_anticipada = true;
     }

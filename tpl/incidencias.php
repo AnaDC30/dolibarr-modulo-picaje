@@ -54,7 +54,7 @@ if ($res && $db->num_rows($res)) {
       print "<td>$fecha</td>";
       print "<td>$hora</td>";
       print "<td>$tipo</td>";
-      print "<td>" . dol_escape_htmltag($obj->justificacion) . "</td>";
+      print "<td>" . dol_escape_htmltag($obj->comentario) . "</td>";
   
       // Columna de estado (editable solo por admin)
       print '<td>';

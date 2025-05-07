@@ -15,6 +15,10 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/admin.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/custom/picaje/lib/dbController.php';
 require_once DOL_DOCUMENT_ROOT . '/custom/picaje/class/picaje.class.php';
 
+
+$entradaAutomaticaActiva = !empty($conf->global->PICAJE_AUTO_LOGIN);
+
+
 // 3) Cargar estilos
 echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/picaje.css', 1) . '">';
 echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/modal.css', 1) . '">';
@@ -27,10 +31,10 @@ $registros = obtenerRegistrosDiarios();
 $estado = Picaje::getEstadoHoy($db, $user->id);
 $ha_entrada = $estado['entrada'];
 $ha_salida = $estado['salida'];
-
+$entrada_manual_justificada = getDolGlobalInt('PICAR_ENTRADA_ANTICIPADA_JUSTIFICADA');
 $salida_automatica = getDolGlobalInt('PICAR_SALIDA_AUTOMATICA');
 $salida_manual_justificada = getDolGlobalInt('PICAR_SALIDA_MANUAL_JUSTIFICADA');
-
+$entradaAutomaticaActiva = getDolGlobalInt('PICAJE_AUTO_LOGIN');
 // ================
 //  TOKEN // CSRF
 // ================
@@ -130,26 +134,29 @@ if (!$ha_entrada) {
     ?>
 </footer>
 
-<!-- ============================= -->
-<!--   MODAL JUSTIFICACIÓN SALIDA  -->
-<!-- ============================= -->
+<!-- ======================================== -->
+<!--   MODAL JUSTIFICACIÓN  ENTRADA Y SALIDA  -->
+<!-- ======================================== -->
 <div id="modalJustificacion" class="modal-overlay">
   <div class="modal-content">
     <button class="cerrarModal" onclick="cerrarModalJustificacion()">✖</button>
     <div class="modal-inner-form">
-      <h2>✏️ Justificación de salida anticipada</h2>
-      <p>Tu hora de salida prevista aún no ha llegado. Indica el motivo por el cual deseas registrar la salida:</p>
+      <h2>✏️ Justificación de Picaje anticipado</h2>
+      <p>Tu hora de entrada/salida prevista aún no ha llegado. Indica el motivo por el cual deseas registrar el picaje:</p>
       <form onsubmit="event.preventDefault(); enviarJustificacion();">
         <label>Tipo de incidencia:</label>
         <div class="toggle-group">
             <input type="radio" id="opcion_extra" name="tipoIncidencia" value="horas_extra" required hidden>
             <label for="opcion_extra" class="toggle-btn">Horas extra</label>
+            
+            <input type="radio" id="opcion_entrada_anticipada" name="tipoIncidencia" value="entrada_anticipada" required hidden>
+            <label for="opcion_entrada_anticipada" class="toggle-btn">Entrada anticipada</label>
 
             <input type="radio" id="opcion_anticipada" name="tipoIncidencia" value="salida_anticipada" required hidden>
             <label for="opcion_anticipada" class="toggle-btn">Salida anticipada</label>
 
-            <input type="radio" id="opcion_olvido" name="tipoIncidencia" value="olvido_picaje" required hidden>
-            <label for="opcion_olvido" class="toggle-btn">Olvido de picaje</label>
+            <input type="radio" id="opcion_otro" name="tipoIncidencia" value="otro" required hidden>
+            <label for="opcion_otro" class="toggle-btn">Otro</label>
         </div>
  
         <label for="textoJustificacion">Motivo:</label>
@@ -177,7 +184,6 @@ if (!$ha_entrada) {
 <!-- ============================= -->
 <!--   SCRIPT PRINCIPAL DEL MÓDULO -->
 <!-- ============================= -->
-<script src="<?php echo dol_buildpath('/custom/picaje/js/picaje.js', 1); ?>"></script>
 
 <script src="<?php echo dol_buildpath('/custom/picaje/js/picaje.js', 1); ?>"></script>
 
@@ -186,8 +192,10 @@ if (!$ha_entrada) {
   const haSalida = <?php echo $ha_salida ? 'true' : 'false'; ?>;
   const salidaManualJustificada = <?php echo getDolGlobalInt('PICAR_SALIDA_MANUAL_JUSTIFICADA') ? 'true' : 'false'; ?>;
   const salidaAutomaticaActiva = <?php echo getDolGlobalInt('PICAR_SALIDA_AUTOMATICA') ? 'true' : 'false'; ?>;
+  const entradaManualJustificada = <?php echo $entrada_manual_justificada ? 'true' : 'false'; ?>;
+  const entradaAutomaticaActiva = <?php echo $entradaAutomaticaActiva ? 'true' : 'false'; ?>;      
 
-  inicializarPicaje(haEntrada, haSalida, salidaManualJustificada, salidaAutomaticaActiva);
+  inicializarPicaje(haEntrada, haSalida, salidaManualJustificada, salidaAutomaticaActiva, entradaManualJustificada, entradaAutomaticaActiva);
 </script>
 
 

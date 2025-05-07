@@ -70,7 +70,7 @@ $res = $db->query($sql);
             };
             echo '<td>' . $tipo_legible . '</td>';
           ;
-            echo '<td>' . dol_escape_htmltag($obj->justificacion) . '</td>';
+            echo '<td>' . dol_escape_htmltag($obj->comentario) . '</td>';
             echo '<td><span class="status-btn ' . strtolower($obj->status) . '">' . $obj->status . '</span></td>';
             echo '</tr>';
         }

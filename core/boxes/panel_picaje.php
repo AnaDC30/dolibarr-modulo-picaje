@@ -70,7 +70,12 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(response => response.json())
             .then(data => {
-                mostrarToast(data.mensaje, data.exito);
+                if (data.anticipada) {
+                    document.getElementById('modalJustificacion').style.display = 'flex';
+                    return;
+                }
+
+             mostrarToast(data.mensaje, data.exito);
 
                 // Cambiar estilo del botón según siguiente picada
                 if (data.siguiente === 'entrada') {
@@ -83,13 +88,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     boton.textContent = 'Picar salida';
                 }
             })
-            .catch(() => {
-                mostrarToast("❌ Error en la petición", false);
-            });
-
-        }, function () {
-            mostrarToast("❌ No se pudo obtener la ubicación", false);
+        .catch(() => {
+            mostrarToast("❌ Error en la petición", false);
         });
+        
     });
 
     function mostrarToast(mensaje, exito) {

@@ -37,7 +37,8 @@ $salidas  = count(array_filter($tipos, fn($t) => $t === 'salida'));
 $siguiente = ($entradas > $salidas) ? 'salida' : 'entrada';
 
 echo json_encode([
-    'exito'     => strpos($resultado['mensaje'], 'correctamente') !== false,
-    'mensaje'   => $resultado['mensaje'],
-    'siguiente' => $siguiente
+    'exito'       => strpos($resultado['mensaje'], 'correctamente') !== false,
+    'mensaje'     => $resultado['mensaje'],
+    'siguiente'   => $siguiente,
+    'anticipada'  => $resultado['anticipada'] ?? false  
 ]);

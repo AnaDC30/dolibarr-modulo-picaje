@@ -23,7 +23,7 @@ class Picaje {
 
         $sql = "INSERT INTO " . $this->table_element . " (
             fk_user, tipo, latitud, longitud, fecha_hora,
-            salida_manual, justificacion, tipo_registro, entity
+            salida_manual, comentario, tipo_registro, entity
         )
         VALUES (
             " . (int) $this->fk_user . ",

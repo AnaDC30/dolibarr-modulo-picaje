@@ -1,4 +1,6 @@
 <?php
+require_once DOL_DOCUMENT_ROOT . '/custom/picaje/lib/dbController.php';
+
 class PicajePanelController {
     private $db;
 
@@ -30,6 +32,28 @@ class PicajePanelController {
             }
         }
 
+         // === comprobar horario ===
+    $horarioObj = getHorarioUsuario($user_id);
+    $hora_actual = date('H:i:s');
+    $anticipada = false;
+
+    if ($tipo === 'entrada' && strtotime($hora_actual) < strtotime($horarioObj->hora_entrada)) {
+        $anticipada = true;
+    }
+    if ($tipo === 'salida' && strtotime($hora_actual) < strtotime($horarioObj->hora_salida)) {
+        $anticipada = true;
+    }
+
+    // Si es anticipada, no registramos aún
+    if ($anticipada) {
+        return [
+            'mensaje' => ucfirst($tipo) . " anticipada detectada.",
+            'anticipada' => true,
+            'tipo' => $tipo
+        ];
+    }
+
+
         $now = dol_now();
         $this->db->begin();
 
@@ -52,13 +76,15 @@ class PicajePanelController {
 
             return [
                 'mensaje' => "Picada de $tipo registrada correctamente.",
-                'siguiente' => $siguiente
+                'siguiente' => $siguiente,
+                'anticipada' => false
             ];
         } else {
             $this->db->rollback();
             return [
                 'mensaje' => "Error al registrar la picada.",
-                'siguiente' => $tipo
+                'siguiente' => $tipo,
+                'anticipada' => false
             ];
         }
     }

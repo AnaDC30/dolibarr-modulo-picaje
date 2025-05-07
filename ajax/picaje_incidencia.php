@@ -11,7 +11,7 @@ if ($user->admin != 1) {
 }
 
 // Obtener incidencias activas con usuario
-$sql = "SELECT i.rowid AS incidencia_id, i.fecha, i.hora, i.tipo, i.justificacion, 
+$sql = "SELECT i.rowid AS incidencia_id, i.fecha, i.hora, i.tipo, i.comentario, 
                u.rowid AS user_id, CONCAT(u.firstname, ' ', u.lastname) AS usuario
         FROM llx_picaje_incidencias i
         JOIN llx_user u ON u.rowid = i.fk_user
@@ -23,17 +23,17 @@ $opciones = '';
 if ($res && $db->num_rows($res) > 0) {
     while ($obj = $db->fetch_object($res)) {
         $tipo = ucfirst(str_replace('_', ' ', $obj->tipo));
-        $justificacion = dol_trunc(dol_escape_htmltag($obj->justificacion), 30);
+        $comentario = dol_trunc(dol_escape_htmltag($obj->comentario), 30);
         $usuario = dol_escape_htmltag($obj->usuario);
-        $fechaISO = $obj->fecha; // Lo pasamos directo, sin date()
-        $fechaLegible = date('d/m/Y', strtotime($obj->fecha)); // Solo para mostrar en el select
+        $fechaISO = $obj->fecha; 
+        $fechaLegible = date('d/m/Y', strtotime($obj->fecha)); 
         $hora = substr($obj->hora, 0, 5);
 
         $opciones .= "<option value='{$obj->incidencia_id}' 
             data-user='{$obj->user_id}' 
             data-fecha='{$fechaISO}'   
             data-hora='{$hora}'>
-            [{$obj->incidencia_id}] {$fechaLegible} - {$usuario} - {$tipo}: {$justificacion}
+            [{$obj->incidencia_id}] {$fechaLegible} - {$usuario} - {$tipo}: {$comentario}
         </option>";
     }
 } else {

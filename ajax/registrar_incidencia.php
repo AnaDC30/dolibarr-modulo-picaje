@@ -28,10 +28,10 @@ if (empty($_SESSION['newtoken']) || $token !== $_SESSION['newtoken']) {
 // RECOGER DATOS
 // =====================
 $tipo = GETPOST('tipo', 'alpha');
-$justificacion = trim(GETPOST('justificacion', 'restricthtml'));
+$comentario = trim(GETPOST('justificacion', 'restricthtml'));
 
 // Validaciones básicas
-if (!in_array($tipo, ['horas_extra', 'salida_anticipada', 'olvido_picaje']) || empty($justificacion)) {
+if (!in_array($tipo, ['horas_extra', 'salida_anticipada', 'olvido_picaje']) || empty($comentario)) {
     echo json_encode(['success' => false, 'error' => 'Datos incompletos']);
     exit;
 }
@@ -42,9 +42,9 @@ $hora = date('H:i:s');
 // =====================
 // INSERTAR EN BASE DE DATOS
 // =====================
-$sql = "INSERT INTO " . MAIN_DB_PREFIX . "picaje_incidencias (fk_user, fecha, hora, tipo, justificacion, entity)
+$sql = "INSERT INTO " . MAIN_DB_PREFIX . "picaje_incidencias (fk_user, fecha, hora, tipo, comentario, entity)
         VALUES (" . (int) $user->id . ", '" . $db->escape($fecha) . "', '" . $db->escape($hora) . "', 
-        '" . $db->escape($tipo) . "', '" . $db->escape($justificacion) . "', " . (int) $conf->entity . ")";
+        '" . $db->escape($tipo) . "', '" . $db->escape($comentario) . "', " . (int) $conf->entity . ")";
 
 if ($db->query($sql)) {
     echo json_encode(['success' => true]);

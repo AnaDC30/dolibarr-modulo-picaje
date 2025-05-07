@@ -88,11 +88,10 @@ function guardarEdicion(event) {
     return false;
 }
 
-
 // ==============================
 // CONTROL DE PICAJE Y UBICACIÓN
 // ==============================
-function inicializarPicaje(haEntrada, haSalida, salidaManualJustificada, salidaAutomaticaActiva) {
+function inicializarPicaje(haEntrada, haSalida, salidaManualJustificada, salidaAutomaticaActiva, entradaManualJustificada, entradaAutomaticaActiva) {
   const form = document.getElementById('form-picaje');
   const latInput = document.getElementById("latitud");
   const lonInput = document.getElementById("longitud");
@@ -102,14 +101,14 @@ function inicializarPicaje(haEntrada, haSalida, salidaManualJustificada, salidaA
 
   let ubicacionObtenida = false;
 
-  // Estado inicial del botón
   if (!boton) return;
 
+  // Estado inicial del botón
   if (!haEntrada) {
       boton.textContent = "📍 Picar entrada";
   } else if (haEntrada && !haSalida) {
       boton.textContent = "📍 Picar salida";
-  } else if (haEntrada && haSalida) {
+  } else {
       boton.textContent = "✅ Picaje completado";
       boton.disabled = true;
       boton.classList.add('disabled');
@@ -137,27 +136,42 @@ function inicializarPicaje(haEntrada, haSalida, salidaManualJustificada, salidaA
 
       const tipo = tipoInput.value;
 
-      // CASO: Salida anticipada con justificación
-      if (haEntrada && !haSalida && salidaAutomaticaActiva) {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                enviarAutoSalida(position.coords.latitude, position.coords.longitude, tipo);
-            }, function(error) {
-                console.warn("⚠️ No se pudo obtener ubicación, enviando sin lat/lon.");
-                enviarAutoSalida(null, null, tipo);
-            });
-        } else {
-            console.warn("⚠️ Navegador no soporta geolocalización.");
-            enviarAutoSalida(null, null, tipo);
-        }
-        return;
+      // CASO: Salida anticipada justificada
+      if (tipo === 'salida' && salidaManualJustificada && salidaAutomaticaActiva) {
+          enviarAutoSalida(latInput.value, lonInput.value, tipo);
+          return;
       }
-    
 
-      // Envío normal: entrada o salida simple
+      // CASO: Entrada anticipada justificada
+      if (tipo === 'entrada' && entradaManualJustificada && entradaAutomaticaActiva) {
+          fetch('/dolibarr/custom/picaje/ajax/validar_entrada.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ latitud: latInput.value, longitud: lonInput.value })
+          })
+          .then(res => res.json())
+          .then(response => {
+              if (response.entrada_anticipada || response.anticipada) {
+                  modalJustificacion.style.display = 'flex';
+              } else if (response.auto_entry) {
+                  mostrarToast("✅ Entrada automática registrada.");
+                  setTimeout(() => location.reload(), 2000);
+              } else {
+                  enviarPicaje(tipo);
+              }
+          })
+          .catch(err => {
+              console.error("❌ Error al validar entrada:", err);
+              alert("❌ Error al validar entrada.");
+          });
+          return;
+      }
+
+      // Caso normal: picaje directo
       enviarPicaje(tipo);
-    });
+  });
 }
+
 
 function enviarAutoSalida(lat, lon, tipo) {
   const data = {
@@ -372,14 +386,14 @@ document.addEventListener('DOMContentLoaded', function () {
 // MODAL DE INCIDENCIA USER
 // ==========================
 
-const modalNueva = document.getElementById('modal-nueva-incidencia');
-const formNueva = document.getElementById('form-nueva-incidencia');
+let modalNueva = document.getElementById('modal-nueva-incidencia');
+let formNueva = document.getElementById('form-nueva-incidencia');
 
-window.cerrarModalNuevaIncidencia = function () {
-  modalNueva.style.display = 'none';
-};
+if (modalNueva && formNueva) {
+  window.cerrarModalNuevaIncidencia = function () {
+    modalNueva.style.display = 'none';
+  };
 
-if (formNueva) {
   formNueva.addEventListener('submit', function (e) {
     e.preventDefault();
 
@@ -406,6 +420,7 @@ if (formNueva) {
     });
   });
 }
+
 
 // ================================
 // MODAL DE CREAR PICAJE INCIDENCIA
@@ -547,7 +562,6 @@ function verUbicacion(id) {
         });
 }
 
-
 // =================
 //  CERRAR MODALES 
 // =================
@@ -594,22 +608,23 @@ function cerrarModalJustificacion() {
     document.getElementById('modalJustificacion').style.display = 'none';
 }
 
-
-
-
 // ================
 //  MOSTRAR TOAST 
 // ================
 
-function mostrarToast(mensaje) {
-    const toast = document.getElementById('toast');
-    toast.textContent = mensaje;
-    toast.style.display = 'block';
-  
-    setTimeout(() => {
+function mostrarToast(mensaje, exito = true) {
+  const toast = document.getElementById('toast') || document.getElementById('boxToast');
+  if (!toast) return;
+
+  toast.textContent = mensaje;
+  toast.style.backgroundColor = exito ? '#28a745' : '#dc3545';
+  toast.style.display = 'block';
+
+  setTimeout(() => {
       toast.style.display = 'none';
-    }, 4000);
-  }
+  }, 10000);
+}
+
 
   
   

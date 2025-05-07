@@ -123,19 +123,22 @@ function getHorarioUsuario($user_id)
     if ($user->fetch($user_id) <= 0) return null;
 
     $user->fetch_optionals($user_id, $extrafields);
+    $hora_entrada = $user->array_options['options_picaje_hora_entrada'] ?? null;
     $hora_salida = $user->array_options['options_picaje_hora_salida'] ?? null;
 
     // Si no tiene horario asignado, buscamos en su grupo
-    if (!$hora_salida && $user->fk_usergroup) {
+    if ((!$hora_entrada || !$hora_salida) && $user->fk_usergroup) {
         require_once DOL_DOCUMENT_ROOT . '/user/class/usergroup.class.php';
         $group = new UserGroup($db);
         if ($group->fetch($user->fk_usergroup) > 0) {
             $group->fetch_optionals($user->fk_usergroup, $extrafields);
-            $hora_salida = $group->array_options['options_picaje_hora_salida'] ?? null;
+            $hora_entrada = $hora_entrada ?: ($group->array_options['options_picaje_hora_entrada'] ?? null);
+            $hora_salida = $hora_salida ?: ($group->array_options['options_picaje_hora_salida'] ?? null);
         }
     }
 
     return (object)[
+        'hora_entrada' => $hora_entrada,
         'hora_salida' => $hora_salida
     ];
 }
@@ -169,7 +172,7 @@ function getEstadoPicajeUsuario($user_id)
     return $estado;
 }
 
-function getHoraSalidaEmpresaPorDefecto() {
+function getHorarioEmpresaPorDefecto() {
     $dias = [
         1 => 'MAIN_INFO_OPENINGHOURS_MONDAY',
         2 => 'MAIN_INFO_OPENINGHOURS_TUESDAY',
@@ -184,15 +187,28 @@ function getHoraSalidaEmpresaPorDefecto() {
     $constante = $dias[$diaSemana] ?? null;
     $valor = $constante ? getDolGlobalString($constante) : '';
 
+    $entrada = '08:00:00';
+    $salida  = '14:00:00';
+
     if ($valor && strpos($valor, '-') !== false) {
-        list(, $salida) = explode('-', $valor);
-        if (preg_match('/^\d{1,2}$/', $salida)) $salida .= ':00:00';
-        elseif (preg_match('/^\d{1,2}:\d{2}$/', $salida)) $salida .= ':00';
-        return $salida;
+        list($hEntrada, $hSalida) = explode('-', $valor);
+
+        if (preg_match('/^\d{1,2}$/', $hEntrada)) $hEntrada .= ':00:00';
+        elseif (preg_match('/^\d{1,2}:\d{2}$/', $hEntrada)) $hEntrada .= ':00';
+
+        if (preg_match('/^\d{1,2}$/', $hSalida)) $hSalida .= ':00:00';
+        elseif (preg_match('/^\d{1,2}:\d{2}$/', $hSalida)) $hSalida .= ':00';
+
+        $entrada = $hEntrada;
+        $salida = $hSalida;
     }
 
-    return '14:00:00'; // fallback
+    return [
+        'entrada' => $entrada,
+        'salida' => $salida
+    ];
 }
+
 
 //Obtener Nombre por ID
 function getNombreUsuarioPorId($id) {

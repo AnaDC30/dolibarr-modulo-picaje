@@ -118,6 +118,10 @@ $item = $formSetup->newItem('PICAR_SALIDA_AUTOMATICA');
 $item->setAsYesNo();
 $item->nameText = "✅ Activar salida automática según horario";
 
+$item = $formSetup->newItem('PICAR_ENTRADA_ANTICIPADA_JUSTIFICADA');
+$item->setAsYesNo();
+$item->nameText = "✅ Permitir entrada manual anticipada con justificación";
+
 $item = $formSetup->newItem('PICAR_SALIDA_MANUAL_JUSTIFICADA');
 $item->setAsYesNo();
 $item->nameText = "✅ Permitir salida manual anticipada con justificación";
