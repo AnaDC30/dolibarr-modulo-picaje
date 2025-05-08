@@ -338,11 +338,17 @@ document.addEventListener('DOMContentLoaded', function () {
   
         const id = document.getElementById('incidencia_id').value;
         const status = document.getElementById('nuevo_status').value;
+        const resolucion = document.getElementById('resolucion').value.trim();
+
+        if (status === 'Resuelta' && !resolucion) {
+          alert("Debes indicar un mensaje de resolución.");
+          return;
+        }
   
         fetch('ajax/cambiar_status_incidencia.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: `id=${id}&status=${encodeURIComponent(status)}`
+          body: `id=${id}&status=${encodeURIComponent(status)}&resolucion=${encodeURIComponent(resolucion)}`
         })
           .then(res => res.json())
           .then(data => {
@@ -351,6 +357,7 @@ document.addEventListener('DOMContentLoaded', function () {
               location.reload();
               document.getElementById('incidencia_id').value = '';
               document.getElementById('nuevo_status').value = '';
+              document.getElementById('resolucion').value = '';
 
             } else {
               alert('Error: ' + data.error);

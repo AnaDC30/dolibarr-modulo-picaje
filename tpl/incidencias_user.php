@@ -53,31 +53,44 @@ $res = $db->query($sql);
       <th>Tipo</th>
       <th>Comentario</th>
       <th>Status</th>
+      <th>Resolución</th>
     </tr>
 
     <?php
-    if ($res && $db->num_rows($res)) {
-        while ($obj = $db->fetch_object($res)) {
-            echo '<tr>';
-            echo '<td>' . dol_print_date(dol_stringtotime($obj->fecha), 'day') . '</td>';
-            echo '<td>' . substr($obj->hora, 0, 5) . '</td>';
-            $tipo_legible = match ($obj->tipo) {
-              'salida_anticipada' => 'Salida anticipada',
-              'horas_extra' => 'Horas extra',
-              'olvido_picaje' => 'Olvido de picaje',
-              'otro' => 'Otro',
-              default => ucfirst($obj->tipo)
-            };
-            echo '<td>' . $tipo_legible . '</td>';
-          ;
-            echo '<td>' . dol_escape_htmltag($obj->comentario) . '</td>';
-            echo '<td><span class="status-btn ' . strtolower($obj->status) . '">' . $obj->status . '</span></td>';
-            echo '</tr>';
-        }
-    } else {
-        echo '<tr><td colspan="5" class="center">No has registrado ninguna incidencia.</td></tr>';
-    }
-    ?>
+      if ($res && $db->num_rows($res)) {
+          while ($obj = $db->fetch_object($res)) {
+              echo '<tr>';
+              echo '<td>' . dol_print_date(dol_stringtotime($obj->fecha), 'day') . '</td>';
+              echo '<td>' . substr($obj->hora, 0, 5) . '</td>';
+
+              $tipo_legible = match ($obj->tipo) {
+                  'salida_anticipada' => 'Salida anticipada',
+                  'horas_extra' => 'Horas extra',
+                  'olvido_picaje' => 'Olvido de picaje',
+                  'otro' => 'Otro',
+                  default => ucfirst($obj->tipo)
+              };
+              echo '<td>' . $tipo_legible . '</td>';
+
+              echo '<td>' . dol_escape_htmltag($obj->comentario) . '</td>';
+              echo '<td><span class="status-btn ' . strtolower($obj->status) . '">' . $obj->status . '</span></td>';
+
+              // Nueva columna: resolución si la incidencia está resuelta
+              echo '<td>';
+              if ($obj->status === 'resuelta' && !empty($obj->resolucion)) {
+                  echo dol_escape_htmltag($obj->resolucion);
+              } else {
+                  echo '-';
+              }
+              echo '</td>';
+
+              echo '</tr>';
+          }
+      } else {
+          echo '<tr><td colspan="6" class="center">No has registrado ninguna incidencia.</td></tr>';
+      }
+      ?>
+
   </table>
 </div>
 

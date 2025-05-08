@@ -192,8 +192,8 @@ if (!$ha_entrada) {
   const haSalida = <?php echo $ha_salida ? 'true' : 'false'; ?>;
   const salidaManualJustificada = <?php echo getDolGlobalInt('PICAR_SALIDA_MANUAL_JUSTIFICADA') ? 'true' : 'false'; ?>;
   const salidaAutomaticaActiva = <?php echo getDolGlobalInt('PICAR_SALIDA_AUTOMATICA') ? 'true' : 'false'; ?>;
-  const entradaManualJustificada = <?php echo $entrada_manual_justificada ? 'true' : 'false'; ?>;
-  const entradaAutomaticaActiva = <?php echo $entradaAutomaticaActiva ? 'true' : 'false'; ?>;      
+  const entradaManualJustificada = <?php echo getDolGlobalInt('PICAR_ENTRADA_ANTICIPADA_JUSTIFICADA') ? 'true' : 'false'; ?>;
+  const entradaAutomaticaActiva = <?php echo getDolGlobalInt('PICAR_AUTO_LOGIN') ? 'true' : 'false'; ?>;      
 
   inicializarPicaje(haEntrada, haSalida, salidaManualJustificada, salidaAutomaticaActiva, entradaManualJustificada, entradaAutomaticaActiva);
 </script>

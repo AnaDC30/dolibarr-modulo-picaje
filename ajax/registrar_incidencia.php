@@ -42,9 +42,19 @@ $hora = date('H:i:s');
 // =====================
 // INSERTAR EN BASE DE DATOS
 // =====================
-$sql = "INSERT INTO " . MAIN_DB_PREFIX . "picaje_incidencias (fk_user, fecha, hora, tipo, comentario, entity)
-        VALUES (" . (int) $user->id . ", '" . $db->escape($fecha) . "', '" . $db->escape($hora) . "', 
-        '" . $db->escape($tipo) . "', '" . $db->escape($comentario) . "', " . (int) $conf->entity . ")";
+$sql = "INSERT INTO " . MAIN_DB_PREFIX . "picaje_incidencias (
+    fk_user, fecha, hora, tipo, comentario, status, entity, resolucion
+) VALUES (
+    " . (int) $user->id . ",
+    '" . $db->escape($fecha) . "',
+    '" . $db->escape($hora) . "',
+    '" . $db->escape($tipo) . "',
+    '" . $db->escape($comentario) . "',
+    'Pendiente',
+    " . (int) $conf->entity . ",
+    NULL
+)";
+
 
 if ($db->query($sql)) {
     echo json_encode(['success' => true]);

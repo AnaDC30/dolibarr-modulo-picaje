@@ -38,7 +38,7 @@ $res = $db->query($sql);
 if ($res && $db->num_rows($res)) {
     print '<div class="main-content" style="margin:auto;max-width:900px">';
     print '<table class="liste">';
-    print '<tr><th>Usuario</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Motivo</th><th>Estado</th><th>Acción</th></tr>';
+    print '<tr><th>Usuario</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Motivo</th><th>Estado</th><th>Resolución</th><th>Acción</th></tr>';
 
     while ($obj = $db->fetch_object($res)) {
       $nombre = dol_escape_htmltag($obj->firstname . ' ' . $obj->lastname);
@@ -47,6 +47,7 @@ if ($res && $db->num_rows($res)) {
       $hora = substr($obj->hora, 0, 5);
       $estado = dol_escape_htmltag($obj->status);
       $estadoClase = strtolower($estado); // pendiente o resuelta
+      $resolucion = !empty($obj->resolucion) ? dol_escape_htmltag($obj->resolucion) : '-';
       $urlHistorial = dol_buildpath('/custom/picaje/picajeindex.php', 1) . '?view=historial&user_id=' . $obj->fk_user . '&desde=incidencias';
   
       print '<tr>';
@@ -64,11 +65,13 @@ if ($res && $db->num_rows($res)) {
           print '<span class="status-btn ' . $estadoClase . '">' . $estado . '</span>';
       }
       print '</td>';
+
+      print "<td>$resolucion</td>";
   
       // Columna de acción (Ver historial + Registrar picada si corresponde)
       print '<td>';
       print '<a class="btn-historial-incidencias" href="' . $urlHistorial . '">Ver historial</a>';
-      
+      print '</td>';
   }
   
   }
@@ -91,6 +94,9 @@ if ($res && $db->num_rows($res)) {
           <option value="Pendiente">Pendiente</option>
           <option value="Resuelta">Resuelta</option>
         </select>
+
+        <label for="resolucion">Mensaje de resolución:</label>
+        <textarea id="resolucion" name="resolucion" rows="3" placeholder="Escriba la resolución..."></textarea>
 
         <div class="modal-actions">
           <button type="submit" class="guardarButton">Guardar</button>

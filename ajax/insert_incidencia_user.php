@@ -22,14 +22,19 @@ if (empty($tipo) || empty($comentario)) {
 $fecha = date('Y-m-d');
 $hora = date('H:i:s');
 
-$sql = "INSERT INTO llx_picaje_incidencias (fk_user, tipo, justificacion, fecha, hora, status, entity)
-        VALUES (" . (int) $user->id . ",
-                '" . $db->escape($tipo) . "',
-                '" . $db->escape($comentario) . "',
-                '" . $fecha . "',
-                '" . $hora . "',
-                'Pendiente',
-                " . (int) $conf->entity . ")";
+$sql = "INSERT INTO llx_picaje_incidencias 
+        (fk_user, tipo, comentario, fecha, hora, status, entity, resolucion)
+        VALUES (
+            " . (int) $user->id . ",
+            '" . $db->escape($tipo) . "',
+            '" . $db->escape($comentario) . "',
+            '" . $fecha . "',
+            '" . $hora . "',
+            'Pendiente',
+            " . (int) $conf->entity . ",
+            NULL
+        )";
+        
 
 $res = $db->query($sql);
 

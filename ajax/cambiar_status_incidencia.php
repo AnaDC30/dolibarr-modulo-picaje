@@ -19,16 +19,20 @@ if (empty($user->id) || !$user->admin) {
 
 $id = GETPOST('id', 'int');
 $status = GETPOST('status', 'alpha');
+$resolucion = trim(GETPOST('resolucion', 'restricthtml'));
 
 if ($id <= 0 || empty($status)) {
     echo json_encode(['success' => false, 'error' => 'Datos incompletos']);
     exit;
 }
 
+// Preparamos SQL
 $sql = "UPDATE llx_picaje_incidencias 
-        SET status = '" . $db->escape($status) . "' 
-        WHERE rowid = " . (int) $id;
+        SET status = '" . $db->escape($status) . "',
+         resolucion = " . ($resolucion ? "'" . $db->escape($resolucion) . "'" : "NULL") . "
+         WHERE rowid = " . (int) $id;
 
+// Ejecutamos
 $res = $db->query($sql);
 
 echo json_encode(['success' => $res ? true : false]);
