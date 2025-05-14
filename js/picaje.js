@@ -96,7 +96,6 @@ function inicializarPicaje(haEntrada, haSalida, salidaManualJustificada, salidaA
   const latInput = document.getElementById("latitud");
   const lonInput = document.getElementById("longitud");
   const tipoInput = document.querySelector('input[name="tipo"]');
-  const modalJustificacion = document.getElementById('modalJustificacion');
   const boton = document.getElementById('boton-picar');
 
   let ubicacionObtenida = false;
@@ -136,75 +135,107 @@ function inicializarPicaje(haEntrada, haSalida, salidaManualJustificada, salidaA
 
       const tipo = tipoInput.value;
 
-      // CASO: Salida anticipada justificada
-      if (tipo === 'salida' && salidaManualJustificada && salidaAutomaticaActiva) {
-          enviarAutoSalida(latInput.value, lonInput.value, tipo);
-          return;
+      if (tipo === 'entrada') {
+          if (entradaAutomaticaActiva) {
+              ejecutarEntradaAutomatica();
+              return;
+          }
+          if (entradaManualJustificada) {
+              validarEntradaAnticipada();
+              return;
+          }
       }
 
-      // CASO: Entrada anticipada justificada
-      if (tipo === 'entrada' && entradaManualJustificada && entradaAutomaticaActiva) {
-          fetch('/dolibarr/custom/picaje/ajax/validar_entrada.php', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ latitud: latInput.value, longitud: lonInput.value })
-          })
-          .then(res => res.json())
-          .then(response => {
-              if (response.entrada_anticipada || response.anticipada) {
-                  modalJustificacion.style.display = 'flex';
-              } else if (response.auto_entry) {
-                  mostrarToast("✅ Entrada automática registrada.");
-                  setTimeout(() => location.reload(), 2000);
-              } else {
-                  enviarPicaje(tipo);
-              }
-          })
-          .catch(err => {
-              console.error("❌ Error al validar entrada:", err);
-              alert("❌ Error al validar entrada.");
-          });
-          return;
+      if (tipo === 'salida') {
+        if (salidaAutomaticaActiva) {
+            enviarAutoSalida(latInput.value, lonInput.value);
+              return;
+          }
+          if (salidaManualJustificada) {
+              validarSalidaAnticipada();
+              return;
+          }
       }
 
-      // Caso normal: picaje directo
+      // Picaje normal si no se cumple ninguna condición especial
       enviarPicaje(tipo);
   });
 }
 
+function ejecutarEntradaAutomatica() {
+  fetch('/dolibarr/custom/picaje/lib/autoentrada.php')
+    .then(res => res.json())
+    .then(response => {
+      if (response.auto_entry) {
+        mostrarToast("✅ Entrada automática registrada.");
+        setTimeout(() => location.reload(), 2000);
+      } else {
+        enviarPicaje('entrada');
+      }
+    })
+    .catch(err => {
+      console.error("❌ Error en autoentrada:", err);
+      enviarPicaje('entrada');
+    });
+}
 
-function enviarAutoSalida(lat, lon, tipo) {
+function enviarAutoSalida(lat, lon) {
   const data = {
       latitud: lat,
       longitud: lon
   };
 
-  fetch('/dolibarr/custom/picaje/ajax/validar_salida.php', {
+  fetch('/dolibarr/custom/picaje/lib/autosalida.php', {
       method: 'POST',
-      headers: {
-          'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
   })
   .then(res => res.json())
   .then(response => {
-      if (response.salida_anticipada) {
-          modalJustificacion.style.display = 'flex';
-      } else if (response.auto_exit) {
+      if (response.auto_exit) {
           mostrarToast("✅ Salida automática registrada.");
-          setTimeout(() => {
-              location.reload();
-          }, 2000);
+          setTimeout(() => location.reload(), 2000);
       } else {
-          enviarPicaje(tipo); // fallback normal si no hay salida auto ni anticipada
+          enviarPicaje('salida');
       }
   })
   .catch(err => {
-      console.error("❌ Error al validar salida:", err);
-      alert("❌ Error al validar salida.");
+      console.error("❌ Error en autosalida:", err);
+      enviarPicaje('salida');
   });
 }
 
+function validarEntradaAnticipada() {
+  fetch('/dolibarr/custom/picaje/ajax/validar_entrada.php')
+    .then(res => res.json())
+    .then(response => {
+      if (response.entrada_anticipada || response.anticipada) {
+        abrirModalJustificacion('entrada');
+      } else {
+        enviarPicaje('entrada');
+      }
+    })
+    .catch(err => {
+      console.error("❌ Error al validar entrada anticipada:", err);
+      enviarPicaje('entrada');
+    });
+}
+
+function validarSalidaAnticipada() {
+  fetch('/dolibarr/custom/picaje/ajax/validar_salida.php')
+    .then(res => res.json())
+    .then(response => {
+      if (response.salida_anticipada) {
+        abrirModalJustificacion('salida');
+      } else {
+        enviarPicaje('salida');
+      }
+    })
+    .catch(err => {
+      console.error("❌ Error al validar salida anticipada:", err);
+      enviarPicaje('salida');
+    });
+}
 
 function enviarPicaje(tipo) {
   const lat = document.getElementById("latitud").value;

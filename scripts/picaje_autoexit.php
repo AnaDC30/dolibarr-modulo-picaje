@@ -1,49 +1,50 @@
-#!/usr/bin/env php
 <?php
-// === Defines CLI ===
-define('NOREQUIREMENU',       1);
-define('NOLOGIN',             1);
-define('NOREQUIREHTML',       1);
-define('NOTOKENRENEWAL',      1);
-define('NOCSRFCHECK',         1);
-define('NOSCANPOSTFORINJECTION', 1);
-define('NOSCANGETFORINJECTION',  1);
-define('EVEN_IF_ONLY_LOGIN_ALLOWED', 1);
-
-// Simular GET
-$_SERVER['REQUEST_METHOD']  = 'GET';
-$_SERVER['REMOTE_ADDR']     = '127.0.0.1';
-$_SERVER['SCRIPT_FILENAME'] = __FILE__;
-$_SERVER['PHP_SELF']        = '/dolibarr/custom/picaje/scripts/picaje_autoexit.php';
-
-// Carga Dolibarr
 require_once dirname(__DIR__, 3) . '/main.inc.php';
-
-// Incluye librerías
 require_once DOL_DOCUMENT_ROOT . '/custom/picaje/lib/dbController.php';
-require_once DOL_DOCUMENT_ROOT . '/custom/picaje/lib/autosalida.php';
 
-// Preparamos el log
-$logfile = DOL_DOCUMENT_ROOT . '/custom/picaje/scripts/picaje_autoexit.log';
-file_put_contents($logfile, date('Y-m-d H:i:s') . " — Inicio picaje_autoexit\n", FILE_APPEND);
+global $db, $conf, $user;
+header('Content-Type: application/json');
 
-// Recorre todos los usuarios activos
-$sql   = "SELECT rowid FROM " . MAIN_DB_PREFIX . "user WHERE statut = 1";
-$resql = $db->query($sql);
-if ($resql) {
-    while ($u = $db->fetch_object($resql)) {
-        $uid = (int)$u->rowid;
-        // Intentamos la auto-salida
-        $ok = ejecutarSalidaAutomaticaUsuario($uid);
-        // Logueamos el resultado
-        $line = sprintf(" User %3d → %s\n", 
-                        $uid, $ok ? 'INSERTADO' : 'SIN CAMBIO');
-        file_put_contents($logfile, $line, FILE_APPEND);
-    }
+$data = json_decode(file_get_contents('php://input'), true);
+$latitude = isset($data['latitud']) ? $data['latitud'] : null;
+$longitude = isset($data['longitud']) ? $data['longitud'] : null;
+
+$user_id = (int) $user->id;
+
+if (empty($conf->global->PICAR_SALIDA_AUTOMATICA)) {
+    echo json_encode(['auto_exit' => false]);
+    exit;
 }
 
-// Fin de ejecución
-file_put_contents($logfile, date('Y-m-d H:i:s') . " — Fin picaje_autoexit\n\n", FILE_APPEND);
+$estado = getEstadoPicajeUsuario($user_id);
+if (!$estado['entrada'] || $estado['salida']) {
+    echo json_encode(['auto_exit' => false]);
+    exit;
+}
 
-// Cerramos conexión
-$db->close();
+$horario = getHorarioUsuario($user_id);
+$hora_salida = $horario->hora_salida ?: getHoraSalidaEmpresaPorDefecto();
+if (strtotime(date('H:i:s')) < strtotime($hora_salida)) {
+    echo json_encode(['auto_exit' => false]);
+    exit;
+}
+
+$fecha_hora = date('Y-m-d H:i:s');
+$lat = $latitude  !== null ? "'" . $db->escape($latitude) . "'" : "NULL";
+$lon = $longitude !== null ? "'" . $db->escape($longitude) . "'" : "NULL";
+
+$sql = "
+    INSERT INTO " . MAIN_DB_PREFIX . "picaje (
+        fecha_hora, tipo, fk_user, tipo_registro, latitud, longitud
+    ) VALUES (
+        '" . $db->escape($fecha_hora) . "',
+        'salida',
+        " . (int)$user_id . ",
+        'auto',
+        {$lat},
+        {$lon}
+    )";
+
+$res = $db->query($sql);
+echo json_encode(['auto_exit' => $res ? true : false]);
+exit;
