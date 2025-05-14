@@ -104,18 +104,22 @@ if ($res && $db->num_rows($res)) {
   <div class="modal-content">
     <div class="modal-inner-form">
       <button class="cerrarModal" onclick="cerrarModal()">×</button>
-      <h2>Cambiar status de incidencia</h2>
+      <h2>Cambiar estado de la incidencia</h2>
       <form id="form-status">
         <input type="hidden" name="incidencia_id" id="incidencia_id">
 
-        <label for="nuevo_status">Nuevo status:</label>
-        <select name="nuevo_status" id="nuevo_status">
-          <option value="Pendiente">Pendiente</option>
-          <option value="Resuelta">Resuelta</option>
-        </select>
+        <div class="estado-linea">
+          <label for="nuevo_status">Nuevo estado:</label>
+          <select name="nuevo_status" id="nuevo_status">
+            <option value="Pendiente">Pendiente</option>
+            <option value="Resuelta">Resuelta</option>
+          </select>
+        </div>
 
-        <label for="resolucion">Mensaje de resolución:</label>
-        <textarea id="resolucion" name="resolucion" rows="3" placeholder="Escriba la resolución..."></textarea>
+        <div class="bloque-resolucion">
+          <label for="resolucion">Mensaje de resolución:</label>
+          <textarea id="resolucion" name="resolucion" rows="4" placeholder="Describe brevemente la resolución..."></textarea>
+        </div>
 
         <div class="modal-actions">
           <button type="submit" class="guardarButton">Guardar</button>

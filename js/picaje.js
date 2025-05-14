@@ -39,7 +39,7 @@ function mostrarMensajeExito(mensaje) {
     botonHistorial.className = "btn-historial";
     botonHistorial.textContent = "📄 Ver historial de modificaciones";
     botonHistorial.onclick = () => {
-        window.open(URL_LOG_MODIFICACIONES, '_blank');
+        window.location.href = URL_LOG_MODIFICACIONES;
     };
 
     contenedor.appendChild(alerta);
