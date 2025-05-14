@@ -42,7 +42,26 @@ if ($res && $db->num_rows($res)) {
 
     while ($obj = $db->fetch_object($res)) {
       $nombre = dol_escape_htmltag($obj->firstname . ' ' . $obj->lastname);
-      $tipo = $obj->tipo === 'horas_extra' ? 'Horas extra' : ($obj->tipo === 'olvido_picaje' ? 'Olvido de picaje' : 'Salida anticipada');
+      switch ($obj->tipo) {
+            case 'horas_extra':
+                $tipo = 'Horas extra';
+                break;
+            case 'salida_anticipada':
+                $tipo = 'Salida anticipada';
+                break;
+          case 'entrada_anticipada':
+                $tipo = 'Entrada anticipada';
+                break;
+            case 'olvido_picaje':
+                $tipo = 'Olvido de picaje';
+                break;
+            case 'otro':
+                $tipo = 'Otro';
+                break;
+            default:
+                $tipo = ucfirst($obj->tipo);
+        }
+
       $fecha = dol_print_date(dol_stringtotime($obj->fecha), 'day');
       $hora = substr($obj->hora, 0, 5);
       $estado = dol_escape_htmltag($obj->status);

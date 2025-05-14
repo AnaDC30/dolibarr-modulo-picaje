@@ -249,6 +249,15 @@ class modPicaje extends DolibarrModules
 			  ),
 			//  ...
 		);
+
+		$this->boxes = array(
+			  0 => array(
+			      'file' => 'box_incidencia.php@picaje',
+			      'note' => 'Widget provided by Picaje',
+			      'enabledbydefaulton' => 'Home',
+			  ),
+			//  ...
+		);
 		/* END MODULEBUILDER WIDGETS */
 
 		// Cronjobs (List of cron jobs entries to add when module is enabled)
