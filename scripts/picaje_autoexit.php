@@ -64,3 +64,8 @@ $sql = "
 $res = $db->query($sql);
 echo json_encode(['auto_exit' => $res ? true : false]);
 exit;
+
+// ✅ Protección automática: solo se registra una salida si el último tipo de picaje hoy es 'entrada'.
+// Si hay un registro previo como 'vacaciones', 'baja', etc., el tipo será diferente,
+// y por tanto no se registrará salida automática. Esto bloquea correctamente en días de ausencia.
+

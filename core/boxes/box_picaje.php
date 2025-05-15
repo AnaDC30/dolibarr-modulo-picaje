@@ -53,7 +53,34 @@ class box_picaje extends ModeleBoxes
 	);
 
 	$html = $tokenScript . $cssLink . '
-		<button id="btnBoxPicaje" class="'.$claseBtn.'">'.$textoBtn.'</button>
+		<button id="btnBoxPicaje" class="' . $claseBtn . '">' . $textoBtn . '</button>
+			<script>
+			document.addEventListener("DOMContentLoaded", function () {
+			fetch("/dolibarr/custom/picaje/ajax/comprobar_ausencia.php")
+				.then(res => res.json())
+				.then(data => {
+				if (data.ausente) {
+					const boton = document.getElementById("btnBoxPicaje");
+					if (boton) {
+					boton.disabled = true;
+					boton.textContent = `🚫 Ausente (${data.tipo})`;
+					boton.classList.add("disabled");
+					}
+
+					const aviso = document.createElement("p");
+					aviso.textContent = `Hoy estás marcado como "${data.tipo}", no puedes registrar picaje.`;
+					aviso.style.color = "red";
+					aviso.style.fontWeight = "bold";
+
+					boton.parentNode.insertBefore(aviso, boton.nextSibling);
+				}
+				})
+				.catch(err => {
+				console.error("❌ Error comprobando ausencia en panel:", err);
+				});
+			});
+			</script>
+
 		<div id="boxToast" class="boxToastStyle" style="display:none; margin-top:10px;"></div>
 		<div id="modalJustificacion" class="modal-overlay">
 			<div class="modal-content">

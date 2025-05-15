@@ -100,7 +100,28 @@ function inicializarPicaje(haEntrada, haSalida, salidaManualJustificada, salidaA
 
   let ubicacionObtenida = false;
 
+  console.log('🔄 inicializarPicaje() llamada');
+
   if (!boton) return;
+
+   // Verificar si el usuario está marcado como ausente hoy
+   console.log('🔍 Verificando ausencia del usuario...');
+
+  fetch('/dolibarr/custom/picaje/ajax/comprobar_ausencia.php')
+  .then(res => res.json())
+  .then(data => {
+    console.log('📦 Resultado de comprobación de ausencia:', data);
+    if (data.ausente) {
+      alert(`🚫 Hoy no puedes picar porque estás marcado como "${data.tipo}".`);
+      boton.disabled = true;
+      boton.classList.add('disabled');
+      boton.textContent = `🚫 Ausente (${data.tipo})`;
+    }
+  })
+  .catch(err => {
+    console.error("❌ Error comprobando ausencia:", err);
+  });
+
 
   // Estado inicial del botón
   if (!haEntrada) {

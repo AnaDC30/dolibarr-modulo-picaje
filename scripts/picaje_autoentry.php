@@ -65,3 +65,7 @@ $sql = "
 $res = $db->query($sql);
 echo json_encode(['auto_entry' => $res ? true : false]);
 exit;
+
+// ✅ Protección automática: si ya existe un registro de tipo 'vacaciones', 'baja', etc.,
+// este será detectado como el primer registro del día, y al no ser 'entrada',
+// no se registrará entrada automática. Esto evita picar en días de ausencia.
