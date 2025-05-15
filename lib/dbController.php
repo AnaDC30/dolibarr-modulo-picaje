@@ -255,8 +255,3 @@ function obtenerResumenMensualUsuario($user_id, $mes, $anio) {
 
     return $registros;
 }
-
-?>
-
-
-

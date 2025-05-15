@@ -1,4 +1,20 @@
 <?php
+// Definir entorno de ejecución
+$_SERVER['REQUEST_METHOD'] = 'GET';
+$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+$_SERVER['SCRIPT_FILENAME'] = __FILE__;
+$_SERVER['PHP_SELF'] = '/dolibarr/custom/picaje/scripts/picaje_autoentry.php'; 
+
+// Constantes para evitar chequeos de seguridad de Dolibarr
+define('NOREQUIREMENU', 1);
+define('NOREQUIREHTML', 1);
+define('NOLOGIN', 1);
+define('NOTOKENRENEWAL', 1);
+define('NOCSRFCHECK', 1);
+define('NOSCANPOSTFORINJECTION', 1);
+define('NOSCANGETFORINJECTION', 1);
+define('EVEN_IF_ONLY_LOGIN_ALLOWED', 1);
+
 require_once dirname(__DIR__, 3) . '/main.inc.php';
 require_once DOL_DOCUMENT_ROOT . '/custom/picaje/lib/dbController.php';
 
