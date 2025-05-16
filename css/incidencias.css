@@ -83,6 +83,26 @@
     background-color: #e0e0e0;
 }
 
+/* ===================== */
+/*  BOTÓN CREAR PICAJE   */
+/* ===================== */
+.btn-crear-incidencias {
+    display: inline-block;
+    padding: 4px 8px;
+    background-color: #ebe07f;
+    color: #333;
+    text-decoration: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: center;
+    white-space: nowrap;
+    transition: background-color 0.2s ease;
+}
+
+.btn-crear-incidencias:hover {
+    background-color: #e0e0e0;
+}
 /* ========================= */
 /*   BOTÓN REGISTRAR PICADA  */
 /* ========================= */

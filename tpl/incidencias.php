@@ -90,6 +90,10 @@ if ($res && $db->num_rows($res)) {
       // Columna de acción (Ver historial + Registrar picada si corresponde)
       print '<td>';
       print '<a class="btn-historial-incidencias" href="' . $urlHistorial . '">Ver historial</a>';
+      
+      if (strtolower($estado) === 'pendiente') {
+        print '<button class="btn-crear-incidencias" onclick="abrirModalCrearPicaje(' . (int)$obj->rowid . ')">⚠️ Crear picaje</button>';
+      }
       print '</td>';
   }
   
@@ -130,6 +134,11 @@ if ($res && $db->num_rows($res)) {
   </div>
 </div>
 
+
+<!-- MODAL PARA CREAR PICAJE -->
+<div id="modalCrearPicaje" class="modal-overlay" style="display: none;">
+    <div class="modal-content" id="modalCrearPicajeContenido"></div>
+</div>
 
 <script src="<?php echo dol_buildpath('/custom/picaje/js/picaje.js', 1); ?>"></script>
 
