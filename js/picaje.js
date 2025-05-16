@@ -157,23 +157,24 @@ function inicializarPicaje(haEntrada, haSalida, salidaManualJustificada, salidaA
       const tipo = tipoInput.value;
 
       if (tipo === 'entrada') {
+        if (entradaManualJustificada) {
+              validarEntradaAnticipada();
+              return;
+          }
           if (entradaAutomaticaActiva) {
               ejecutarEntradaAutomatica();
               return;
           }
-          if (entradaManualJustificada) {
-              validarEntradaAnticipada();
-              return;
-          }
+          
       }
 
       if (tipo === 'salida') {
-        if (salidaAutomaticaActiva) {
-            enviarAutoSalida(latInput.value, lonInput.value);
+        if (salidaManualJustificada) {
+              validarSalidaAnticipada();
               return;
           }
-          if (salidaManualJustificada) {
-              validarSalidaAnticipada();
+        if (salidaAutomaticaActiva) {
+            enviarAutoSalida(latInput.value, lonInput.value);
               return;
           }
       }
@@ -246,7 +247,7 @@ function validarSalidaAnticipada() {
   fetch('/dolibarr/custom/picaje/ajax/validar_salida.php')
     .then(res => res.json())
     .then(response => {
-      if (response.salida_anticipada) {
+      if (response.salida_anticipada || response.anticipada) {
         abrirModalJustificacion('salida');
       } else {
         enviarPicaje('salida');
@@ -296,11 +297,39 @@ function enviarPicaje(tipo) {
 // =======================================
 //   MODAL DE JUSTIFICACION/INCIDENCIAS
 // =======================================
+
+function abrirModalJustificacion(tipoPicaje) {
+  const modal = document.getElementById('modalJustificacion');
+  const inputTipo = document.querySelector('input[name="tipo"]');
+  const textarea = document.getElementById('textoJustificacion');
+
+  if (modal) {
+    modal.style.display = 'flex';
+  }
+
+  if (inputTipo) {
+    inputTipo.value = tipoPicaje; // 'entrada' o 'salida'
+  }
+
+  if (textarea) {
+    textarea.value = '';
+  }
+
+  // Marcar automáticamente la opción correcta del radio
+  if (tipoPicaje === 'salida') {
+    document.getElementById('opcion_anticipada').checked = true;
+  } else if (tipoPicaje === 'entrada') {
+    document.getElementById('opcion_entrada_anticipada').checked = true;
+  }
+
+  console.log("✅ Modal abierto para tipo:", tipoPicaje);
+}
+
 function enviarJustificacion() {
-  const tipo = document.querySelector('input[name="tipoIncidencia"]:checked');
+  const tipoIncidencia = document.querySelector('input[name="tipoIncidencia"]:checked');
   const motivo = document.getElementById('textoJustificacion').value.trim();
 
-  if (!tipo || !motivo) {
+  if (!tipoIncidencia || !motivo) {
     alert("Debes seleccionar el tipo de incidencia y escribir una justificación.");
     return;
   }
@@ -312,48 +341,32 @@ function enviarJustificacion() {
     },
     body: new URLSearchParams({
       token: csrfToken,
-      tipo: tipo.value,
+      tipo: tipoIncidencia.value,
       justificacion: motivo
     })
   })
-    .then(async res => {
-      try {
-        const data = await res.json();
+  .then(async res => {
+    try {
+      const data = await res.json();
 
-        if (data.success) {
-          mostrarToast("✅ Justificación registrada correctamente.");
-          cerrarModalJustificacion();
-          location.reload();
-
-          // ✅ Registrar salida tras justificar
-          const formPicaje = document.getElementById('form-picaje');
-          if (formPicaje) {
-            formPicaje.submit();
-          } else {
-            console.warn("⚠️ Formulario de picaje no encontrado al intentar registrar salida.");
-          }
-
-        } else {
-          alert("❌ Error: " + (data.error || "No se pudo registrar la incidencia."));
-        }
-      } catch (e) {
-        console.error("❌ Error al interpretar JSON:", e);
-        alert("❌ Respuesta inesperada del servidor.");
+      if (data.success) {
+        mostrarToast("✅ Justificación registrada correctamente.");
+        cerrarModalJustificacion();
+      } else {
+        alert("❌ Error: " + (data.error || "No se pudo registrar la incidencia."));
       }
-    })
-    .catch(err => {
-      console.error("❌ Error de red:", err);
-      alert("❌ No se pudo conectar con el servidor.");
-    });
+    } catch (e) {
+      console.error("❌ Error al interpretar JSON:", e);
+      alert("❌ Respuesta inesperada del servidor.");
+    }
+  })
+  .catch(err => {
+    console.error("❌ Error de red:", err);
+    alert("❌ No se pudo conectar con el servidor.");
+  });
 }
 
-
-function abrirModalJustificacion() {
-    document.getElementById('modalJustificacion').style.display = 'flex';
-  }
   
-
-
 // ===============================
 //   MODAL DE STATUS INCIDENCIAS
 // ===============================

@@ -1,4 +1,10 @@
 <?php
+
+define('NOREQUIREMENU', 1);
+define('NOREQUIREHTML', 1);
+define('NOTOKENRENEWAL', 1);
+define('NOCSRFCHECK', 1);
+
 require_once dirname(__DIR__, 3) . '/main.inc.php';
 require_once DOL_DOCUMENT_ROOT . '/custom/picaje/lib/dbController.php';
 

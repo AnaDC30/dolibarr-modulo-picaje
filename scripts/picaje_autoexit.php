@@ -8,8 +8,8 @@ $_SERVER['PHP_SELF'] = '/dolibarr/custom/picaje/scripts/picaje_autoexit.php';
 // Constantes para evitar chequeos de seguridad de Dolibarr
 define('NOREQUIREMENU', 1);
 define('NOREQUIREHTML', 1);
-define('NOLOGIN', 1);
 define('NOTOKENRENEWAL', 1);
+define('NOLOGIN', 1);
 define('NOCSRFCHECK', 1);
 define('NOSCANPOSTFORINJECTION', 1);
 define('NOSCANGETFORINJECTION', 1);
@@ -18,52 +18,73 @@ define('EVEN_IF_ONLY_LOGIN_ALLOWED', 1);
 require_once dirname(__DIR__, 3) . '/main.inc.php';
 require_once DOL_DOCUMENT_ROOT . '/custom/picaje/lib/dbController.php';
 
-global $db, $conf, $user;
-header('Content-Type: application/json');
+global $db, $conf;
 
-$data = json_decode(file_get_contents('php://input'), true);
-$latitude = isset($data['latitud']) ? $data['latitud'] : null;
-$longitude = isset($data['longitud']) ? $data['longitud'] : null;
-
-$user_id = (int) $user->id;
+echo "<pre>";
+echo "🔁 Iniciando salida automática\n";
 
 if (empty($conf->global->PICAR_SALIDA_AUTOMATICA)) {
-    echo json_encode(['auto_exit' => false]);
+    echo "⚠️ Funcionalidad 'salida automática' desactivada\n";
     exit;
 }
 
-$estado = getEstadoPicajeUsuario($user_id);
-if (!$estado['entrada'] || $estado['salida']) {
-    echo json_encode(['auto_exit' => false]);
-    exit;
-}
-
-$horario = getHorarioUsuario($user_id);
-$hora_salida = $horario->hora_salida ?: getHoraSalidaEmpresaPorDefecto();
-if (strtotime(date('H:i:s')) < strtotime($hora_salida)) {
-    echo json_encode(['auto_exit' => false]);
-    exit;
-}
-
-$fecha_hora = date('Y-m-d H:i:s');
-$lat = $latitude  !== null ? "'" . $db->escape($latitude) . "'" : "NULL";
-$lon = $longitude !== null ? "'" . $db->escape($longitude) . "'" : "NULL";
-
+// Buscar usuarios con entrada hoy pero sin salida
 $sql = "
-    INSERT INTO " . MAIN_DB_PREFIX . "picaje (
-        fecha_hora, tipo, fk_user, tipo_registro, latitud, longitud
-    ) VALUES (
-        '" . $db->escape($fecha_hora) . "',
-        'salida',
-        " . (int)$user_id . ",
-        'auto',
-        {$lat},
-        {$lon}
-    )";
+SELECT fk_user
+FROM " . MAIN_DB_PREFIX . "picaje
+WHERE DATE(fecha_hora) = CURDATE()
+  AND tipo = 'entrada'
+  AND fk_user NOT IN (
+    SELECT fk_user
+    FROM " . MAIN_DB_PREFIX . "picaje
+    WHERE DATE(fecha_hora) = CURDATE()
+      AND tipo = 'salida'
+  )
+GROUP BY fk_user";
 
-$res = $db->query($sql);
-echo json_encode(['auto_exit' => $res ? true : false]);
+$resql = $db->query($sql);
+
+if (!$resql) {
+    echo "❌ Error al obtener usuarios con entrada sin salida: " . $db->lasterror();
+    exit;
+}
+
+$now = strtotime(date('H:i:s'));
+
+while ($obj = $db->fetch_object($resql)) {
+    $user = new User($db);
+    $user->fetch($obj->fk_user);
+    $horario = getHorarioUsuario($user->id);
+    $hora_salida = $horario->hora_salida ?: getHoraSalidaEmpresaPorDefecto();
+    $hora_limite = strtotime($hora_salida);
+
+
+    if ($now < $hora_limite) {
+        continue;
+    }
+
+    // Insertar salida automática
+    $fecha_hora = date('Y-m-d H:i:s');
+    $sqlInsert = "
+        INSERT INTO " . MAIN_DB_PREFIX . "picaje (
+            fecha_hora, tipo, fk_user, tipo_registro
+        ) VALUES (
+            '" . $db->escape($fecha_hora) . "',
+            'salida',
+            " . (int)$user->id . ",
+            'auto'
+        )";
+
+    if ($db->query($sqlInsert)) {
+        echo "✅ Picaje automático registrado\n";
+    } else {
+        echo "❌ Error al insertar picaje: " . $db->lasterror() . "\n";
+    }
+}
+
+echo "\n✔️ Proceso completado\n";
 exit;
+
 
 // ✅ Protección automática: solo se registra una salida si el último tipo de picaje hoy es 'entrada'.
 // Si hay un registro previo como 'vacaciones', 'baja', etc., el tipo será diferente,

@@ -16,8 +16,6 @@ require_once DOL_DOCUMENT_ROOT . '/custom/picaje/lib/dbController.php';
 require_once DOL_DOCUMENT_ROOT . '/custom/picaje/class/picaje.class.php';
 
 
-$entradaAutomaticaActiva = !empty($conf->global->PICAJE_AUTO_LOGIN);
-
 
 // 3) Cargar estilos
 echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/picaje.css', 1) . '">';
@@ -137,40 +135,45 @@ if (!$ha_entrada) {
 <!-- ======================================== -->
 <!--   MODAL JUSTIFICACIÓN  ENTRADA Y SALIDA  -->
 <!-- ======================================== -->
-<div id="modalJustificacion" class="modal-overlay">
+
+<div id="modalJustificacion" class="modal-overlay" style="display: none;">
   <div class="modal-content">
     <button class="cerrarModal" onclick="cerrarModalJustificacion()">✖</button>
     <div class="modal-inner-form">
       <h2>✏️ Justificación de Picaje anticipado</h2>
       <p>Tu hora de entrada/salida prevista aún no ha llegado. Indica el motivo por el cual deseas registrar el picaje:</p>
+      
       <form onsubmit="event.preventDefault(); enviarJustificacion();">
+        <!-- ✅ Campo oculto para saber si es entrada o salida -->
+        <input type="hidden" name="tipo" value="">
+
         <label>Tipo de incidencia:</label>
         <div class="toggle-group">
-            <input type="radio" id="opcion_extra" name="tipoIncidencia" value="horas_extra" required hidden>
-            <label for="opcion_extra" class="toggle-btn">Horas extra</label>
-            
-            <input type="radio" id="opcion_entrada_anticipada" name="tipoIncidencia" value="entrada_anticipada" required hidden>
-            <label for="opcion_entrada_anticipada" class="toggle-btn">Entrada anticipada</label>
+          <input type="radio" id="opcion_extra" name="tipoIncidencia" value="horas_extra" required hidden>
+          <label for="opcion_extra" class="toggle-btn">Horas extra</label>
+          
+          <input type="radio" id="opcion_entrada_anticipada" name="tipoIncidencia" value="entrada_anticipada" required hidden>
+          <label for="opcion_entrada_anticipada" class="toggle-btn">Entrada anticipada</label>
 
-            <input type="radio" id="opcion_anticipada" name="tipoIncidencia" value="salida_anticipada" required hidden>
-            <label for="opcion_anticipada" class="toggle-btn">Salida anticipada</label>
+          <input type="radio" id="opcion_anticipada" name="tipoIncidencia" value="salida_anticipada" required hidden>
+          <label for="opcion_anticipada" class="toggle-btn">Salida anticipada</label>
 
-            <input type="radio" id="opcion_otro" name="tipoIncidencia" value="otro" required hidden>
-            <label for="opcion_otro" class="toggle-btn">Otro</label>
+          <input type="radio" id="opcion_otro" name="tipoIncidencia" value="otro" required hidden>
+          <label for="opcion_otro" class="toggle-btn">Otro</label>
         </div>
- 
+
         <label for="textoJustificacion">Motivo:</label>
-            <textarea id="textoJustificacion" placeholder="Escribe aquí tu motivo..." rows="4" required></textarea>
+        <textarea id="textoJustificacion" placeholder="Escribe aquí tu motivo..." rows="4" required></textarea>
 
         <div class="modal-actions">
-            <button type="button" onclick="cerrarModalJustificacion()">Cancelar</button>
-            <button type="submit" class="guardarButton">Confirmar</button>
+          <button type="button" onclick="cerrarModalJustificacion()">Cancelar</button>
+          <button type="submit" class="guardarButton">Confirmar</button>
         </div>
       </form>
- 
     </div>
   </div>
 </div>
+
 
 <div id="toast" class="toast" style="display:none;"></div>
 
@@ -190,13 +193,32 @@ if (!$ha_entrada) {
 <script>
   const haEntrada = <?php echo $ha_entrada ? 'true' : 'false'; ?>;
   const haSalida = <?php echo $ha_salida ? 'true' : 'false'; ?>;
-  const salidaManualJustificada = <?php echo getDolGlobalInt('PICAR_SALIDA_MANUAL_JUSTIFICADA') ? 'true' : 'false'; ?>;
+  //const salidaManualJustificada = <?php echo getDolGlobalInt('PICAR_SALIDA_MANUAL_JUSTIFICADA') ? 'true' : 'false'; ?>;//
   const salidaAutomaticaActiva = <?php echo getDolGlobalInt('PICAR_SALIDA_AUTOMATICA') ? 'true' : 'false'; ?>;
   const entradaManualJustificada = <?php echo getDolGlobalInt('PICAR_ENTRADA_ANTICIPADA_JUSTIFICADA') ? 'true' : 'false'; ?>;
   const entradaAutomaticaActiva = <?php echo getDolGlobalInt('PICAR_AUTO_LOGIN') ? 'true' : 'false'; ?>;      
 
-  inicializarPicaje(haEntrada, haSalida, salidaManualJustificada, salidaAutomaticaActiva, entradaManualJustificada, entradaAutomaticaActiva);
+  const salidaManualJustificada = true;
+
+document.addEventListener('DOMContentLoaded', function () {
+  inicializarPicaje(
+    haEntrada,
+    haSalida,
+    salidaManualJustificada,
+    salidaAutomaticaActiva,
+    entradaManualJustificada,
+    entradaAutomaticaActiva
+  );
+});
+
+
+console.log("🚦 haEntrada:", haEntrada);
+console.log("🚦 haSalida:", haSalida);
+console.log("🚦 salidaManualJustificada:", salidaManualJustificada);
+console.log("🚦 salidaAutomaticaActiva:", salidaAutomaticaActiva);
+
 </script>
+
 
 
 <!-- ===================== -->
