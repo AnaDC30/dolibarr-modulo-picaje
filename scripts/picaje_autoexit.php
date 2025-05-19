@@ -17,6 +17,8 @@ define('EVEN_IF_ONLY_LOGIN_ALLOWED', 1);
 
 require_once dirname(__DIR__, 3) . '/main.inc.php';
 require_once DOL_DOCUMENT_ROOT . '/custom/picaje/lib/dbController.php';
+require_once DOL_DOCUMENT_ROOT . '/custom/picaje/lib/autosalida.php';
+
 
 global $db, $conf;
 

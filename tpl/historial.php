@@ -9,7 +9,8 @@ require_once dol_buildpath('/custom/picaje/lib/dbController.php', 0);
 // =====================
 //  CARGAR ESTILOS CSS
 // =====================
-echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/historial.css', 1) . '">';
+echo '<link rel="stylesheet" href="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/style.css.php">';
+echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/layout.css', 1) . '">';
 echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/modal.css', 1) . '">';
 
 // =====================
@@ -31,51 +32,72 @@ if ($desdeIncidencias === 'incidencias') {
 <!-- ===================== -->
 <!--       ENCABEZADO      -->
 <!-- ===================== -->
-<header class="page-header">
-    <h1>Historial de Picaje</h1>
-</header>
+<div class="titre">
+    <span class="inline-block valignmiddle">
+        <?php echo img_picto('', 'picaje@picaje'); ?>
+    </span>
+    <span class="inline-block valignmiddle" style="font-size: 22px; font-weight: bold;">
+        <?php echo $langs->trans("Historial de Picaje"); ?>
+    </span>
+</div>
+
 
 <!-- ===================== -->
 <!--  CONTENEDOR PRINCIPAL -->
 <!-- ===================== -->
 
-<div class="filtros-crear-container">
-    <div class="filtros-seccion">
-        <!-- BOTON FILTRO -->
-        <button type="button" class="toggle-filtros" onclick="toggleFiltros()">🔍</button>
-        <div id="botonQuitarFlotante" class="btn-reset-flotante oculto">
-            <a href="picajeindex.php?view=historial" class="btn-reset">🔄 Quitar filtros</a>
-        </div>
+<div class="fiche" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+    <!-- Botón filtros a la izquierda -->
+    <div>
+        <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all" onclick="toggleFiltros()">
+            🔍 Filtros
+        </button>
+    </div>
+    <div id="botonQuitarFlotante" class="oculto">
+        <a href="picajeindex.php?view=historial" class="ui-button ui-widget ui-state-default ui-corner-all">🔄 Quitar filtros</a>
     </div>
 
+    <!-- Botón Crear Incidencia a la derecha (solo si es admin) -->
     <?php if ($user->admin == 1): ?>
-        <div class="create-button">
-            <button type="button" class="butInci" onclick="abrirModalCrearPicaje()">⚠️ Incidencia en picaje</button>
+        <div>
+            <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all" onclick="abrirModalCrearPicaje()">
+                ⚠️ Incidencia en picaje
+            </button>
         </div>
     <?php endif; ?>
 </div>
 
-
-<!-- Contenedor del formulario oculto inicialmente -->
-<div id="filtrosContainer" class="filtro-formulario oculto">
-    <form method="GET" action="picajeindex.php">
+<!-- ===================== -->
+<!--  CONTENEDOR FILTROS   -->
+<!-- ===================== -->
+<div id="filtrosContainer" class="fiche <?php echo ($filtroFecha || $filtroUsuario) ? '' : 'oculto'; ?>" style="margin-bottom: 15px;">
+    <form method="GET" action="picajeindex.php" style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end;">
         <input type="hidden" name="view" value="historial">
-        <div class="filtros">
-            <label for="fecha">Fecha:</label>
-            <input type="date" name="fecha" id="fecha" value="<?php echo dol_escape_htmltag($filtroFecha); ?>">
 
-            <?php if ($user->admin == 1): ?>
-                <label for="usuario">Usuario:</label>
-                <input type="text" name="usuario" id="usuario" placeholder="Nombre o apellido" value="<?php echo dol_escape_htmltag($filtroUsuario); ?>">
-            <?php endif; ?>
+        <!-- Campo Fecha -->
+        <div>
+            <label for="fecha">Fecha:</label><br>
+            <input type="date" name="fecha" id="fecha"
+                   class="flat ui-widget ui-corner-all"
+                   value="<?php echo dol_escape_htmltag($filtroFecha); ?>">
+        </div>
 
-            <button type="submit">🔍 Buscar</button>
+        <!-- Campo Usuario (solo admin) -->
+        <?php if ($user->admin == 1): ?>
+            <div>
+                <label for="usuario">Usuario:</label><br>
+                <input type="text" name="usuario" id="usuario"
+                       placeholder="Nombre o apellido"
+                       class="flat ui-widget ui-corner-all"
+                       value="<?php echo dol_escape_htmltag($filtroUsuario); ?>">
+            </div>
+        <?php endif; ?>
+
+        <!-- Botón Buscar -->
+        <div>
+            <button type="submit" class="ui-button ui-widget ui-state-default ui-corner-all">🔍 Buscar</button>
         </div>
     </form>
-</div>
-<!-- Boton para quitar filtro-->
-<div id="botonQuitarFlotante" class="btn-reset-flotante oculto">
-    <a href="picajeindex.php?view=historial" class="btn-reset">🔄 Quitar filtros</a>
 </div>
 
 <!-- Botones para exportar-->
@@ -87,86 +109,65 @@ $params = http_build_query([
     'desde' => GETPOST('desde', 'alpha')
 ]);
 ?>
-<div class="export-buttons">
-    <a href="export/exportar_pdf.php?<?php echo $params; ?>" class="butAction">📄 Exportar a PDF</a>
-    <a href="export/exportar_csv.php?<?php echo $params; ?>" class="butAction">📤 Exportar a CSV</a>
+<div class="fiche" style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 10px;">
+    
+    <a href="export/exportar_pdf.php?<?php echo $params; ?>" class="ui-button ui-widget ui-state-default ui-corner-all">📄 Exportar PDF</a>
+    <a href="export/exportar_csv.php?<?php echo $params; ?>" class="ui-button ui-widget ui-state-default ui-corner-all">📤 Exportar a CSV</a>
 </div>
 
 
 <!-- TABLA  -->
-<div class="table-container">
-    <div class="table-wrapper">
-
-        <!-- CABECERA DE LA TABLA -->
-        <div class="table-header">
-            <?php if ($user->admin == 1): ?>
-                <div class="cell">Usuario</div>
-            <?php endif; ?>
-            <div class="cell">Tipo</div>
-            <div class="cell">Hora</div>
-            <div class="cell">Fecha</div>
-            <div class="cell">Origen</div>
-        </div>
-
-        <!-- SI NO HAY DATOS -->
-        <?php if (empty($historial)): ?>
-            <div class="row-wrapper no-data">
-                <div class="cell">No hay registros disponibles.</div>
-            </div>
-
-        <!-- MOSTRAR DATOS -->
-        <?php else: ?>
-            <?php foreach ($historial as $registro): ?>
-                <div class="row-wrapper">
-
-                    <?php if ($user->admin == 1): ?>
-                        <div class="cell cell-usuario"><?php echo dol_escape_htmltag($registro['usuario']); ?></div>
-                    <?php endif; ?>
-
-                    <div class="cell"><?php echo dol_escape_htmltag($registro['tipo']); ?></div>
-                    <div class="cell"><?php echo dol_escape_htmltag($registro['hora']); ?></div>
-                    <div class="cell"><?php echo date("d/m/Y", strtotime($registro['fecha'])); ?></div>
-                    <div class="cell"><?php echo dol_escape_htmltag($registro['tipo_registro'] ?? 'manual'); ?></div>
-
-                    <div class="floating-buttons">
-                        <button type="button" class="locButton tableButton" onclick="verUbicacion(<?php echo (int)$registro['id']; ?>)">📍</button>
-
+<div class="div-table-responsive">
+    <table class="noborder allwidth">
+        <thead class="liste_titre">
+            <tr>
+                <?php if ($user->admin == 1): ?>
+                    <th class="center">Usuario</th>
+                <?php endif; ?>
+                <th class="center">Tipo</th>
+                <th class="center">Hora</th>
+                <th class="center">Fecha</th>
+                <th class="center">Origen</th>
+                <th class="center">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if (empty($historial)): ?>
+                <tr class="oddeven">
+                    <td colspan="<?php echo ($user->admin == 1) ? 6 : 5; ?>" class="opacitymedium center">
+                        ⚠️ No hay registros disponibles.
+                    </td>
+                </tr>
+            <?php else: ?>
+                <?php foreach ($historial as $registro): ?>
+                    <tr class="oddeven valignmiddle">
                         <?php if ($user->admin == 1): ?>
-                            <button type="button" class="editButton tableButton" onclick="abrirModalEditar(<?php echo (int)$registro['id']; ?>)">✏️</button>  
+                            <td class="center"><?php echo dol_escape_htmltag($registro['usuario']); ?></td>
                         <?php endif; ?>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        <?php endif; ?>
-
-    </div>
+                        <td class="center"><?php echo dol_escape_htmltag($registro['tipo']); ?></td>
+                        <td class="center"><?php echo dol_escape_htmltag($registro['hora']); ?></td>
+                        <td class="center"><?php echo date("d/m/Y", strtotime($registro['fecha'])); ?></td>
+                        <td class="center"><?php echo dol_escape_htmltag($registro['tipo_registro'] ?? 'manual'); ?></td>
+                        <td class="center nowrap">
+                            <button class="ui-button ui-widget" onclick="verUbicacion(<?php echo (int)$registro['id']; ?>)">📍</button>
+                            <?php if ($user->admin == 1): ?>
+                                <button class="ui-button ui-widget" onclick="abrirModalEditar(<?php echo (int)$registro['id']; ?>)">✏️</button>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </tbody>
+    </table>
 </div>
 
-<!-- ===================== -->
-<!--     BOTÓN VOLVER      -->
-<!-- ===================== -->
-<div class="backContainer">
-    <a href="<?php echo dol_buildpath('/custom/picaje/picajeindex.php', 1); ?>" class="backArrow">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-big-left-icon lucide-arrow-big-left">
-            <path d="M18 15h-6v4l-7-7 7-7v4h6v6z"/>
-        </svg>
-    </a>
-</div>
 
-<!-- MODAL PARA EDITAR -->
-<div id="modalEditar" class="modal-overlay" style="display: none;">
-    <div class="modal-content" id="modalEditarContenido"></div>
-</div>
+<!-- MODALES -->
+<?php include_once dol_buildpath('/custom/picaje/tpl/modales.php', 0); ?>
 
-<!-- MODAL PARA VER UBICACIÓN -->
+
 <div id="modalUbicacion" class="modal-overlay" style="display: none;">
     <div class="modal-content" id="modalUbicacionContenido"></div>
-</div>
-
-<!-- MODAL PARA CREAR PICAJE -->
-<div id="modalCrearPicaje" class="modal-overlay" style="display: none;">
-    <div class="modal-content" id="modalCrearPicajeContenido"></div>
 </div>
 
 

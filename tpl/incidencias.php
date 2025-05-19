@@ -9,7 +9,8 @@ if (!$user->admin || $user->id != 1) {
     accessforbidden();
 }
 
-echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/incidencias.css', 1) . '">';
+echo '<link rel="stylesheet" href="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/style.css.php">';
+echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/layout.css', 1) . '">';
 echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/modal.css', 1) . '">';
 
 global $db, $conf;
@@ -18,9 +19,14 @@ global $db, $conf;
 <!-- ===================== -->
 <!--       ENCABEZADO      -->
 <!-- ===================== -->
-<header class="page-header">
-    <h1>Incidencias Registradas</h1>
-</header>
+<div class="titre">
+    <span class="inline-block valignmiddle">
+        <?php echo img_picto('', 'picaje@picaje'); ?>
+    </span>
+    <span class="inline-block valignmiddle" style="font-size: 22px; font-weight: bold;">
+        <?php echo $langs->trans("Incidencias"); ?>
+    </span>
+</div>
 
 <?php
 
@@ -36,123 +42,67 @@ $sql = "SELECT i.*, u.firstname, u.lastname
 $res = $db->query($sql);
 
 if ($res && $db->num_rows($res)) {
-    print '<div class="main-content" style="margin:auto;max-width:900px">';
-    print '<table class="liste">';
-    print '<tr><th>Usuario</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Motivo</th><th>Estado</th><th>Resolución</th><th>Acción</th></tr>';
+    echo '<div class="div-table-responsive" style="margin-top: 20px;">';
+    echo '<table class="noborder allwidth">';
+    echo '<thead class="liste_titre">';
+    echo '<tr><th>Usuario</th><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Motivo</th><th>Estado</th><th>Resolución</th><th>Acción</th></tr>';
+    echo '</thead><tbody>';
 
     while ($obj = $db->fetch_object($res)) {
-      $nombre = dol_escape_htmltag($obj->firstname . ' ' . $obj->lastname);
-      switch ($obj->tipo) {
-            case 'horas_extra':
-                $tipo = 'Horas extra';
-                break;
-            case 'salida_anticipada':
-                $tipo = 'Salida anticipada';
-                break;
-          case 'entrada_anticipada':
-                $tipo = 'Entrada anticipada';
-                break;
-            case 'olvido_picaje':
-                $tipo = 'Olvido de picaje';
-                break;
-            case 'otro':
-                $tipo = 'Otro';
-                break;
-            default:
-                $tipo = ucfirst($obj->tipo);
+        $nombre = dol_escape_htmltag($obj->firstname . ' ' . $obj->lastname);
+        $fecha = dol_print_date(dol_stringtotime($obj->fecha), 'day');
+        $hora = substr($obj->hora, 0, 5);
+
+        // Tipo legible
+        switch ($obj->tipo) {
+            case 'horas_extra': $tipo = 'Horas extra'; break;
+            case 'salida_anticipada': $tipo = 'Salida anticipada'; break;
+            case 'entrada_anticipada': $tipo = 'Entrada anticipada'; break;
+            case 'olvido_picaje': $tipo = 'Olvido de picaje'; break;
+            case 'otro': $tipo = 'Otro'; break;
+            default: $tipo = ucfirst($obj->tipo); break;
         }
 
-      $fecha = dol_print_date(dol_stringtotime($obj->fecha), 'day');
-      $hora = substr($obj->hora, 0, 5);
-      $estado = dol_escape_htmltag($obj->status);
-      $estadoClase = strtolower($estado); // pendiente o resuelta
-      $resolucion = !empty($obj->resolucion) ? dol_escape_htmltag($obj->resolucion) : '-';
-      $urlHistorial = dol_buildpath('/custom/picaje/picajeindex.php', 1) . '?view=historial&user_id=' . $obj->fk_user . '&desde=incidencias';
-  
-      print '<tr>';
-      print "<td>$nombre</td>";
-      print "<td>$fecha</td>";
-      print "<td>$hora</td>";
-      print "<td>$tipo</td>";
-      print "<td>" . dol_escape_htmltag($obj->comentario) . "</td>";
-  
-      // Columna de estado (editable solo por admin)
-      print '<td>';
-      if ($user->admin == 1) {
-          print '<button class="btn-status status-btn ' . $estadoClase . '" data-id="' . $obj->rowid . '" data-status="' . $estado . '">' . $estado . '</button>';
-      } else {
-          print '<span class="status-btn ' . $estadoClase . '">' . $estado . '</span>';
-      }
-      print '</td>';
+        $estado = dol_escape_htmltag($obj->status);
+        $estadoClase = strtolower($estado); // pendiente o resuelta
+        $resolucion = !empty($obj->resolucion) ? dol_escape_htmltag($obj->resolucion) : '-';
+        $urlHistorial = dol_buildpath('/custom/picaje/picajeindex.php', 1) . '?view=historial&user_id=' . $obj->fk_user . '&desde=incidencias';
 
-      print "<td>$resolucion</td>";
-  
-      // Columna de acción (Ver historial + Registrar picada si corresponde)
-      print '<td>';
-      print '<a class="btn-historial-incidencias" href="' . $urlHistorial . '">Ver historial</a>';
-      
-      if (strtolower($estado) === 'pendiente') {
-        print '<button class="btn-crear-incidencias" onclick="abrirModalCrearPicaje(' . (int)$obj->rowid . ')">⚠️ Crear picaje</button>';
-      }
-      print '</td>';
-  }
-  
-  }
+        echo '<tr class="oddeven">';
+        echo "<td class=\"center\">$nombre</td>";
+        echo "<td class=\"center\">$fecha</td>";
+        echo "<td class=\"center\">$hora</td>";
+        echo "<td class=\"center\">$tipo</td>";
+        echo "<td class=\"center\">" . dol_escape_htmltag($obj->comentario) . "</td>";
+
+        // Estado editable
+        echo '<td class="center">';
+        if ($user->admin == 1) {
+            echo '<button class="btn-status status-btn ' . $estadoClase . '" data-id="' . $obj->rowid . '" data-status="' . $estado . '">' . $estado . '</button>';
+        } else {
+            echo '<span class="status-btn ' . $estadoClase . '">' . $estado . '</span>';
+        }
+        echo '</td>';
+
+        echo "<td class=\"center\">$resolucion</td>";
+
+        // Acciones
+        echo '<td class="center">';
+        echo '<a class="btn-historial-incidencias" href="' . $urlHistorial . '">Ver historial</a>';
+        if ($estadoClase === 'pendiente') {
+            echo '<button class="btn-crear-incidencias" onclick="abrirModalCrearPicaje(' . (int)$obj->rowid . ')">⚠️ Crear picaje</button>';
+        }
+        echo '</td>';
+
+        echo '</tr>';
+    }
+
+    echo '</tbody></table></div>';
+}
 ?>
-
-<!-- =================== -->
-<!--  MODAL INCIDENCIA   -->
-<!-- =================== -->
-
-<div id="modal-status" class="modal-overlay">
-  <div class="modal-content">
-    <div class="modal-inner-form">
-      <button class="cerrarModal" onclick="cerrarModal()">×</button>
-      <h2>Cambiar estado de la incidencia</h2>
-      <form id="form-status">
-        <input type="hidden" name="incidencia_id" id="incidencia_id">
-
-        <div class="estado-linea">
-          <label for="nuevo_status">Nuevo estado:</label>
-          <select name="nuevo_status" id="nuevo_status">
-            <option value="Pendiente">Pendiente</option>
-            <option value="Resuelta">Resuelta</option>
-          </select>
-        </div>
-
-        <div class="bloque-resolucion">
-          <label for="resolucion">Mensaje de resolución:</label>
-          <textarea id="resolucion" name="resolucion" rows="4" placeholder="Describe brevemente la resolución..."></textarea>
-        </div>
-
-        <div class="modal-actions">
-          <button type="submit" class="guardarButton">Guardar</button>
-          <button type="button" onclick="cerrarModal()">Cancelar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
 
 
 <!-- MODAL PARA CREAR PICAJE -->
-<div id="modalCrearPicaje" class="modal-overlay" style="display: none;">
-    <div class="modal-content" id="modalCrearPicajeContenido"></div>
-</div>
+<?php include_once dol_buildpath('/custom/picaje/tpl/modales.php', 0); ?>
 
 <script src="<?php echo dol_buildpath('/custom/picaje/js/picaje.js', 1); ?>"></script>
-
-
-
-<!-- =================== -->
-<!--    BOTÓN VOLVER     -->
-<!-- =================== -->
-
-<div class="backContainer">
-    <a href="<?php echo dol_buildpath('/custom/picaje/picajeindex.php', 1); ?>" class="backArrow">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-big-left-icon lucide-arrow-big-left">
-            <path d="M18 15h-6v4l-7-7 7-7v4h6v6z"/>
-        </svg>
-    </a>
-</div>

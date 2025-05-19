@@ -1,103 +1,188 @@
 /* ===================== */
-/*     ESTILOS GLOBALES  */
+/*     AJUSTES ICONO     */
 /* ===================== */
 
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
-    text-align: center;
-}
-
-/* ===================== */
-/*      ENCABEZADO       */
-/* ===================== */
-
-.page-header {
-    background-color: rgb(104, 63, 105);
-    color: white;
-    font-size: 24px;
-    border-radius: 5px;
-    margin-bottom: 30px;
-}
-
-/* ===================== */
-/*    CONTENEDOR FLEX    */
-/* ===================== */
-
-.container-flex {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin-top: 40px;
-    padding: 0 20px;
-}
-
-/* ===================== */
-/*     BLOQUES OPCIÓN    */
-/* ===================== */
-
-.main-content {
-    background-color: rgb(242, 221, 247);
-    width: 300px;
-    padding: 20px;
+.seccion-modulo {
+    width: 280px;
+    height: 220px;
+    background-color: var(--background, #f9f9f9);
+    border: 1px solid #ccc;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
     text-align: center;
-    transition: transform 0.2s ease;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    text-decoration: none !important;
+    color: inherit;
 }
 
-.main-content:hover {
-    transform: scale(1.03);
+.seccion-modulo:hover {
+    transform: scale(1.2);
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+    text-decoration: none !important;
+    color: inherit;
 }
 
-.main-content p {
+.seccion-icono {
+    font-size: 42px;
+    margin-bottom: 10px;
+    color: var(--colortexttitle, #333);
+}
+
+.seccion-titulo {
+    font-weight: bold;
     font-size: 18px;
-    color: #050505;
-    margin-bottom: 20px;
-    text-decoration: none;
+    margin-bottom: 5px;
+}
+
+.seccion-descripcion {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.secciones-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 40px;
 }
 
 /* ===================== */
-/*     BOTÓN PRINCIPAL   */
+/*    FILTRO FORMULARIO  */
+/* ===================== */
+.filtro-formulario {
+    margin: 1rem 0;
+    padding: 1rem;
+    background-color: #fff;
+    border-radius: 6px;
+    max-height: 500px;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+}
+.filtro-formulario.oculto {
+    max-height: 0;
+    padding: 0;
+}
+
+.toggle-filtros {
+    background-color: var(--colorbacktitle, #684069);
+    color: white;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 5px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    margin-bottom: 1rem;
+}
+
+.toggle-filtros:hover {
+    background-color: #f2ddf7;
+}
+
+/* ===================== */
+/*     TABLAS GLOBALES   */
+/* ===================== */
+thead.liste_titre {
+    background-color: var(--colorbacktitle, #684069);
+    color: var(--colortexttitle, #fff);
+}
+
+thead.liste_titre th {
+    padding: 8px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.oddeven td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.no-data td {
+    font-style: italic;
+    color: gray;
+}
+
+.cell-usuario {
+    font-weight: bold;
+    color: var(--colorbacktitle, #684069);
+}
+
+.oculto {
+    display: none !important;
+}
+
+/* ===================== */
+/*  BOTÓN CREAR PICAJE   */
 /* ===================== */
 
-.mainButton {
-    background-color: #9b8b9b;
-    color: white;
-    padding: 10px 20px;
+.btn-crear-incidencias {
+    display: inline-block;
+    padding: 4px 8px;
+    background-color: #ebe07f;
+    color: #333;
+    text-decoration: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: center;
+    white-space: nowrap;
+    transition: background-color 0.2s ease;
+}
+
+.btn-crear-incidencias:hover {
+    background-color: #e0e0e0;
+}
+
+/* ===================== */
+/*   BOTÓN HISTORIAL     */
+/* ===================== */
+
+.btn-historial-incidencias {
+    display: inline-block;
+    padding: 4px 8px;
+    background-color: #f0f0f0;
+    color: #333;
+    text-decoration: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: center;
+    white-space: nowrap;
+    transition: background-color 0.2s ease;
+}
+
+.btn-historial-incidencias:hover {
+    background-color: #e0e0e0;
+}
+
+/* ===================== */
+/*     BOTÓN ESTADO      */
+/* ===================== */
+
+.status-btn {
+    padding: 0.4rem 0.8rem;
     border: none;
     border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
     font-weight: bold;
-    transition: background-color 0.3s ease;
-    text-decoration: none;
-    display: inline-block;
+    cursor: pointer;
+    font-size: 0.85rem;
 }
 
-.mainButton:hover {
-    background-color: #532d54;
-    text-decoration: none;
+.status-btn.pendiente {
+    background-color: #fdecea;
+    color: #c0392b;
+    border: 1px solid #e74c3c;
 }
 
-  
-/* ================ */
-/*  BOTÓN AJUSTES   */
-/* ================ */
-
-.icon-ajustes {
-    display: inline-block;
-    position: absolute;
-    top: 200px; /* Ajusta según tu diseño */
-    right: 30px;
-    color: #333;
-    transition: transform 0.2s ease;
-}
-
-.icon-ajustes:hover {
-    transform: scale(1.2);
-    color: #6b4d6b;
+.status-btn.resuelta {
+    background-color: #eafaf1;
+    color: #27ae60;
+    border: 1px solid #2ecc71;
 }

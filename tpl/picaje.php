@@ -18,7 +18,8 @@ require_once DOL_DOCUMENT_ROOT . '/custom/picaje/class/picaje.class.php';
 
 
 // 3) Cargar estilos
-echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/picaje.css', 1) . '">';
+echo '<link rel="stylesheet" href="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/style.css.php">';
+echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/layout.css', 1) . '">';
 echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/modal.css', 1) . '">';
 
 // =====================
@@ -27,6 +28,7 @@ echo '<link rel="stylesheet" href="' . dol_buildpath('/custom/picaje/css/modal.c
 
 $registros = obtenerRegistrosDiarios();
 $estado = Picaje::getEstadoHoy($db, $user->id);
+$horario = getHorarioUsuario($user->id);
 $ha_entrada = $estado['entrada'];
 $ha_salida = $estado['salida'];
 $entrada_manual_justificada = getDolGlobalInt('PICAR_ENTRADA_ANTICIPADA_JUSTIFICADA');
@@ -67,13 +69,21 @@ if (!$ha_entrada) {
 <!-- ===================== -->
 <!--       ENCABEZADO      -->
 <!-- ===================== -->
-<header class="page-header">
-    <h1>Realizar Picaje</h1>
-</header>
+<div class="titre">
+    <span class="inline-block valignmiddle">
+        <?php echo img_picto('', 'picaje@picaje'); ?>
+    </span>
+    <span class="inline-block valignmiddle" style="font-size: 22px; font-weight: bold;">
+        <?php echo $langs->trans("Panel Picaje"); ?>
+    </span>
+</div>
 
-<div class="container-flex">
-    <div class="main-content">
-        <h2>Registro de Picaje</h2>
+<div class="secciones-grid">
+
+    <!-- Bloque Picaje actual -->
+    <div class="seccion-modulo" style="width: 280px;">
+        <div class="seccion-icono">🕒</div>
+        <div class="seccion-titulo">Picaje actual</div>
 
         <?php if ($mostrarBoton): ?>
             <form id="form-picaje" method="post">
@@ -83,97 +93,73 @@ if (!$ha_entrada) {
                 <input type="hidden" name="longitud" id="longitud">
                 <input type="hidden" name="justificacion" id="inputJustificacion">
 
-                <button type="submit" class="picajeButton" id="boton-picar" <?php echo $desactivarBoton; ?>>
+                <button type="submit" class="ui-button ui-widget ui-state-default ui-corner-all" id="boton-picar" <?php echo $desactivarBoton; ?>>
                     <?php echo $textoBoton; ?>
                 </button>
             </form>
         <?php else: ?>
-            <p>✅ Ya has registrado entrada y salida hoy o la salida será automática.</p>
+            <div class="opacitymedium">✅ Ya has registrado entrada y salida hoy o la salida será automática.</div>
         <?php endif; ?>
     </div>
 
-    <div class="main-content">
-        <h2>Registro Diario (<?php echo date("d/m/Y"); ?>)</h2>
-        <table class="customTable">
-            <tr>
-                <th>Hora</th>
-                <th>Tipo</th>
-                <th>Origen</th>
-            </tr>
+    <!-- Bloque Registro Diario más ancho -->
+    <div class="seccion-modulo" style="width: 300px; height: 300px;">
+        <div class="seccion-icono">📋</div>
+        <div class="seccion-titulo">Registro Diario</div>
+        <div class="seccion-descripcion"><?php echo date("d/m/Y"); ?></div>
 
-            <?php if (empty($registros)): ?>
-                <tr>
-                    <td colspan="3">No hay registros hoy.</td>
-                </tr>
-            <?php else: ?>
-                <?php foreach ($registros as $registro): ?>
+        <div class="div-table-responsive" style="margin-top: 10px;">
+            <table class="noborder allwidth">
+                <thead class="liste_titre">
                     <tr>
-                        <td><?php echo dol_escape_htmltag($registro['hora']); ?></td>
-                        <td><?php echo ucfirst(dol_escape_htmltag($registro['tipo'])); ?></td>
-                        <td><em><?php echo dol_escape_htmltag($registro['origen']); ?></em></td>
+                        <th class="center">Hora</th>
+                        <th class="center">Tipo</th>
+                        <th class="center">Origen</th>
                     </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </table>
+                </thead>
+                <tbody>
+                    <?php if (empty($registros)): ?>
+                        <tr class="oddeven">
+                            <td colspan="3" class="center opacitymedium">No hay registros hoy.</td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($registros as $registro): ?>
+                            <tr class="oddeven">
+                                <td class="center"><?php echo dol_escape_htmltag($registro['hora']); ?></td>
+                                <td class="center"><?php echo ucfirst(dol_escape_htmltag($registro['tipo'])); ?></td>
+                                <td class="center"><em><?php echo dol_escape_htmltag($registro['origen']); ?></em></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
+
 </div>
+
 
 <footer>
-    <?php
-            $autoSalidaActiva = getDolGlobalInt('PICAR_SALIDA_AUTOMATICA');
-            $horario = getHorarioUsuario($user->id);
-
-            if ($autoSalidaActiva && $horario && $horario->hora_salida) {
-                echo '
-                <div class="salida-auto-alert">
-                    🕒 <strong>Recuerda:</strong> La <strong>salida automática</strong> está activada hoy a las <strong>' . dol_escape_htmltag($horario->hora_salida) . '</strong>.<br>
-                </div>';
-            }
-    ?>
+    <!-- Bloque info salida automática -->
+ <?php if ($salida_automatica && $horario && $horario->hora_salida): ?>
+    <div class="fiche center" style="margin-top: 10px;">
+        <div class="info" style="display: inline-block; max-width: 600px;">
+            🕒 <strong>Recuerda:</strong> La <strong>salida automática</strong> está activada hoy a las 
+            <strong><?php echo dol_escape_htmltag($horario->hora_salida); ?></strong>.
+        </div>
+    </div>
+ <?php endif; ?>
 </footer>
 
-<!-- ======================================== -->
+<style>
+    .seccion-modulo:hover {
+        transform: none !important;
+        box-shadow: none !important;
+    }
+</style>
+
 <!--   MODAL JUSTIFICACIÓN  ENTRADA Y SALIDA  -->
-<!-- ======================================== -->
-
-<div id="modalJustificacion" class="modal-overlay" style="display: none;">
-  <div class="modal-content">
-    <button class="cerrarModal" onclick="cerrarModalJustificacion()">✖</button>
-    <div class="modal-inner-form">
-      <h2>✏️ Justificación de Picaje anticipado</h2>
-      <p>Tu hora de entrada/salida prevista aún no ha llegado. Indica el motivo por el cual deseas registrar el picaje:</p>
-      
-      <form onsubmit="event.preventDefault(); enviarJustificacion();">
-        <!-- ✅ Campo oculto para saber si es entrada o salida -->
-        <input type="hidden" name="tipo" value="">
-
-        <label>Tipo de incidencia:</label>
-        <div class="toggle-group">
-          <input type="radio" id="opcion_extra" name="tipoIncidencia" value="horas_extra" required hidden>
-          <label for="opcion_extra" class="toggle-btn">Horas extra</label>
-          
-          <input type="radio" id="opcion_entrada_anticipada" name="tipoIncidencia" value="entrada_anticipada" required hidden>
-          <label for="opcion_entrada_anticipada" class="toggle-btn">Entrada anticipada</label>
-
-          <input type="radio" id="opcion_anticipada" name="tipoIncidencia" value="salida_anticipada" required hidden>
-          <label for="opcion_anticipada" class="toggle-btn">Salida anticipada</label>
-
-          <input type="radio" id="opcion_otro" name="tipoIncidencia" value="otro" required hidden>
-          <label for="opcion_otro" class="toggle-btn">Otro</label>
-        </div>
-
-        <label for="textoJustificacion">Motivo:</label>
-        <textarea id="textoJustificacion" placeholder="Escribe aquí tu motivo..." rows="4" required></textarea>
-
-        <div class="modal-actions">
-          <button type="button" onclick="cerrarModalJustificacion()">Cancelar</button>
-          <button type="submit" class="guardarButton">Confirmar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
+<?php include_once dol_buildpath('/custom/picaje/tpl/modales.php', 0); ?>
 
 <div id="toast" class="toast" style="display:none;"></div>
 
@@ -193,12 +179,11 @@ if (!$ha_entrada) {
 <script>
   const haEntrada = <?php echo $ha_entrada ? 'true' : 'false'; ?>;
   const haSalida = <?php echo $ha_salida ? 'true' : 'false'; ?>;
-  //const salidaManualJustificada = <?php echo getDolGlobalInt('PICAR_SALIDA_MANUAL_JUSTIFICADA') ? 'true' : 'false'; ?>;//
+  const salidaManualJustificada = <?php echo getDolGlobalInt('PICAR_SALIDA_MANUAL_JUSTIFICADA') ? 'true' : 'false'; ?>;
   const salidaAutomaticaActiva = <?php echo getDolGlobalInt('PICAR_SALIDA_AUTOMATICA') ? 'true' : 'false'; ?>;
   const entradaManualJustificada = <?php echo getDolGlobalInt('PICAR_ENTRADA_ANTICIPADA_JUSTIFICADA') ? 'true' : 'false'; ?>;
   const entradaAutomaticaActiva = <?php echo getDolGlobalInt('PICAR_AUTO_LOGIN') ? 'true' : 'false'; ?>;      
 
-  const salidaManualJustificada = true;
 
 document.addEventListener('DOMContentLoaded', function () {
   inicializarPicaje(
@@ -219,19 +204,6 @@ console.log("🚦 salidaAutomaticaActiva:", salidaAutomaticaActiva);
 
 </script>
 
-
-
-<!-- ===================== -->
-<!--     BOTÓN VOLVER      -->
-<!-- ===================== -->
-<div class="backContainer">
-    <a href="<?php echo dol_buildpath('/custom/picaje/picajeindex.php', 1); ?>" class="backArrow">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-big-left-icon lucide-arrow-big-left">
-            <path d="M18 15h-6v4l-7-7 7-7v4h6v6z"/>
-        </svg>
-    </a>
-</div>
 
 
 

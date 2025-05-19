@@ -40,31 +40,41 @@ if (!empty($registro['fecha_hora'])) {
 
 ?>
 
-<div class="modal-inner-form">
-    <button class="cerrarModal" onclick="cerrarModalEditar()">×</button>
-    <h2>Editar Registro de Picaje</h2>
+<!-- ===================== -->
+<!--  MODAL EDITAR PICAJE  -->
+<!-- ===================== -->
 
-    <form onsubmit="return guardarEdicion(event)">
-        <input type="hidden" name="id_picaje" value="<?php echo $registro['id']; ?>">
+<h2 class="titre">Editar Registro de Picaje</h2>
 
-        <label for="tipo">Tipo de Picaje:</label>
-        <select name="tipo" id="tipo">
+<form onsubmit="return guardarEdicion(event)">
+    <input type="hidden" name="id_picaje" value="<?php echo $registro['id']; ?>">
+
+    <div class="formelement">
+        <label for="tipo">Tipo de Picaje:</label><br>
+        <select name="tipo" id="tipo" class="flat ui-widget ui-corner-all">
             <option value="entrada" <?php if ($registro['tipo'] === 'entrada') echo 'selected'; ?>>Entrada</option>
             <option value="salida" <?php if ($registro['tipo'] === 'salida') echo 'selected'; ?>>Salida</option>
         </select>
+    </div>
 
-        <label for="hora">Hora:</label>
-        <input type="time" name="hora" id="hora" value="<?php echo $hora; ?>" required>
+    <div class="formelement">
+        <label for="hora">Hora:</label><br>
+        <input type="time" name="hora" id="hora" value="<?php echo $hora; ?>" required class="flat ui-widget ui-corner-all">
+    </div>
 
-        <label for="fecha">Fecha:</label>
-        <input type="date" name="fecha" id="fecha" value="<?php echo $fecha; ?>" required>
+    <div class="formelement">
+        <label for="fecha">Fecha:</label><br>
+        <input type="date" name="fecha" id="fecha" value="<?php echo $fecha; ?>" required class="flat ui-widget ui-corner-all">
+    </div>
 
-        <label for="comentario">Comentario (obligatorio):</label>
-        <textarea name="comentario" id="comentario" rows="4" required></textarea>
+    <div class="formelement">
+        <label for="comentario">Comentario (obligatorio):</label><br>
+        <textarea name="comentario" id="comentario" rows="4" required class="flat ui-widget ui-corner-all" style="width: 100%;"></textarea>
+    </div>
 
-        <div class="modal-actions">
-            <button type="submit" class="guardarButton">Guardar Cambios</button>
-            <button type="button" onclick="cerrarModalEditar()">Cancelar</button>
-        </div>
-    </form>
-</div>
+    <div style="margin-top: 20px; text-align: center;">
+        <button type="submit" class="ui-button ui-widget ui-state-default ui-corner-all">💾 Guardar Cambios</button>
+        <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all" onclick="cerrarModalEditar()">Cancelar</button>
+    </div>
+</form>
+

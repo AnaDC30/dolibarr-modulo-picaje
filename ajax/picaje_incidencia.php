@@ -44,37 +44,51 @@ if ($res && $db->num_rows($res) > 0) {
 
 ?>
 
-<div class="modal-inner-form">
-    <button class="cerrarModal" onclick="cerrarModalCrearPicaje()">×</button>
-    <h2>Crear Picaje desde Incidencia</h2>
+<!-- ===================== -->
+<!--  MODAL CREAR PICAJE   -->
+<!-- ===================== -->
+
+    <h2 class="titre">Crear Picaje desde Incidencia</h2>
 
     <form id="picaje_incidencia">
-        <label>Incidencia:</label>
-        <select name="incidencia" id="incidencia">
-            <option value="">--Selecciona--</option>
-            <?php echo $opciones; ?>
-        </select>
+        <div class="formelement">
+            <label for="incidencia">Incidencia:</label><br>
+            <select name="incidencia" id="incidencia" class="flat ui-widget ui-corner-all" required>
+                <option value="">--Selecciona--</option>
+                <?php echo $opciones; ?>
+            </select>
+        </div>
 
         <input type="hidden" name="fk_user" id="fk_user">
 
-        <label>Tipo:</label>
-        <select name="tipo" required>
-            <option value="entrada">Entrada</option>
-            <option value="salida">Salida</option>
-        </select>
+        <div class="formelement">
+            <label for="tipo">Tipo:</label><br>
+            <select name="tipo" id="tipo" class="flat ui-widget ui-corner-all" required>
+                <option value="entrada">Entrada</option>
+                <option value="salida">Salida</option>
+            </select>
+        </div>
 
-        <label>Fecha:</label>
-        <input type="date" name="fecha" id="fecha" required>
+        <div class="formelement">
+            <label for="fecha">Fecha:</label><br>
+            <input type="date" name="fecha" id="fecha" class="flat ui-widget ui-corner-all" required>
+        </div>
 
-        <label>Hora:</label>
-        <input type="time" name="hora" id="hora" required>
+        <div class="formelement">
+            <label for="hora">Hora:</label><br>
+            <input type="time" name="hora" id="hora" class="flat ui-widget ui-corner-all" required>
+        </div>
 
-        <label>Comentario:</label>
-        <textarea name="comentario" required></textarea>
+        <div class="formelement">
+            <label for="comentario">Comentario:</label><br>
+            <textarea name="comentario" rows="4" class="flat ui-widget ui-corner-all" required style="width: 100%;"></textarea>
+        </div>
 
-        <div class="modal-actions">
-            <button type="submit" class="guardarButton">Guardar Picaje</button>
-            <button type="button" onclick="cerrarModalCrearPicaje()">Cancelar</button>
+        <div style="margin-top: 20px; text-align: center;">
+            <button type="submit" class="ui-button ui-widget ui-state-default ui-corner-all">💾 Guardar Picaje</button>
+            <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all" onclick="cerrarModalCrearPicaje()">Cancelar</button>
         </div>
     </form>
-</div>
+
+
+
