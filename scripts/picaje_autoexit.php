@@ -28,6 +28,11 @@ if (empty($conf->global->PICAR_SALIDA_AUTOMATICA)) {
     exit;
 }
 
+// Obtener coordenadas desde el JSON recibido (si se envían)
+$data = json_decode(file_get_contents('php://input'), true);
+$latitud = isset($data['latitud']) ? (float)$data['latitud'] : null;
+$longitud = isset($data['longitud']) ? (float)$data['longitud'] : null;
+
 // Buscar usuarios con entrada hoy pero sin salida
 $sql = "
 SELECT fk_user
@@ -50,39 +55,31 @@ if (!$resql) {
 }
 
 $now = strtotime(date('H:i:s'));
+$ejecutadas = 0;
 
 while ($obj = $db->fetch_object($resql)) {
     $user = new User($db);
     $user->fetch($obj->fk_user);
+
     $horario = getHorarioUsuario($user->id);
     $hora_salida = $horario->hora_salida ?: getHoraSalidaEmpresaPorDefecto();
     $hora_limite = strtotime($hora_salida);
 
-
     if ($now < $hora_limite) {
+        echo "⏳ Usuario {$user->id} aún no alcanza hora de salida ({$hora_salida})\n";
         continue;
     }
 
-    // Insertar salida automática
-    $fecha_hora = date('Y-m-d H:i:s');
-    $sqlInsert = "
-        INSERT INTO " . MAIN_DB_PREFIX . "picaje (
-            fecha_hora, tipo, fk_user, tipo_registro
-        ) VALUES (
-            '" . $db->escape($fecha_hora) . "',
-            'salida',
-            " . (int)$user->id . ",
-            'auto'
-        )";
-
-    if ($db->query($sqlInsert)) {
-        echo "✅ Picaje automático registrado\n";
+    if (ejecutarSalidaAutomaticaUsuario($user->id, $latitud, $longitud)) {
+        echo "✅ Salida automática registrada para usuario {$user->id}\n";
+        $ejecutadas++;
     } else {
-        echo "❌ Error al insertar picaje: " . $db->lasterror() . "\n";
+        echo "❌ Fallo al registrar salida para usuario {$user->id}\n";
     }
 }
 
-echo "\n✔️ Proceso completado\n";
+echo "\n✔️ Proceso completado. Salidas registradas: {$ejecutadas}\n";
+echo "</pre>";
 exit;
 
 
