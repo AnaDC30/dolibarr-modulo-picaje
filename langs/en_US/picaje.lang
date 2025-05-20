@@ -1,0 +1,42 @@
+# Translation file
+
+#
+# Generic
+#
+
+# Module label 'ModulePicajeName'
+ModulePicajeName = Picaje
+# Module description 'ModulePicajeDesc'
+ModulePicajeDesc = Picaje description
+
+#
+# Admin page
+#
+PicajeSetup = Picaje setup
+Settings = Settings
+PicajeSetupPage = Picaje setup page
+NewSection=New section
+PICAJE_MYPARAM1 = My param 1
+PICAJE_MYPARAM1Tooltip = My param 1 tooltip
+PICAJE_MYPARAM2=My param 2
+PICAJE_MYPARAM2Tooltip=My param 2 tooltip
+
+
+#
+# About page
+#
+About = About
+PicajeAbout = About Picaje
+PicajeAboutPage = Picaje about page
+
+#
+# Sample page
+#
+PicajeArea = Home Picaje
+MyPageName = My page name
+
+#
+# Sample widget
+#
+MyWidget = My widget
+MyWidgetDescription = My widget description

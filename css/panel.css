@@ -1,0 +1,120 @@
+
+/* ===================== */
+/*    BOTÓN DOLIBARR     */
+/* ===================== */
+#btnBoxPicaje,
+#btnPicajePanel {
+    font-size: 13px;
+    font-weight: 500;
+    color: #fff;
+    background-color: var(--colortexttitle); /* se adapta al tema Dolibarr */
+    border: 1px solid #ccc;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    transition: background-color 0.2s ease;
+}
+
+#btnBoxPicaje:hover,
+#btnPicajePanel:hover {
+    background-color: #444;
+    text-decoration: none;
+}
+
+#btnBoxPicaje:active,
+#btnPicajePanel:active {
+    transform: scale(0.98);
+}
+
+#btnBoxPicaje::before,
+#btnPicajePanel::before {
+    content: "🕘 ";
+    margin-right: 6px;
+}
+
+/* ===================== */
+/*      TOAST ESTILO     */
+/* ===================== */
+#toast,
+#boxToast {
+    margin-top: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 15px;
+    text-align: center;
+    color: white;
+    display: none;
+    background-color: #333;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* ===================== */
+/*    CONTENEDOR PANEL   */
+/* ===================== */
+.center {
+    text-align: center;
+    padding-top: 30px;
+}
+
+/* ============================ */
+/*     BOX DE INCIDENCIAS      */
+/* ============================ */
+.boxcontent {
+    padding: 10px;
+}
+
+.boxcontent table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.boxcontent table th,
+.boxcontent table td {
+    padding: 6px 8px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.boxcontent table.liste_titre th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    color: #333;
+    border-bottom: 1px solid #ccc;
+}
+
+.boxcontent table tr.oddeven:nth-child(odd) {
+    background-color: #fcfcfc;
+}
+
+.boxcontent table tr.oddeven:nth-child(even) {
+    background-color: #f7f7f7;
+}
+
+.boxcontent .center {
+    text-align: center;
+    margin-top: 8px;
+}
+
+.boxcontent a.button.small {
+    font-size: 13px;
+    padding: 4px 10px;
+    background-color: var(--colortexttitle);
+    border: 1px solid #ccc;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.boxcontent a.button.small:hover {
+    background-color: #444;
+}
+
+.opacitymedium {
+    color: #999;
+    font-style: italic;
+}
+
