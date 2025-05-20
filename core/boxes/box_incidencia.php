@@ -13,21 +13,19 @@ class box_incidencia extends ModeleBoxes {
         global $langs;
         $langs->load("picaje@picaje");
         $this->db = $db;
-
     }
 
-    public function loadBox($max = 5)
-    {
+    public function loadBox($max = 5) {
         global $langs, $user, $db;
         $langs->load("main");
 
+        $cssLink = '<link rel="stylesheet" type="text/css" href="' . dol_buildpath('/custom/picaje/css/panel.css', 1) . '">';
         $cssLink = '<link rel="stylesheet" type="text/css" href="'.dol_buildpath('/custom/picaje/css/panel.css', 1).'">';
-        $html = $cssLink;
-        $html .= '<ul class="incidencia-box-list">';
+        print $cssLink;
 
-        $this->info_box_head = array(
-            'text' => $langs->trans("📌 Incidencias Pendientes"),
-        );
+        $this->info_box_head = [
+            'text' => $langs->trans("📌 Incidencias Pendientes")
+        ];
 
         $sql = "SELECT fecha, tipo, comentario, fk_user 
                 FROM llx_picaje_incidencias 
@@ -41,41 +39,55 @@ class box_incidencia extends ModeleBoxes {
 
         $resql = $db->query($sql);
 
+        $html = '<div class="boxcontent">';
+        $html .= '<table class="noborder allwidth">';
+        $html .= '<thead class="liste_titre">';
+        $html .= '</thead>';
+        $html .= '<tbody>';
+
         if ($resql && $db->num_rows($resql)) {
             while ($obj = $db->fetch_object($resql)) {
-                $fecha = dol_print_date(dol_stringtotime($obj->fecha), 'day'); 
-                $linea = '🔴 '. dol_escape_htmltag($obj->comentario) . ' - ' . $fecha;
+                $fecha = dol_print_date(dol_stringtotime($obj->fecha), 'day');
+                $comentario = dol_escape_htmltag($obj->comentario);
+
+                $html .= '<tr class="oddeven">';
+                $html .= '<td>' . $comentario . '</td>';
 
                 if ($user->admin) {
                     require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
                     $usuarioObj = new User($db);
+                    $nombreUsuario = '';
                     if ($usuarioObj->fetch($obj->fk_user) > 0) {
                         $nombreUsuario = $usuarioObj->getFullName($langs);
-                        $linea .= ' - <small>👤 ' . dol_escape_htmltag($nombreUsuario) . '</small>';
                     }
+                    $html .= '<td>👤' . dol_escape_htmltag($nombreUsuario) . '</td>';
                 }
 
-                $html .= '<li>' . $linea . '</li>';
+                $html .= '<td class="right">' . $fecha . '</td>';
+                $html .= '</tr>';
             }
         } else {
-            $html .= '<div>✅ No hay incidencias pendientes.</div>';
+            $html .= '<tr><td colspan="' . ($user->admin ? 3 : 2) . '" class="opacitymedium center">';
+            $html .= '✅ No hay incidencias pendientes.</td></tr>';
         }
 
-        $html .= '<div class="incidencias-vermas">';
+        $html .= '</tbody>';
+        $html .= '</table>';
+
         $url = $user->admin
             ? dol_buildpath('/custom/picaje/picajeindex.php?view=incidencias', 1)
             : dol_buildpath('/custom/picaje/picajeindex.php?view=incidencias_user', 1);
 
-        $html .= '<div class="center"><a class="button small" href="' . $url . '">📝 Ver todas las incidencias</a></div>';
+        $html .= '<div class="center" style="margin-top: 8px;">';
+        $html .= '<a class="button small" href="' . $url . '">📝 Ver todas las incidencias</a>';
+        $html .= '</div>';
+        $html .= '</div>';
 
-        $html .= '</div></div>';
-
-        $this->info_box_contents[0][0] = array(
-            'tr' => 'class="center"',
+        $this->info_box_contents[0][0] = [
+            'tr' => 'class="nohover center"',
             'td' => '',
-            'text' => $html,
-            'asis' => 1
-        );
+            'text' => $html
+        ];
     }
 
     public function showBox($head = null, $contents = null, $nooutput = 0) {

@@ -140,7 +140,7 @@ $params = http_build_query([
                 </tr>
             <?php else: ?>
                 <?php foreach ($historial as $registro): ?>
-                    <tr class="oddeven valignmiddle">
+                    <tr class="oddeven valignmiddle fila-dinamica">
                         <?php if ($user->admin == 1): ?>
                             <td class="center"><?php echo dol_escape_htmltag($registro['usuario']); ?></td>
                         <?php endif; ?>
@@ -159,6 +159,9 @@ $params = http_build_query([
             <?php endif; ?>
         </tbody>
     </table>
+    <div class="center" style="margin-top: 10px;">
+    <button id="btn-mostrar-mas" class="button small">Mostrar más</button>
+    </div>
 </div>
 
 
@@ -203,6 +206,31 @@ $params = http_build_query([
         botonFlotante.classList.add("oculto");
     }
 });
-
 </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const filas = document.querySelectorAll(".fila-dinamica");
+  const btn = document.getElementById("btn-mostrar-mas");
+  const batchSize = 10;
+  let mostradas = 0;
+
+  function mostrarMas() {
+    for (let i = mostradas; i < mostradas + batchSize && i < filas.length; i++) {
+      filas[i].style.display = "";
+    }
+    mostradas += batchSize;
+    if (mostradas >= filas.length && btn) {
+      btn.style.display = "none";
+    }
+  }
+
+  filas.forEach((fila, i) => {
+    fila.style.display = i < batchSize ? "" : "none";
+  });
+
+  if (btn) btn.addEventListener("click", mostrarMas);
+});
+</script>
+
 

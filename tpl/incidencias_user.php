@@ -77,7 +77,7 @@ $res = $db->query($sql);
             };
 
             $estado = strtolower($obj->status);
-            echo '<tr class="oddeven">';
+            echo '<tr class="oddeven fila-dinamica">';
             echo '<td class="center">' . dol_print_date(dol_stringtotime($obj->fecha), 'day') . '</td>';
             echo '<td class="center">' . substr($obj->hora, 0, 5) . '</td>';
             echo '<td class="center">' . dol_escape_htmltag($tipo_legible) . '</td>';
@@ -93,6 +93,9 @@ $res = $db->query($sql);
 </tbody>
 
   </table>
+  <div class="center" style="margin-top: 10px;">
+    <button id="btn-mostrar-mas" class="button small">Mostrar más</button>
+   </div>
 </div>
 
 <!-- MODAL NUEVA INCIDENCIA -->
@@ -101,3 +104,28 @@ $res = $db->query($sql);
 
 <!-- JS -->
 <script src="<?php echo dol_buildpath('/custom/picaje/js/picaje.js', 1); ?>"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const filas = document.querySelectorAll(".fila-dinamica");
+  const btn = document.getElementById("btn-mostrar-mas");
+  const batchSize = 10;
+  let mostradas = 0;
+
+  function mostrarMas() {
+    for (let i = mostradas; i < mostradas + batchSize && i < filas.length; i++) {
+      filas[i].style.display = "";
+    }
+    mostradas += batchSize;
+    if (mostradas >= filas.length && btn) {
+      btn.style.display = "none";
+    }
+  }
+
+  filas.forEach((fila, i) => {
+    fila.style.display = i < batchSize ? "" : "none";
+  });
+
+  if (btn) btn.addEventListener("click", mostrarMas);
+});
+</script>

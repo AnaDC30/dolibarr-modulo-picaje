@@ -68,7 +68,7 @@ if ($res && $db->num_rows($res)) {
         $resolucion = !empty($obj->resolucion) ? dol_escape_htmltag($obj->resolucion) : '-';
         $urlHistorial = dol_buildpath('/custom/picaje/picajeindex.php', 1) . '?view=historial&user_id=' . $obj->fk_user . '&desde=incidencias';
 
-        echo '<tr class="oddeven">';
+        echo '<tr class="oddeven fila-dinamica">';
         echo "<td class=\"center\">$nombre</td>";
         echo "<td class=\"center\">$fecha</td>";
         echo "<td class=\"center\">$hora</td>";
@@ -97,7 +97,10 @@ if ($res && $db->num_rows($res)) {
         echo '</tr>';
     }
 
-    echo '</tbody></table></div>';
+    echo '</tbody></table><div class="center" style="margin-top: 10px;">
+    <button id="btn-mostrar-mas" class="button small">Mostrar más</button>
+</div>
+</div>';
 }
 ?>
 
@@ -106,3 +109,28 @@ if ($res && $db->num_rows($res)) {
 <?php include_once dol_buildpath('/custom/picaje/tpl/modales.php', 0); ?>
 
 <script src="<?php echo dol_buildpath('/custom/picaje/js/picaje.js', 1); ?>"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const filas = document.querySelectorAll(".fila-dinamica");
+  const btn = document.getElementById("btn-mostrar-mas");
+  const batchSize = 10;
+  let mostradas = 0;
+
+  function mostrarMas() {
+    for (let i = mostradas; i < mostradas + batchSize && i < filas.length; i++) {
+      filas[i].style.display = "";
+    }
+    mostradas += batchSize;
+    if (mostradas >= filas.length && btn) {
+      btn.style.display = "none";
+    }
+  }
+
+  filas.forEach((fila, i) => {
+    fila.style.display = i < batchSize ? "" : "none";
+  });
+
+  if (btn) btn.addEventListener("click", mostrarMas);
+});
+</script>

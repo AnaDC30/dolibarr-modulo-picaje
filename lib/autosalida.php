@@ -5,7 +5,7 @@
  * @param int $user_id
  * @return bool
  */
-function ejecutarSalidaAutomaticaUsuario($user_id, $latitude = null, $longitude = null)
+function ejecutarSalidaAutomaticaUsuario($user_id, $lat, $lon)
 {
     global $db, $conf;
 
@@ -29,9 +29,10 @@ function ejecutarSalidaAutomaticaUsuario($user_id, $latitude = null, $longitude 
     // 3) Insertar registro de salida automática CON geo
     $fecha_hora = date('Y-m-d H:i:s');
 
-    // Preparamos los valores para SQL (o NULL si no vinieron)
-    $lat = $latitude  !== null ? "'".$db->escape($latitude)."'"  : "NULL";
-    $lon = $longitude !== null ? "'".$db->escape($longitude)."'" : "NULL";
+   $input = json_decode(file_get_contents('php://input'), true);
+    $lat = $input['latitud'] ?? null;
+    $lon = $input['longitud'] ?? null;
+
 
     $sql = "
       INSERT INTO ".MAIN_DB_PREFIX."picaje

@@ -1,43 +1,37 @@
+
 /* ===================== */
-/*    BOTÓN DESTACADO    */
+/*    BOTÓN DOLIBARR     */
 /* ===================== */
-#btnPicajePanel,
-#btnBoxPicaje {
-    padding: 16px 30px;
-    margin: 20px auto;
-    display: inline-block;
-    background: linear-gradient(145deg, #6f42c1, #a26ed8);
-    color: #ffffff;
-    font-size: 18px;
-    font-weight: 700;
-    border: none;
-    border-radius: 10px;
+#btnBoxPicaje,
+#btnPicajePanel {
+    font-size: 13px;
+    font-weight: 500;
+    color: #fff;
+    background-color: var(--colortexttitle); /* se adapta al tema Dolibarr */
+    border: 1px solid #ccc;
+    padding: 6px 12px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: all 0.25s ease-in-out;
-    box-shadow: 0 8px 18px rgba(111, 66, 193, 0.35);
-    position: relative;
-    overflow: hidden;
+    display: inline-block;
+    text-align: center;
+    transition: background-color 0.2s ease;
 }
 
-#btnPicajePanel::before,
-#btnBoxPicaje::before {
+#btnBoxPicaje:hover,
+#btnPicajePanel:hover {
+    background-color: #444;
+    text-decoration: none;
+}
+
+#btnBoxPicaje:active,
+#btnPicajePanel:active {
+    transform: scale(0.98);
+}
+
+#btnBoxPicaje::before,
+#btnPicajePanel::before {
     content: "🕘 ";
-    position: relative;
-    left: 0;
-    margin-right: 10px;
-}
-
-#btnPicajePanel:hover,
-#btnBoxPicaje:hover {
-    background: linear-gradient(145deg, #5c36a4, #8e5ec2);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 24px rgba(93, 36, 179, 0.5);
-}
-
-#btnPicajePanel:active,
-#btnBoxPicaje:active {
-    transform: scale(0.97);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    margin-right: 6px;
 }
 
 /* ===================== */
@@ -65,11 +59,62 @@
     padding-top: 30px;
 }
 
-/* ======================== */
-/* CONTENEDOR INCIDENCIAS   */
-/* ======================== */
-.incidencia-box-list {
-  list-style-type: none;
-  padding-left: 0;
-  margin: 0;
+/* ============================ */
+/*     BOX DE INCIDENCIAS      */
+/* ============================ */
+.boxcontent {
+    padding: 10px;
 }
+
+.boxcontent table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.boxcontent table th,
+.boxcontent table td {
+    padding: 6px 8px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.boxcontent table.liste_titre th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    color: #333;
+    border-bottom: 1px solid #ccc;
+}
+
+.boxcontent table tr.oddeven:nth-child(odd) {
+    background-color: #fcfcfc;
+}
+
+.boxcontent table tr.oddeven:nth-child(even) {
+    background-color: #f7f7f7;
+}
+
+.boxcontent .center {
+    text-align: center;
+    margin-top: 8px;
+}
+
+.boxcontent a.button.small {
+    font-size: 13px;
+    padding: 4px 10px;
+    background-color: var(--colortexttitle);
+    border: 1px solid #ccc;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.boxcontent a.button.small:hover {
+    background-color: #444;
+}
+
+.opacitymedium {
+    color: #999;
+    font-style: italic;
+}
+

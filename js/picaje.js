@@ -174,7 +174,18 @@ function inicializarPicaje(haEntrada, haSalida, salidaManualJustificada, salidaA
               return;
           }
         if (salidaAutomaticaActiva) {
-            enviarAutoSalida(latInput.value, lonInput.value);
+        // Obtener ubicación justo antes del envío
+              if (navigator.geolocation) {
+                  navigator.geolocation.getCurrentPosition(function (position) {
+                      const lat = position.coords.latitude;
+                      const lon = position.coords.longitude;
+                      enviarAutoSalida(lat, lon);
+                  }, function () {
+                      alert("❌ No se pudo obtener la ubicación.");
+                  });
+              } else {
+                  alert("❌ Geolocalización no soportada por el navegador.");
+              }
               return;
           }
       }

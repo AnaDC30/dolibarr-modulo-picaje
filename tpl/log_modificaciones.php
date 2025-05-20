@@ -42,7 +42,7 @@ $resql = $db->query($sql);
         <tbody>
             <?php if ($resql && $db->num_rows($resql) > 0): ?>
                 <?php while ($row = $db->fetch_array($resql)): ?>
-                    <tr class="oddeven">
+                    <tr class="oddeven fila-dinamica">
                         <td class="center"><?php echo (int)$row['id']; ?></td>
                         <td class="center"><?php echo dol_escape_htmltag($row['nombre_usuario_afectado'] ?? '—'); ?></td>
                         <td class="center"><?php echo dol_escape_htmltag($row['descripcion']); ?></td>
@@ -57,5 +57,35 @@ $resql = $db->query($sql);
             <?php endif; ?>
         </tbody>
     </table>
+    <div class="center" style="margin-top: 10px;">
+    <button id="btn-mostrar-mas" class="button small">Mostrar más</button>
+    </div>
+
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const filas = document.querySelectorAll(".fila-dinamica");
+  const btn = document.getElementById("btn-mostrar-mas");
+  const batchSize = 10;
+  let mostradas = 0;
+
+  function mostrarMas() {
+    for (let i = mostradas; i < mostradas + batchSize && i < filas.length; i++) {
+      filas[i].style.display = "";
+    }
+    mostradas += batchSize;
+    if (mostradas >= filas.length && btn) {
+      btn.style.display = "none";
+    }
+  }
+
+  filas.forEach((fila, i) => {
+    fila.style.display = i < batchSize ? "" : "none";
+  });
+
+  if (btn) btn.addEventListener("click", mostrarMas);
+});
+</script>
+
 
