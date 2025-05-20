@@ -46,68 +46,59 @@ git clone https://github.com/AnaDC30/dolibarr-modulo-picaje
 
 
 
-⚙️ Configuración
+---
+
+## ⚙️ Configuración
+
 Una vez activado el módulo, puedes:
 
-- Asignar permisos personalizados por usuario o grupo.
+- Asignar **permisos personalizados** por usuario o grupo.
+- Configurar opciones desde la sección **Configuración del módulo Picaje**:
 
-- Configurar opciones desde la sección Configuración del módulo Picaje:
+  1. Activar picaje automático al iniciar sesión
+  2. Activar salida automática
+  3. Definir la duración de la jornada laboral
+  4. Seleccionar el modo de horario: por usuario o por grupo
 
-	1. Activar picaje automático al iniciar sesión
+---
 
-	2. Activar salida automática
+## 🖥 Panel del Usuario
 
-	3. Duración de jornada
-
-	4. Modo de horario: por usuario o por grupo
-
-
-🖥 Panel del Usuario
 Cada usuario puede:
 
 - Registrar su entrada/salida con un solo botón
-
 - Visualizar su historial diario y completo
-
 - Justificar una incidencia (salida anticipada, olvido, horas extra)
-
 - Consultar sus incidencias pendientes y resueltas
 
+---
 
-🛡 Panel del Administrador
+## 🛡 Panel del Administrador
+
 El administrador (root) puede:
 
 - Ver y editar todos los registros de fichaje
-
-- Consultar logs de modificaciones
-
+- Consultar el log de modificaciones
 - Revisar y resolver incidencias
-
 - Registrar picajes olvidados desde incidencias
-
 - Acceder a reportes mensuales y firmarlos digitalmente
 
+---
 
-📤 Reporte mensual automático
+## 📤 Reporte mensual automático
 
-- Generación de PDF personalizado el día 1 de cada mes
-
+- Generación de PDF personalizado el **día 1 de cada mes**
 - Envío automático por correo a cada trabajador
+- Estructura clara del informe, que incluye:
+  - Registros diarios
+  - Horas normales
+  - Horas extra
+  - Salidas anticipadas
+- Firma digital opcional mediante certificados `.pem`
 
-- Estructura clara, con:
+---
 
-	Registros diarios
+## 📄 Licencia
 
-	Horas normales
-
-	Horas extra
-
-	Salidas anticipadas
-
-- Firma digital opcional mediante certificados .pem
-
-
-📄 Licencia
-Código: GPLv3 o superior
-
-Documentación: GFDL 1.3
+- **Código**: GPLv3 o superior
+- **Documentación**: GFDL 1.3
