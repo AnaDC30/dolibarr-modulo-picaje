@@ -2,6 +2,8 @@
 
 Este módulo permite registrar, visualizar y gestionar los **fichajes de entrada y salida de los trabajadores** dentro de Dolibarr. Está diseñado para adaptarse a empresas con necesidades de control horario, justificaciones, automatismos y reportes mensuales.
 
+Repositorio oficial: [github.com/AnaDC30/dolibarr-modulo-picaje](https://github.com/AnaDC30/dolibarr-modulo-picaje)
+
 ---
 
 ## 🚀 Funcionalidades Principales
@@ -15,8 +17,7 @@ Este módulo permite registrar, visualizar y gestionar los **fichajes de entrada
 - 🧾 Reportes mensuales en PDF con firma digital y envío por email
 - 🕵️‍♂️ Historial completo de fichajes con log de modificaciones
 - 📦 Integración con días de vacaciones (módulo Holiday)
-- 🔁 Picaje desde Home de Dolibarr
-- 📝 Avisos de incidencias desde Home
+- 🔁 Picaje desde panel lateral de Dolibarr
 
 ---
 
@@ -42,9 +43,8 @@ Este módulo permite registrar, visualizar y gestionar los **fichajes de entrada
 
 ```bash
 cd htdocs/custom
-git clone https://github.com/AnaDC30/dolibarr-modulo-picaje 
-
-
+git clone https://github.com/AnaDC30/dolibarr-modulo-picaje.git picaje
+```
 
 ---
 
@@ -95,6 +95,24 @@ El administrador (root) puede:
   - Horas extra
   - Salidas anticipadas
 - Firma digital opcional mediante certificados `.pem`
+
+---
+
+## 📚 Estructura de Archivos
+
+```
+dolibarr-modulo-picaje/
+├── ajax/
+├── css/
+├── exports/
+├── lib/
+├── scripts/
+├── tpl/
+├── README.md
+├── modPicaje.class.php
+├── dbController.php
+...
+```
 
 ---
 
