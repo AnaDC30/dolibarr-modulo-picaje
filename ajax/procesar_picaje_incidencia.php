@@ -71,7 +71,26 @@ if ($timestamp === false) {
 }
 $fechaHoraSQL = date('Y-m-d H:i:s', $timestamp);
 
-// 5) Construir e insertar picaje
+// 5) Verificar si ya existe un picaje del mismo tipo para ese usuario y ese día
+$fechaInicio = date('Y-m-d 00:00:00', $timestamp);
+$fechaFin    = date('Y-m-d 23:59:59', $timestamp);
+
+$sqlCheckDup = "
+    SELECT id FROM llx_picaje
+    WHERE fk_user = " . (int)$userAssign . "
+    AND tipo = '" . $db->escape($tipo) . "'
+    AND DATE(fecha_hora) = '" . $db->escape($fechaNueva) . "'
+";
+
+$resCheckDup = $db->query($sqlCheckDup);
+if ($resCheckDup && $db->num_rows($resCheckDup) > 0) {
+    $response['error'] = "Ya existe un picaje de tipo '{$tipo}' para este usuario en la fecha {$fechaNueva}.";
+    echo json_encode($response);
+    exit;
+}
+
+
+// 6) Insertar picaje
 $sqlInsert = "
     INSERT INTO llx_picaje
     (fk_user, tipo, fk_incidencia, comentario, fecha_hora, latitud, longitud, tipo_registro)
@@ -86,6 +105,7 @@ $sqlInsert = "
         'manual'
     )
 ";
+
 
 $resInsert = $db->query($sqlInsert);
 if ($resInsert) {

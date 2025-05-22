@@ -5,6 +5,10 @@ require_once DOL_DOCUMENT_ROOT . '/custom/picaje/lib/dbController.php';
 // Protección de Acceso - Permisos del Módulo
 global $user;
 
+// Añadir CSS si el modal se carga de forma aislada
+echo '<link rel="stylesheet" href="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/style.css.php">';
+echo '<link rel="stylesheet" href="/custom/picaje/css/modal.css">';
+
 if (empty($user->rights->picaje->editar)) { 
     http_response_code(403);
     exit('Acceso denegado.');
@@ -77,4 +81,5 @@ if (!empty($registro['fecha_hora'])) {
         <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all" onclick="cerrarModalEditar()">Cancelar</button>
     </div>
 </form>
+
 

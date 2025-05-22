@@ -5,6 +5,10 @@ header('Content-Type: text/html; charset=UTF-8');
 
 global $user, $db;
 
+// Añadir CSS si el modal se carga de forma aislada
+echo '<link rel="stylesheet" href="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/style.css.php">';
+echo '<link rel="stylesheet" href="/custom/picaje/css/modal.css">';
+
 if ($user->admin != 1) {
     echo "<p>❌ Acceso no autorizado.</p>";
     exit;
