@@ -13,7 +13,7 @@ define('NOSCANGETFORINJECTION',  1);
 $_SERVER['REQUEST_METHOD']  = 'GET';
 $_SERVER['REMOTE_ADDR']     = '127.0.0.1';
 $_SERVER['SCRIPT_FILENAME'] = __FILE__;
-$_SERVER['PHP_SELF']        = '/dolibarr/custom/picaje/scripts/test_resumen_pdf.php';
+$_SERVER['PHP_SELF']        = '/custom/picaje/scripts/test_resumen_pdf.php';
 
 // Carga Dolibarr
 require_once dirname(__DIR__, 3) . '/main.inc.php';

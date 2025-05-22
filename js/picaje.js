@@ -107,7 +107,7 @@ function inicializarPicaje(haEntrada, haSalida, salidaManualJustificada, salidaA
    // Verificar si el usuario está marcado como ausente hoy
    console.log('🔍 Verificando ausencia del usuario...');
 
-  fetch('/dolibarr/custom/picaje/ajax/comprobar_ausencia.php')
+  fetch('/custom/picaje/ajax/comprobar_ausencia.php')
   .then(res => res.json())
   .then(data => {
     console.log('📦 Resultado de comprobación de ausencia:', data);
@@ -196,7 +196,7 @@ function inicializarPicaje(haEntrada, haSalida, salidaManualJustificada, salidaA
 }
 
 function ejecutarEntradaAutomatica() {
-  fetch('/dolibarr/custom/picaje/lib/autoentrada.php')
+  fetch('/custom/picaje/lib/autoentrada.php')
     .then(res => res.json())
     .then(response => {
       if (response.auto_entry) {
@@ -218,7 +218,7 @@ function enviarAutoSalida(lat, lon) {
       longitud: lon
   };
 
-  fetch('/dolibarr/custom/picaje/lib/autosalida.php', {
+  fetch('/custom/picaje/lib/autosalida.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
@@ -239,7 +239,7 @@ function enviarAutoSalida(lat, lon) {
 }
 
 function validarEntradaAnticipada() {
-  fetch('/dolibarr/custom/picaje/ajax/validar_entrada.php')
+  fetch('/custom/picaje/ajax/validar_entrada.php')
     .then(res => res.json())
     .then(response => {
       if (response.entrada_anticipada || response.anticipada) {
@@ -255,7 +255,7 @@ function validarEntradaAnticipada() {
 }
 
 function validarSalidaAnticipada() {
-  fetch('/dolibarr/custom/picaje/ajax/validar_salida.php')
+  fetch('/custom/picaje/ajax/validar_salida.php')
     .then(res => res.json())
     .then(response => {
       if (response.salida_anticipada || response.anticipada) {
@@ -280,7 +280,7 @@ function enviarPicaje(tipo) {
   formData.append('latitud', lat);
   formData.append('longitud', lon);
 
-  fetch('/dolibarr/custom/picaje/ajax/procesar_picaje.php', {
+  fetch('/custom/picaje/ajax/procesar_picaje.php', {
       method: 'POST',
       headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -345,7 +345,7 @@ function enviarJustificacion() {
     return;
   }
 
-  fetch('/dolibarr/custom/picaje/ajax/registrar_incidencia.php', {
+  fetch('/custom/picaje/ajax/registrar_incidencia.php', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',

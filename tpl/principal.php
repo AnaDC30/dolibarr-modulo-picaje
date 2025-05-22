@@ -2,7 +2,8 @@
 // === Cargar entorno Dolibarr si no se ha hecho ya ===
 if (!defined('DOL_DOCUMENT_ROOT')) {
     // Ajusta la ruta según la profundidad de tu archivo
-    require_once __DIR__ . '/../../main.inc.php';
+    require_once dirname(__DIR__, 3) . '/main.inc.php';
+
 }
 
 // Ahora sí podemos usar DOLIBARR y sus globals

@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'].'/dolibarr/main.inc.php';
+require_once dirname(__DIR__, 3) . '/main.inc.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/picaje/lib/dbController.php';
 header('Content-Type: text/html; charset=UTF-8');
 

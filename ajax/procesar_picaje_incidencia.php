@@ -8,7 +8,7 @@ define('NOREQUIREMENU', 1);
 define('NOREQUIREHTML', 1);
 define('AJAX', 1);
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/dolibarr/main.inc.php';
+require_once dirname(__DIR__, 3) . '/main.inc.php';
 require_once DOL_DOCUMENT_ROOT.'/custom/picaje/class/picaje.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
 
@@ -46,7 +46,7 @@ if (empty($incidenciaId) || !$tipo || !$fechaNueva || !$horaNueva || empty($user
 }
 
 // 3) Validar incidencia en base de datos (⚠ movido aquí porque depende de $userAssign)
-$sqlCheck = "SELECT fk_user FROM llx_picaje_incidencias WHERE rowid = " . (int)$incidenciaId . " AND status = 'Pendiente'";
+$sqlCheck = "SELECT fk_user FROM llx_picaje_incidencias WHERE rowid = " . (int)$incidenciaId . " AND status = 'pendiente'";
 $resCheck = $db->query($sqlCheck);
 $objCheck = $db->fetch_object($resCheck);
 

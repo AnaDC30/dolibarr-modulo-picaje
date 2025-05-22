@@ -3,7 +3,7 @@
 $_SERVER['REQUEST_METHOD'] = 'GET';
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 $_SERVER['SCRIPT_FILENAME'] = __FILE__;
-$_SERVER['PHP_SELF'] = '/dolibarr/custom/picaje/scripts/registrar_ausencias_diarias.php'; 
+$_SERVER['PHP_SELF'] = '/custom/picaje/scripts/registrar_ausencias_diarias.php'; 
 
 // Constantes para evitar chequeos de seguridad de Dolibarr
 define('NOREQUIREMENU', 1);

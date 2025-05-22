@@ -13,7 +13,7 @@ define('EVEN_IF_ONLY_LOGIN_ALLOWED', 1);
 $_SERVER['REQUEST_METHOD'] = 'GET';
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 $_SERVER['SCRIPT_FILENAME'] = __FILE__;
-$_SERVER['PHP_SELF'] = '/dolibarr/custom/picaje/scripts/enviar_resumen_mensual.php';
+$_SERVER['PHP_SELF'] = '/custom/picaje/scripts/enviar_resumen_mensual.php';
 
 // === Cargar entorno Dolibarr ===
 require_once dirname(__DIR__, 3) . '/main.inc.php';

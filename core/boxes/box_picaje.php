@@ -56,7 +56,7 @@ class box_picaje extends ModeleBoxes
 		<button id="btnBoxPicaje" class="' . $claseBtn . '">' . $textoBtn . '</button>
 			<script>
 			document.addEventListener("DOMContentLoaded", function () {
-			fetch("/dolibarr/custom/picaje/ajax/comprobar_ausencia.php")
+			fetch("/custom/picaje/ajax/comprobar_ausencia.php")
 				.then(res => res.json())
 				.then(data => {
 				if (data.ausente) {

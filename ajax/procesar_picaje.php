@@ -5,7 +5,7 @@ define('NOREQUIREMENU', 1);
 define('NOREQUIREHTML', 1);
 define('AJAX', 1);
 
-require_once $_SERVER["DOCUMENT_ROOT"] . '/dolibarr/main.inc.php';
+require_once dirname(__DIR__, 3) . '/main.inc.php';
 require_once DOL_DOCUMENT_ROOT . '/custom/picaje/class/picaje.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/admin.lib.php';
 

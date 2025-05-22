@@ -3,7 +3,7 @@ ob_start();
 error_reporting(0);
 ini_set('display_errors', 0);
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/dolibarr/main.inc.php';
+require_once dirname(__DIR__, 3) . '/main.inc.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/custom/picaje/lib/dbController.php';
 require_once DOL_DOCUMENT_ROOT . '/includes/tecnickcom/tcpdf/tcpdf.php';

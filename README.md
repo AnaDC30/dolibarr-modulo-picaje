@@ -116,6 +116,80 @@ dolibarr-modulo-picaje/
 
 ---
 
+# ⚠️ Instrucciones para importar el archivo SQL del módulo Picaje
+
+Este módulo incluye un archivo SQL con la estructura necesaria para crear sus tablas personalizadas (`llx_picaje`, `llx_incidencias`, etc.).
+
+---
+
+## 📁 Ubicación del archivo
+
+```
+custom/picaje/sql/install.sql
+```
+
+---
+
+## 🛠️ ¿Cuándo debes usar este archivo?
+
+- Si al activar el módulo no se crean automáticamente las tablas
+- Si estás migrando el módulo a otro entorno o reinstalándolo
+- Si necesitas regenerar las tablas por algún fallo o corrupción
+
+---
+
+## ✅ ¿Cómo importar el archivo?
+
+### Opción 1: Usando phpMyAdmin
+
+1. Accede a phpMyAdmin
+2. Selecciona la base de datos activa (ej. `dolibarr`)
+3. Ve a la pestaña **Importar**
+4. Selecciona el archivo `install.sql`
+5. Haz clic en **Continuar**
+
+### Opción 2: Usando línea de comandos
+
+#### En Linux/Docker
+
+```bash
+mysql -u root -p dolibarr < custom/picaje/sql/install.sql
+```
+
+#### En Windows (XAMPP)
+
+```bat
+C:\xampp\mysql\bin\mysql.exe -u root -p dolibarr < C:\xampp\htdocs\dolibarr\custom\picaje\sql\install.sql
+```
+
+(Recuerda ajustar la ruta según tu instalación)
+
+---
+
+## ⚠️ Advertencias importantes
+
+- Ejecuta este archivo **solo una vez**
+- Si las tablas ya existen, puede generar errores de duplicado
+- Asegúrate de que estás conectado a la **base de datos correcta** antes de importarlo
+
+---
+
+## 📎 Recomendación
+
+Documenta en tu entorno cuándo y cómo se ha ejecutado este archivo para evitar reimportaciones accidentales.
+
+---
+
+### ⚠️ Importante sobre tareas programadas (cron)
+
+Este módulo incluye scripts que pueden ser ejecutados automáticamente mediante tareas programadas (cron).  
+Debido a las diferencias entre sistemas operativos, encontrarás ejemplos preparados tanto para **Windows (.bat)** como para **Linux/Docker (.sh)**.
+
+📄 Consulta el archivo [`docs/cron_adaptacion.md`](docs/cron_adaptacion.md) para ver cómo configurar correctamente los cron en cada entorno.
+
+
+---
+
 ## 📄 Licencia
 
 - **Código**: GPLv3 o superior
