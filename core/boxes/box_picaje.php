@@ -204,7 +204,7 @@ class box_picaje extends ModeleBoxes
 
 	$this->info_box_contents = array();
 	$this->info_box_contents[0][0] = array(
-		'tr' => 'class="center"',
+		'tr' => 'class="panel-center"',
 		'td' => '',
 		'text' => $html,
 		'asis' => 1

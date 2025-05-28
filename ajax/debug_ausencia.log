@@ -1,9 +1,9 @@
 🧪 COMPROBAR AUSENCIA
 User login: root
 Usuario: 1
-Fecha: 2025-05-22
+Fecha: 2025-05-28
 SQL ejecutada: SELECT tipo, fecha_hora FROM llx_picaje
         WHERE fk_user = 1
-        AND DATE(fecha_hora) = '2025-05-22'
+        AND DATE(fecha_hora) = '2025-05-28'
         AND tipo IN ('vacaciones', 'baja', 'permiso', 'otra')
 ❌ No se detectó ausencia
